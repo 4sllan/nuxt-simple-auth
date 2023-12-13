@@ -23,6 +23,7 @@
 </a>
 </p>
 
+
 ## Installation
 
 <!-- <a href="https://auth.nuxtjs.org">Read Documentation</a>
