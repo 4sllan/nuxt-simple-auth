@@ -1,5 +1,5 @@
-<h1 align="center" >🔑 Auth Module Simple</h1>
-<p align="center">Zero-boilerplate authentication support for Nuxt 2 / Nuxt 3 !</p>
+<h1 align="center" >🔐 Auth Module Simple</h1>
+<p align="center">Zero standard authentication support for Nuxt </p>
 
 <p align="center">
 <!-- <a href="https://david-dm.org/nuxt-community/auth-module">
