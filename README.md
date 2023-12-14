@@ -85,6 +85,17 @@ yarn add nuxt-simple-auth
 },
 ```
 
+
+#### Pages
+
+``` js
+    definePageMeta({
+      middleware: ['auth']
+    });
+```
+
+
+
 ## License
 
 [MIT License](./LICENSE) - Copyright (c) Nuxt Community
