@@ -2,6 +2,21 @@
   "name": "nuxt-simple-auth",
   "version": "1.0.0",
   "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "start": "nuxt start"
+  },
+  "devDependencies": {
+    "nuxt": "^3.8.2"
+  },
   "dependencies": {
+    "@nuxt/kit": "^3.8.2"
+  },
+  "files": ["dist"],
+  "exports": {
+    ".": "./dist/index.js"
   }
 }
