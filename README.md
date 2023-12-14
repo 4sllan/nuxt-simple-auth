@@ -15,11 +15,11 @@
     <img alt="" src="https://img.shields.io/codecov/c/github/nuxt-community/auth-module.svg?style=flat-square">
 </a> -->
 <br>
-<a href="https://npmjs.com/package/@nuxtjs/nuxt-simple-auth">
-    <img alt="" src="https://img.shields.io/npm/v/@nuxtjs/nuxt-simple-auth/latest.svg?style=flat-square">
+<a href="https://www.npmjs.com/package/nuxt-simple-auth">
+    <img alt="" src="https://img.shields.io/npm/v/nuxt-simple-auth/latest.svg?style=flat-square">
 </a>
-<a href="https://npmjs.com/package/@nuxtjs/nuxt-simple-auth">
-    <img alt="" src="https://img.shields.io/npm/dt/@nuxtjs/nuxt-simple-auth.svg?style=flat-square">
+<a href="https://www.npmjs.com/package/nuxt-simple-auth">
+    <img alt="" src="https://img.shields.io/npm/dt/nuxt-simple-auth.svg?style=flat-square">
 </a>
 </p>
 
