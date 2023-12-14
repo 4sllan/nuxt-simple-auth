@@ -2,18 +2,6 @@
 <p align="center">Zero standard authentication support for Nuxt </p>
 
 <p align="center">
-<!-- <a href="https://david-dm.org/nuxt-community/auth-module">
-    <img alt="" src="https://david-dm.org/nuxt-community/auth-module/status.svg?style=flat-square">
-</a> -->
-<!-- <a href="https://standardjs.com">
-    <img alt="" src="https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square">
-</a> -->
-<!-- <a href="https://circleci.com/gh/nuxt-community/auth-module">
-    <img alt="" src="https://img.shields.io/circleci/project/github/nuxt-community/auth-module.svg?style=flat-square">
-</a> -->
-<!-- <a href="https://codecov.io/gh/nuxt-community/auth-module">
-    <img alt="" src="https://img.shields.io/codecov/c/github/nuxt-community/auth-module.svg?style=flat-square">
-</a> -->
 <br>
 <a href="https://www.npmjs.com/package/nuxt-simple-auth">
     <img alt="" src="https://img.shields.io/npm/v/nuxt-simple-auth/latest.svg?style=flat-square">
@@ -30,6 +18,7 @@
 
 **🚧 please see [status page](http://auth.nuxtjs.org/status) in documentation.** -->
 
+
 ## Development
 
 Running demo for development:
@@ -45,6 +34,53 @@ Running tests for development:
 $ yarn build
 $ yarn nuxt build test/fixture
 $ yarn jest
+```
+
+## Example
+
+#### nuxt.config.ts
+
+[//]: # (> **Note**: CommonJS usage  )
+
+[//]: # (> In order to gain the TypeScript typings &#40;for intellisense / autocomplete&#41; while using CommonJS imports with `require&#40;&#41;`, use the following approach:)
+
+
+```
+  auth: {
+    cookie: {
+        options: {
+            httpOnly: true,
+                secure: true,
+                sameSite: 'Lax',
+                priority: 'high',
+            //maxAge: 24 * 60 * 60 * 1000,
+        },
+        prefix: '__Secure-auth.',
+    },
+    strategies: {
+        "2fa": {
+            active: true,
+                scheme: 'local',
+        },
+        local: {
+            "2fa": {
+                checker: {url: '/oauth/token', method: 'post'},
+                generator: {url: '/oauth/token', method: 'post'},
+            },
+            token: {
+                property: 'access_token',
+            },
+            user: {
+                property: 'profile',
+            },
+            endpoints: {
+                login: {url: '/oauth/token', method: 'post'},
+                user: {url: '/api/admin/profile', method: 'get'},
+                logout: false,
+            },
+        },
+    }
+},
 ```
 
 ## License
