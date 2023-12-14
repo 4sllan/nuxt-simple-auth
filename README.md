@@ -1,51 +1,53 @@
-<h1 align="center" >🔐 Auth Module Simple</h1>
-<p align="center">Zero standard authentication support for Nuxt </p>
-
-<p align="center">
+<h1 align="center">🔐 Auth Module Simple</h1>
+    <p align="center">
+        <span>Authentication support for Nuxt</span>
+            <br>
+        <span>Suporte de autenticação para Nuxt</span>
+    </p>
 <br>
-<a href="https://www.npmjs.com/package/nuxt-simple-auth">
-    <img alt="" src="https://img.shields.io/npm/v/nuxt-simple-auth/latest.svg?style=flat-square">
-</a>
-<a href="https://www.npmjs.com/package/nuxt-simple-auth">
-    <img alt="" src="https://img.shields.io/npm/dt/nuxt-simple-auth.svg?style=flat-square">
-</a>
-</p>
 
+<div align="center">
+
+
+[![Static Badge](https://img.shields.io/badge/NPM:nuxt-simple-auth)](https://www.npmjs.com/package/nuxt-simple-auth)
+[![Static Badge](https://img.shields.io/badge/GITHUB:nuxt-simple-auth)](https://github.com/4slanK/nuxt-simple-auth)
+[![npm version](https://img.shields.io/npm/v/nuxt-simple-auth/latest.svg?style=flat-square)](https://www.npmjs.com/package/nuxt-simple-auth)
+[![npm downloads](https://img.shields.io/npm/dt/nuxt-simple-auth.svg?style=flat-square)](https://www.npmjs.com/package/nuxt-simple-auth)
+
+
+</div>
 
 ## Installation
+
+> **Note**: CommonJS usage
+> nuxt-simple-auth is a feature-rich open source authentication module for Nuxt 2/3 applications. supports static Nuxt
+> applications
+
+> **Note**: CommonJS usage
+> nuxt-simple-auth é um módulo de autenticação de código aberto repleto de recursos para aplicativos Nuxt 2/3. oferece
+> suporte a aplicativos Nuxt estáticos
+
+## Quick Start
+
+```sh
+npm i nuxt-simple-auth
+```
+
+```sh
+yarn add nuxt-simple-auth
+```
 
 <!-- <a href="https://auth.nuxtjs.org">Read Documentation</a>
 
 **🚧 please see [status page](http://auth.nuxtjs.org/status) in documentation.** -->
 
 
-## Development
-
-Running demo for development:
-
-```bash
-$ yarn install
-$ yarn dev
-```
-
-Running tests for development:
-
-```bash
-$ yarn build
-$ yarn nuxt build test/fixture
-$ yarn jest
-```
-
 ## Example
 
 #### nuxt.config.ts
 
-[//]: # (> **Note**: CommonJS usage  )
 
-[//]: # (> In order to gain the TypeScript typings &#40;for intellisense / autocomplete&#41; while using CommonJS imports with `require&#40;&#41;`, use the following approach:)
-
-
-```
+``` js
   auth: {
     cookie: {
         options: {
