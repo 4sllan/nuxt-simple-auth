@@ -41,13 +41,20 @@ yarn add nuxt-simple-auth
 
 **🚧 please see [status page](http://auth.nuxtjs.org/status) in documentation.** -->
 
+## Setup
 
-## Example
+### Installation
 
-#### nuxt.config.ts
+Then, add @nuxtjs/auth-next to the modules section of nuxt.config.js:
 
+#### config nuxt-simple-auth
 
 ``` js
+{
+ modules: [
+    'nuxt-simple-auth'
+  ],
+  
   auth: {
     cookie: {
         options: {
@@ -83,18 +90,17 @@ yarn add nuxt-simple-auth
         },
     }
 },
+}
+  
 ```
-
 
 #### Pages
 
 ``` js
     definePageMeta({
-      middleware: ['auth']
+      middleware: ['auth', '_2fa']
     });
 ```
-
-
 
 ## License
 
