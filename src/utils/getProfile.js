@@ -1,15 +1,13 @@
-// import {useFetch} from '@vueuse/core'
-// export const getProfile = async (endpoints, token) => {
+// export const getProfile  = async (endpoints, token) => {
 //     try {
-//         const {data, pending, error, refresh} = await useFetch(endpoints.user.url, {
+//         return await $fetch(endpoints.user.url, {
+//             baseURL: siteUrl,
 //             method: endpoints.user.method,
 //             headers: {
 //                 'Content-Type': 'application/json',
 //                 'Authorization': token
 //             },
 //         });
-//
-//         return data
 //
 //     } catch (err) {
 //         console.log(err)

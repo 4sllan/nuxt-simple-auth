@@ -1,18 +1,15 @@
 import getURL from 'requrl'
 import {defineStore, storeToRefs} from 'pinia';
-import {defineNuxtPlugin, useRuntimeConfig, useFetch, useRequestEvent} from '#imports'
+import {defineNuxtPlugin, useRuntimeConfig, useFetch, useRequestEvent, useCookie} from '#imports'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
 
     const authState = {
-        user: false,
-        loggedIn: false,
-        strategy: "",
+        user: false, loggedIn: false, strategy: "",
     }
 
     const useAuthStore = defineStore('auth', {
-        state: () => authState,
-        actions: {
+        state: () => authState, actions: {
             setUser(data) {
                 this.user = data;
                 this.loggedIn = true;
@@ -20,9 +17,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             setStrategy(data) {
                 this.strategy = data
             },
-            destroy(data) {
-                this.state = authState
-            }
         },
     })
 
@@ -33,28 +27,24 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
 
     // use runtimeConfig
-    const runtimeConfig = useRuntimeConfig()
+    const {'nuxt-simple-auth': config} = useRuntimeConfig()
     const baseUrl = process.server ? getURL(useRequestEvent().req) : window.location.origin
 
 
     class Auth {
-        constructor() {
+        constructor(strategy) {
             const profile = this._setProfile()
-            //console.log(profile)
-            // profile.then(response => {
-            //     if (response) {
-            //         this._state = {
-            //             user: response.profile,
-            //             loggedIn: true,
-            //             strategy: response.type,
-            //         }
-            //         this._user = this._state.user
-            //         this._strategy = this._state.strategy
-            //         this._loggedIn = this._state.loggedIn
-            //     }
-            // }).catch(error => {
-            //
-            // })
+
+            profile.then(response => {
+                if (response) {
+                    this._state = {user: response.profile, loggedIn: true, strategy: response.type,}
+                    this._user = this._state.user
+                    this._strategy = this._state.strategy
+                    this._loggedIn = this._state.loggedIn
+                }
+            }).catch(error => {
+                console.log(error)
+            })
         }
 
         set _Pinia(val) {
@@ -80,82 +70,71 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             return this._loggedIn
         }
 
-        async loginWith(type, el) {
+        async loginWith(type, value) {
             try {
                 const {data, pending, error, refresh} = await useFetch('/api/auth', {
-                    baseUrl: baseUrl,
-                    method: 'POST',
-                    body: {type, el}
+                    baseUrl: baseUrl, method: 'POST', body: {type, value}
                 });
 
-                console.log(data.value)
+                const property = 'profile'
+                store.setUser(data.value[property])
+                store.setStrategy(type)
 
+                return new Promise((resolve) => {
+                    resolve(data.value)
+                })
 
-                // return await axios.post('/api/auth', {type, data: data.data})
-                //     .then(response => {
-                //         const module = 'auth/'
-                //         store.dispatch(module + 'setUser', response.data.profile)
-                //         store.dispatch(module + 'setStrategy', type)
-                //         $axios.setToken(response.data.token)
-                //     });
-            } catch (err) {
-                //console.log(red + err)
+            } catch (error) {
+                console.log(error)
             }
         }
 
         async logout(type) {
             try {
-                return await axios.post('/api/logout', {type})
-                    .then(response => {
-                        store.dispatch('auth/' + 'destroy')
-                    })
-            } catch (err) {
-                //console.log(red + err)
+                const {data, pending, error, refresh} = await useFetch('/api/logout', {
+                    baseUrl: baseUrl, method: 'POST', body: {type}
+                });
+                store.$reset()
+
+            } catch (error) {
+                console.log(error)
             }
         }
 
         async _setProfile() {
             try {
-
                 const {data, pending, error, refresh} = await useFetch('/api/profile', {
-                    baseUrl: baseUrl
+                    baseUrl: baseUrl, method: 'GET',
                 })
 
-                console.log(data.value)
+                const property = 'profile'
+                store.setUser(data.value[property])
+                store.setStrategy(data.value.type)
 
-                // if (data.value[profile]) {
-                //
-                // }
-                //
-                // return data
+                return new Promise((resolve, reject) => {
+                    if (data.value.statusCode === 400) {
+                        reject(data.value)
+                    }
+                    resolve(data.value)
+                })
 
-                // return baseUrl;
-                // return await axios.get('/api/profile')
-                //     .then((response) => {
-                //         if (response.data.profile) {
-                //             const module = 'auth/'
-                //             store.dispatch(module + 'setUser', response.data.profile)
-                //             store.dispatch(module + 'setStrategy', response.data.type)
-                //             $axios.setToken(response.data.token)
-                //             $axios.defaults.headers.common['Authorization'] = response.data.token
-                //             return response.data;
-                //         }
-                //     })
-
-            } catch (err) {
-                //console.log(red + err)
+            } catch (error) {
+                console.log(error)
             }
         }
     }
 
-    const $auth = new Auth()
+
+    const $auth = new Auth(() => {
+
+        if (process.server) {
+            const prefix = config.cookie.prefix && !import.meta.dev ? config.cookie.prefix : 'auth.'
+            return useCookie(`${prefix}strategy`)
+        }
+
+    })
 
     $auth._Pinia = store.$state
-
-
-    // const {data: response, pending, error, refresh} = await useFetch('/api/auth')
-    //
-    // console.log(response)
 
     nuxtApp.provide('auth', $auth)
 

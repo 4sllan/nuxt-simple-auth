@@ -54,6 +54,11 @@ export default defineNuxtModule({
             handler: resolve('./api/profile.js')
         })
 
+        addServerHandler({
+            route: '/api/logout',
+            handler: resolve('./api/logout.js')
+        })
+
 
         logger.success('`nuxt-simple-auth` setup done')
     }
