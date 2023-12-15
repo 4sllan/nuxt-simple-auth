@@ -1,6 +1,8 @@
 {
   "name": "nuxt-simple-auth",
-  "version": "1.0.3",
+  "version": "1.0.4",
+  "description": "Authentication module for Nuxt.js",
+  "repository": "4slanK/nuxt-simple-auth",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
