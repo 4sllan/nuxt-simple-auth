@@ -94,11 +94,11 @@ Then, add @nuxtjs/auth-next to the modules section of nuxt.config.js:
  runtimeConfig: {
         // The private keys which are only available server-side
         // Back-end Laravel Passport
-        // mandatory information
+        // Mandatory information
         
         grant_type: 'password',
-        client_id: 2,
-        client_secret: 'UL2yaCLcSQIxjyi2PRkLaZrDzcsCHlGwNgSIN788',
+        client_id: 0,
+        client_secret: '',
         // Keys within public are also exposed client-side
         public: {
             apiBase: '/api',
