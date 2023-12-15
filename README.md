@@ -84,7 +84,7 @@ Then, add @nuxtjs/auth-next to the modules section of nuxt.config.js:
             },
             endpoints: {
                 login: {url: '/oauth/token', method: 'post'},
-                user: {url: '/api/admin/profile', method: 'get'},
+                user: {url: '/api/profile', method: 'get'},
                 logout: false,
             },
         },
