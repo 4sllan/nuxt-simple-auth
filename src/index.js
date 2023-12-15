@@ -7,6 +7,7 @@ import {
     addRouteMiddleware
 } from '@nuxt/kit'
 
+
 const PACKAGE_NAME = 'nuxt-simple-auth'
 export default defineNuxtModule({
 
@@ -17,17 +18,19 @@ export default defineNuxtModule({
     async setup(options, nuxt) {
         const logger = useLogger(PACKAGE_NAME)
 
-
         const {resolve} = createResolver(import.meta.url)
-        console.log(nuxt.options.auth)
+        const runtimeConfig = nuxt.options.auth;
 
-        if (nuxt.options.auth.strategies['2fa'].active) {
+        nuxt.options.runtimeConfig['nuxt-simple-auth'] = runtimeConfig;
+
+        if (runtimeConfig.strategies['2fa'].active) {
             addRouteMiddleware({
                 name: '_2fa',
                 path: resolve('./core/2fa.js'),
             })
         }
 
+        // Add middleware template
         addRouteMiddleware({
             name: 'auth',
             path: resolve('./core/auth.js'),
@@ -37,26 +40,21 @@ export default defineNuxtModule({
         addPlugin({
             src: resolve('plugin.js'),
             mode: 'all',
-            options: nuxt.options.auth
         })
 
 
         // Add server-plugin
-        addServerHandler(
-            {
-                route: '/api/auth',
-                handler: resolve('./api/auth.js')
-            },
-            {
-                route: '/api/logout',
-                handler: resolve('./api/logout.js')
-            },
-            {
-                route: '/api/profile',
-                handler: resolve('./api/profile.js')
-            }
-        )
+        addServerHandler({
+            route: '/api/auth',
+            handler: resolve('./api/auth.js')
+        })
 
-        // logger.success('`nuxt-simple-auth` setup done')
+        addServerHandler({
+            route: '/api/profile',
+            handler: resolve('./api/profile.js')
+        })
+
+
+        logger.success('`nuxt-simple-auth` setup done')
     }
 })

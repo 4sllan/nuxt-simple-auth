@@ -1,6 +1,6 @@
 {
   "name": "nuxt-simple-auth",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
@@ -13,9 +13,14 @@
     "nuxt": "^3.8.2"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.8.2"
+    "@nuxt/kit": "^3.8.2",
+    "@pinia/nuxt": "^0.5.1",
+    "requrl": "^3.0.2",
+    "@vueuse/core": "^10.7.0"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": "./dist/index.js"
   }
