@@ -47,7 +47,7 @@ yarn add nuxt-simple-auth
 
 Then, add @nuxtjs/auth-next to the modules section of nuxt.config.js:
 
-#### config nuxt-simple-auth
+#### Config nuxt-simple-auth
 
 ``` js
 {
@@ -90,6 +90,21 @@ Then, add @nuxtjs/auth-next to the modules section of nuxt.config.js:
         },
     }
 },
+
+ runtimeConfig: {
+        // The private keys which are only available server-side
+        // Back-end Laravel Passport
+        // mandatory information
+        
+        grant_type: 'password',
+        client_id: 2,
+        client_secret: 'UL2yaCLcSQIxjyi2PRkLaZrDzcsCHlGwNgSIN788',
+        // Keys within public are also exposed client-side
+        public: {
+            apiBase: '/api',
+            siteUrl: process.env.baseURL,
+        }
+    },
 }
   
 ```
