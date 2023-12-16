@@ -5,30 +5,32 @@
   "repository": "4slanK/nuxt-simple-auth",
   "license": "MIT",
   "type": "module",
-  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs"
+    }
+  },
+  "main": "./dist/module.cjs",
+  "types": "./dist/types.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "prepack": "nuxt-module-build",
     "build": "nuxt build",
     "dev": "nuxt dev",
     "start": "nuxt start"
   },
   "devDependencies": {
-    "@4slanK/seu-pacote": "1.0.6",
+    "@nuxt/module-builder": "^0.5.4",
+    "@nuxt/schema": "^3.8.2",
     "nuxt": "^3.8.2"
   },
   "dependencies": {
     "@nuxt/kit": "^3.8.2",
     "@pinia/nuxt": "^0.5.1",
-    "requrl": "^3.0.2",
-    "@vueuse/core": "^10.7.0"
-  },
-  "files": [
-    "dist",
-    "src"
-  ],
-  "exports": {
-    ".": "./dist/index.js"
-  },
-  "publishConfig": {
-    "@4slan:registry": "https://npm.pkg.github.com"
+    "@vueuse/core": "^10.7.0",
+    "requrl": "^3.0.2"
   }
 }

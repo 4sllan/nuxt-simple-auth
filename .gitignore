@@ -11,3 +11,5 @@ package-lock.json
 _book
 temp
 tsdoc-metadata.json
+yarn.lock
+yarn-error.log
