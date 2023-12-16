@@ -20,11 +20,11 @@
 ## Installation
 
 > **Note**: CommonJS usage
-> nuxt-simple-auth is a feature-rich open source authentication module for Nuxt 2/3 applications. supports static Nuxt
+> nuxt-simple-auth is a feature-rich open source authentication module for Nuxt3 applications. supports static Nuxt
 > applications
 
 > **Note**: CommonJS usage
-> nuxt-simple-auth é um módulo de autenticação de código aberto repleto de recursos para aplicativos Nuxt 2/3. oferece
+> nuxt-simple-auth é um módulo de autenticação de código aberto repleto de recursos para aplicativos Nuxt 3. oferece
 > suporte a aplicativos Nuxt estáticos
 
 ## Quick Start
@@ -45,37 +45,28 @@ yarn add nuxt-simple-auth
 
 ### Installation
 
-Then, add @nuxtjs/auth-next to the modules section of nuxt.config.js:
+Then, add nuxt-simple-auth to the modules section of nuxt.config.js:
 
-#### Config nuxt-simple-auth
+### Config
 
+***nuxt.config.js***
 ``` js
 {
- modules: [
-    'nuxt-simple-auth'
-  ],
+     modules: [
+        'nuxt-simple-auth'
+    ],
   
-  auth: {
-    cookie: {
-        options: {
-            httpOnly: true,
-                secure: true,
-                sameSite: 'Lax',
-                priority: 'high',
-            //maxAge: 24 * 60 * 60 * 1000,
-        },
-        prefix: '__Secure-auth.',
-    },
-    strategies: {
-        "2fa": {
-            active: true,
-                scheme: 'local',
-        },
+    auth: {
+  
+    }
+},
+
+```
+### Strategies
+
+``` js
+ strategies: {
         local: {
-            "2fa": {
-                checker: {url: '/oauth/token', method: 'post'},
-                generator: {url: '/oauth/token', method: 'post'},
-            },
             token: {
                 property: 'access_token',
             },
@@ -89,32 +80,101 @@ Then, add @nuxtjs/auth-next to the modules section of nuxt.config.js:
             },
         },
     }
-},
-
- runtimeConfig: {
-        // The private keys which are only available server-side
-        // Back-end Laravel Passport
-        // Mandatory information
-        
-        grant_type: 'password',
-        client_id: 0,
-        client_secret: '',
-        // Keys within public are also exposed client-side
-        public: {
-            apiBase: '/api',
-            siteUrl: process.env.baseURL,
-        }
-    },
-}
-  
 ```
 
-#### Pages
+### Cookie
+
+**prefix** - Default token prefix used in constructing a key for token storage.
+</br>
+**options** - Additional cookie options, passed to <a href="https://github.com/jshttp/cookie?tab=readme-ov-file">
+cookie</a>
+</br>
+**path** - path where the cookie is visible. The default is '/'.
+</br>
+**expires** - can be used to specify the lifetime of the cookie in Number of Days or Specific Date. The default is
+session only.
+</br>
+**maxAge** - Specifies the number (in seconds) that will be the Max-Age value (preferably expired)
+</br>
+**domain** - domain (and by extension subdomain(s)) where the cookie is visible. The default is domain and all
+subdomains.
+</br>
+**secure** - defines whether the cookie requires a secure protocol (https). Default is false, should be set to true if
+possible.
+
+``` js
+cookie: {
+        options: {
+            httpOnly: true,
+                secure: true,
+                sameSite: 'Lax',
+                priority: 'high',
+            //maxAge: 24 * 60 * 60 * 1000,
+        },
+        prefix: '__Secure-auth.',
+    }
+```
+### 2fa
+
+**Two-factor identification** The 2fa token will have all settings already defined in the cookie
+
+``` js
+"2fa": {
+    active: true,
+    scheme: ['local'],
+ },
+```
+
+### Pages
 
 ``` js
     definePageMeta({
       middleware: ['auth', '_2fa']
     });
+```
+
+### runtimeConfig
+
+**nuxt.config.js**
+
+``` js
+ grant_type: 'password',
+ client_id: 0,
+ client_secret: '',
+        
+        
+public: {
+    apiBase: '/api',
+    siteUrl: process.env.baseURL,
+ },
+        
+```
+
+### Methods
+
+```shell
+loginWith(strategyName, ...args)
+```
+Returns: Promise
+
+Set current strategy to strategyName and attempt login. Usage varies by current strategy.
+
+``` js
+const {$auth} = useNuxtApp()
+
+$auth.loginWith('local', data)
+      .then(response => {
+        
+      })
+```
+
+```shell
+logout(strategyName)
+```
+``` js
+const {$auth} = useNuxtApp()
+
+$auth.logout(strategyName)
 ```
 
 ## License
