@@ -6,16 +6,19 @@ import {
     addPlugin,
     addRouteMiddleware
 } from '@nuxt/kit'
+import type {
+    ModuleOptions,
+} from './runtime/types'
 
 
 const PACKAGE_NAME = 'nuxt-simple-auth'
-export default defineNuxtModule({
+export default defineNuxtModule<ModuleOptions>({
 
     meta: {
         name: PACKAGE_NAME,
         configKey: 'auth'
     },
-    async setup(options, nuxt: any) {
+    async setup(options, nuxt:any) {
         const logger = useLogger(PACKAGE_NAME)
 
         // @ts-ignore
