@@ -5,7 +5,7 @@ import {
     addServerHandler,
     addPlugin,
     addRouteMiddleware
-} from '@nuxt/kit'
+} from 'nuxt/kit'
 
 
 const PACKAGE_NAME = 'nuxt-simple-auth'
@@ -24,9 +24,15 @@ export default defineNuxtModule({
         nuxt.options.runtimeConfig['nuxt-simple-auth'] = runtimeConfig;
 
         if (runtimeConfig.strategies['2fa'].active) {
+            //add middleware 2fa
             addRouteMiddleware({
                 name: '_2fa',
                 path: resolve('./core/2fa.js'),
+            })
+            //add server-plugin 2fa
+            addServerHandler({
+                route: '/api/2fa',
+                handler: resolve('./api/2fa.js')
             })
         }
 

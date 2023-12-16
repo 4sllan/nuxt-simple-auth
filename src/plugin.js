@@ -25,11 +25,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
     const {user, loggedIn, strategy} = storeToRefs(store)
 
-
     // use runtimeConfig
     const {'nuxt-simple-auth': config} = useRuntimeConfig()
     const baseUrl = process.server ? getURL(useRequestEvent().req) : window.location.origin
-
 
     class Auth {
         constructor(strategy) {
@@ -101,6 +99,20 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             }
         }
 
+        async _2fa(code) {
+            async function autenticar(code) {
+                const {data: response, pending, error, refresh} = await useFetch('/api/2fa', {
+                    baseUrl: baseUrl, method: 'POST', body: {code}
+                })
+            }
+
+            async function renew() {
+                const {data: response, pending, error, refresh} = await useFetch('/api/2fa', {
+                    baseUrl: baseUrl, method: 'POST', body: {code}
+                })
+            }
+        }
+
         async _setProfile() {
             try {
                 const {data, pending, error, refresh} = await useFetch('/api/profile', {
@@ -122,6 +134,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 console.log(error)
             }
         }
+
     }
 
 
@@ -133,6 +146,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         }
 
     })
+
+
+    await $auth._setProfile()
 
     $auth._Pinia = store.$state
 
