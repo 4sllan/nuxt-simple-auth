@@ -18,11 +18,11 @@
   ],
   "scripts": {
     "prepack": "nuxt-module-build",
-    "build": "nuxt build",
+    "build": "nuxi build",
     "lint": "eslint . --max-warnings=0",
-    "clean": "rm -rf playground-authjs/.nuxt playground-local/.nuxt playground-refresh/.nuxt dist .nuxt",
-    "typecheck": "nuxi prepare playground-local && tsc --noEmit",
-    "typecheck:refresh": "nuxi prepare playground-refresh && tsc --noEmit",
+    "clean": "rm -rf scripts/.nuxt dist .nuxt",
+    "typecheck": "nuxi prepare scripts && tsc --noEmit",
+    "typecheck:refresh": "nuxi prepare scripts && tsc --noEmit",
     "dev:prepare": "nuxt-module-build --stub"
   },
   "devDependencies": {
