@@ -20,11 +20,11 @@ export default defineNuxtModule({
 
         // @ts-ignore
         const {resolve} = createResolver(import.meta.url)
-        const runtimeConfig = nuxt.options?.auth;
+        const auth = nuxt.options?.auth;
 
-        nuxt.options.runtimeConfig['nuxt-simple-auth'] = runtimeConfig;
+        nuxt.options.runtimeConfig[PACKAGE_NAME] = auth;
 
-        if (runtimeConfig.strategies['2fa'].active) {
+        if (auth['2fa'].active) {
             //add middleware 2fa
             addRouteMiddleware({
                 name: '_2fa',
@@ -49,18 +49,17 @@ export default defineNuxtModule({
             mode: 'all',
         })
 
-
-        // Add server-plugin
+        // Add server-plugin auth
         addServerHandler({
             route: '/api/auth',
             handler: resolve('./runtime/api/auth.js')
         })
-
+        // Add server-plugin profile
         addServerHandler({
             route: '/api/profile',
             handler: resolve('./runtime/api/profile.js')
         })
-
+        // Add server-plugin logout
         addServerHandler({
             route: '/api/logout',
             handler: resolve('./runtime/api/logout.js')
