@@ -5,7 +5,7 @@ import {
     addServerHandler,
     addPlugin,
     addRouteMiddleware
-} from 'nuxt/kit'
+} from '@nuxt/kit'
 
 
 const PACKAGE_NAME = 'nuxt-simple-auth'
@@ -28,24 +28,24 @@ export default defineNuxtModule({
             //add middleware 2fa
             addRouteMiddleware({
                 name: '_2fa',
-                path: resolve('./core/2fa.js'),
+                path: resolve('./runtime/core/2fa.js'),
             })
             //add server-plugin 2fa
             addServerHandler({
                 route: '/api/2fa',
-                handler: resolve('./api/2fa.js')
+                handler: resolve('./runtime/api/2fa.js')
             })
         }
 
         // Add middleware template
         addRouteMiddleware({
             name: 'auth',
-            path: resolve('./core/auth.js'),
+            path: resolve('./runtime/core/auth.js'),
         })
 
         // Add plugin template
         addPlugin({
-            src: resolve('plugin.js'),
+            src: resolve('./runtime/plugin.js'),
             mode: 'all',
         })
 
@@ -53,17 +53,17 @@ export default defineNuxtModule({
         // Add server-plugin
         addServerHandler({
             route: '/api/auth',
-            handler: resolve('./api/auth.js')
+            handler: resolve('./runtime/api/auth.js')
         })
 
         addServerHandler({
             route: '/api/profile',
-            handler: resolve('./api/profile.js')
+            handler: resolve('./runtime/api/profile.js')
         })
 
         addServerHandler({
             route: '/api/logout',
-            handler: resolve('./api/logout.js')
+            handler: resolve('./runtime/api/logout.js')
         })
 
 
