@@ -12,6 +12,7 @@
     "start": "nuxt start"
   },
   "devDependencies": {
+    "@4slanK/seu-pacote": "1.0.6",
     "nuxt": "^3.8.2"
   },
   "dependencies": {
