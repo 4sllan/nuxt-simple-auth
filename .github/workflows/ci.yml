@@ -30,4 +30,4 @@ empregos:
       - execute: npm ci
       - executar: npm publicar
         ambiente:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NODE_AUTH_TOKEN: ${{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}}
