@@ -85,20 +85,20 @@ Then, add nuxt-simple-auth to the modules section of nuxt.config.js:
 ### Cookie
 
 **prefix** - Default token prefix used in constructing a key for token storage.
-</br>
+<br/>
 **options** - Additional cookie options, passed to <a href="https://github.com/jshttp/cookie?tab=readme-ov-file">
 cookie</a>
-</br>
+<br/>
 **path** - path where the cookie is visible. The default is '/'.
-</br>
+<br/>
 **expires** - can be used to specify the lifetime of the cookie in Number of Days or Specific Date. The default is
 session only.
-</br>
+<br/>
 **maxAge** - Specifies the number (in seconds) that will be the Max-Age value (preferably expired)
 </br>
 **domain** - domain (and by extension subdomain(s)) where the cookie is visible. The default is domain and all
 subdomains.
-</br>
+<br/>
 **secure** - defines whether the cookie requires a secure protocol (https). Default is false, should be set to true if
 possible.
 
