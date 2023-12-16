@@ -22,7 +22,8 @@
     "@vueuse/core": "^10.7.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "exports": {
     ".": "./dist/index.js"
