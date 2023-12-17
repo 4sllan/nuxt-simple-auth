@@ -1,12 +1,3 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "sourceMap": true
-  },
-  "exclude": [
-    "node_modules",
-    "../docs"
-  ],
-  "include": ["src/"]
+  "extends": "./.nuxt/tsconfig.json"
 }

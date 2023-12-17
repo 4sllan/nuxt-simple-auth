@@ -18,12 +18,13 @@ export default defineNuxtModule<ModuleOptions>({
         name: PACKAGE_NAME,
         configKey: 'auth'
     },
-    async setup(options, nuxt:any) {
+
+    async setup(options, nuxt: any) {
         const logger = useLogger(PACKAGE_NAME)
 
-        // @ts-ignore
+
         const {resolve} = createResolver(import.meta.url)
-        const auth = nuxt.options?.auth;
+        const auth = nuxt.options.auth;
 
         nuxt.options.runtimeConfig[PACKAGE_NAME] = auth;
 
