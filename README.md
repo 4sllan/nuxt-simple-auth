@@ -76,6 +76,7 @@ Then, add nuxt-simple-auth to the modules section of nuxt.config.js:
             endpoints: {
                 login: {url: '/oauth/token', method: 'post'},
                 user: {url: '/api/profile', method: 'get'},
+                "2fa": {url: '/api/token_2fa', method: 'post'},
                 logout: false,
             },
         },
