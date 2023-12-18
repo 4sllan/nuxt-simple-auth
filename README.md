@@ -145,10 +145,11 @@ default: false
  client_secret: '',
         
         
-public: {
-    apiBase: '/api',
-    siteUrl: process.env.baseURL,
- },
+ public: {
+     apiBase: '/api',
+     siteURL: 'http://localhost:3000/' || URL,
+     baseURL: process.env.baseURL,
+ }
         
 ```
 
@@ -198,7 +199,6 @@ $auth._2fa('local', data).then(response => {
     headers: $auth.httpHeaders,
   })
 ```
-
 
 ## License
 
