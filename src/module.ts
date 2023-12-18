@@ -24,11 +24,11 @@ export default defineNuxtModule<ModuleOptions>({
 
 
         const {resolve} = createResolver(import.meta.url)
-        const auth = nuxt.options.auth;
+        const auth = nuxt.options?.auth;
 
         nuxt.options.runtimeConfig[PACKAGE_NAME] = auth;
 
-        if (auth['2fa'].active) {
+        if (auth['2fa']) {
             //add middleware 2fa
             addRouteMiddleware({
                 name: '_2fa',

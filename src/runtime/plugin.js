@@ -26,8 +26,17 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     const {user, loggedIn, strategy} = storeToRefs(store)
 
     // use runtimeConfig
-    const {'nuxt-simple-auth': config} = useRuntimeConfig()
+    const {
+        'nuxt-simple-auth': config,
+        public: {
+            siteURL,
+            apiBase
+        }
+    } = useRuntimeConfig()
+
+
     const baseUrl = process.server ? getURL(useRequestEvent().req) : window.location.origin
+
 
     class Auth {
         constructor(strategy) {
@@ -35,14 +44,21 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
             profile.then(response => {
                 if (response) {
+                    this.httpHeaders = ['authorization', response.token]
                     this._state = {user: response.profile, loggedIn: true, strategy: response.type,}
                     this._user = this._state.user
                     this._strategy = this._state.strategy
                     this._loggedIn = this._state.loggedIn
                 }
-            }).catch(error => {
-                console.log(error)
             })
+        }
+
+        set httpHeaders(headers) {
+            return this._headers = new Headers([headers])
+        }
+
+        get httpHeaders() {
+            return this._headers
         }
 
         set _Pinia(val) {
@@ -71,15 +87,20 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         async loginWith(type, value) {
             try {
                 const {data, pending, error, refresh} = await useFetch('/api/auth', {
-                    baseUrl: baseUrl, method: 'POST', body: {type, value}
+                    baseUrl: siteURL || baseUrl, method: 'POST', body: {type, value},
                 });
 
                 const property = 'profile'
                 store.setUser(data.value[property])
                 store.setStrategy(type)
 
-                return new Promise((resolve) => {
-                    resolve(data.value)
+                return new Promise((resolve, reject) => {
+                    if (data.value) {
+                        return resolve(data.value)
+                    }
+
+                    return reject()
+
                 })
 
             } catch (error) {
@@ -90,33 +111,33 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         async logout(type) {
             try {
                 const {data, pending, error, refresh} = await useFetch('/api/logout', {
-                    baseUrl: baseUrl, method: 'POST', body: {type}
+                    baseUrl: siteURL || baseUrl, method: 'POST', body: {type}
                 });
                 store.$reset()
+
+                if (data.value) {
+                    return navigateTo('/');
+                }
 
             } catch (error) {
                 console.log(error)
             }
         }
 
-        async _2fa(code) {
-            async function autenticar(code) {
-                const {data: response, pending, error, refresh} = await useFetch('/api/2fa', {
-                    baseUrl: baseUrl, method: 'POST', body: {code}
-                })
-            }
+        async _2fa(strategyName, code) {
+            const {data, pending, error, refresh} = await useFetch('/api/2fa', {
+                baseUrl: siteURL || baseUrl, method: 'POST', body: {strategyName, code}
+            })
 
-            async function renew() {
-                const {data: response, pending, error, refresh} = await useFetch('/api/2fa', {
-                    baseUrl: baseUrl, method: 'POST', body: {code}
-                })
-            }
+            return new Promise((resolve) => {
+                resolve(data.value)
+            })
         }
 
         async _setProfile() {
             try {
                 const {data, pending, error, refresh} = await useFetch('/api/profile', {
-                    baseUrl: baseUrl, method: 'GET',
+                    baseUrl: siteURL || baseUrl, method: 'GET',
                 })
 
                 const property = 'profile'
@@ -125,9 +146,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
                 return new Promise((resolve, reject) => {
                     if (data.value.statusCode === 400) {
-                        reject(data.value)
+                        return reject()
                     }
-                    resolve(data.value)
+                    return resolve(data.value)
                 })
 
             } catch (error) {
@@ -147,8 +168,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
     })
 
+    const getResponseToken = await $auth._setProfile()
 
-    await $auth._setProfile()
+    $auth.httpHeaders = (['authorization', getResponseToken.token])
 
     $auth._Pinia = store.$state
 

@@ -50,6 +50,7 @@ Then, add nuxt-simple-auth to the modules section of nuxt.config.js:
 ### Config
 
 ***nuxt.config.js***
+
 ``` js
 {
      modules: [
@@ -62,6 +63,7 @@ Then, add nuxt-simple-auth to the modules section of nuxt.config.js:
 },
 
 ```
+
 ### Strategies
 
 ``` js
@@ -115,15 +117,14 @@ cookie: {
         prefix: '__Secure-auth.',
     }
 ```
+
 ### 2fa
 
 **Two-factor identification** The 2fa token will have all settings already defined in the cookie
+default: false
 
 ``` js
-"2fa": {
-    active: true,
-    scheme: ['local'],
- },
+"2fa":  true,
 ```
 
 ### Pages
@@ -156,6 +157,7 @@ public: {
 ```shell
 loginWith(strategyName, ...args)
 ```
+
 Returns: Promise
 
 Set current strategy to strategyName and attempt login. Usage varies by current strategy.
@@ -172,11 +174,31 @@ $auth.loginWith('local', data)
 ```shell
 logout(strategyName)
 ```
+
 ``` js
 const {$auth} = useNuxtApp()
 
 $auth.logout(strategyName)
 ```
+
+```shell
+_2fa(strategyName, ...args)
+```
+
+``` js
+$auth._2fa('local', data).then(response => {
+
+  })
+```
+
+``` js
+
+ const {data, pending, error, refresh} = useFetch(url, {
+    $fetch: useRequestFetch(),
+    headers: $auth.httpHeaders,
+  })
+```
+
 
 ## License
 

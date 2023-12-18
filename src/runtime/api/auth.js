@@ -1,5 +1,5 @@
 import {useRuntimeConfig} from '#imports'
-
+import {setHeaders, getRequestHeaders} from 'h3'
 
 export default defineEventHandler(async (event) => {
     let {type, value} = await readBody(event)
@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     const {
         'nuxt-simple-auth': config,
         public: {
-            siteUrl,
+            baseURL,
             apiBase
         },
         grant_type,
@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
     async function getToken(endpoints, value) {
         try {
             const data = await $fetch(endpoints.login.url, {
-                baseURL: siteUrl,
+                baseURL: baseURL,
                 method: endpoints.login.method,
                 body: {...value, grant_type, client_id, client_secret},
             });
@@ -51,12 +51,15 @@ export default defineEventHandler(async (event) => {
 
     async function getProfile(endpoints, token) {
         try {
+            //console.log(getRequestHeaders(event, 'headers'))
             return await $fetch(endpoints.user.url, {
-                baseURL: siteUrl,
+                baseURL: baseURL,
                 method: endpoints.user.method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': token
+                onRequest({ request, options }) {
+                    // Set the request headers
+                    options.headers = options.headers || {}
+                    options.headers.Authorization = token
+                    //console.log(options)
                 },
             });
 

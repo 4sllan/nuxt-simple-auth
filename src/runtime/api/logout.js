@@ -1,4 +1,5 @@
 import {useRuntimeConfig} from '#imports'
+import {deleteCookie} from 'h3'
 
 export default defineEventHandler(async (event) => {
     let {type} = await readBody(event)
@@ -10,12 +11,13 @@ export default defineEventHandler(async (event) => {
 
     if (type) {
 
-        setCookie(event, `${prefix}_token.${type}`, false, {maxAge: -1})
-        setCookie(event, `${prefix}strategy`, false, {maxAge: -1})
-        setCookie(event, `${prefix}_token_expiration.${type}`, false, {maxAge: -1})
+        deleteCookie(event, `${prefix}_token.${type}`, cookie.options)
+        deleteCookie(event, `${prefix}strategy`, cookie.options)
+        deleteCookie(event, `${prefix}_token_expiration.${type}`, cookie.options)
 
-        return 'Você foi desconectado com sucesso'
+        return true
     }
 
+    return false
 
 })

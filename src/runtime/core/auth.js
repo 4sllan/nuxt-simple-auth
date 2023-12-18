@@ -1,5 +1,4 @@
-import getURL from 'requrl'
-import {useRuntimeConfig, useFetch, useRequestEvent} from '#imports'
+import {useRuntimeConfig} from '#imports'
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
 
@@ -9,26 +8,8 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     const {user, loggedIn, strategy, state, $reset,} = store.get('auth')
 
     const {'nuxt-simple-auth': config} = useRuntimeConfig(nuxtApp)
-    const baseUrl = process.server ? getURL(useRequestEvent().req) : window.location.origin
-
 
     const {$auth} = useNuxtApp()
-
-    //Todo <-- $auth -->
-    class AuthClassMiddleware {
-        async logout(type) {
-            try {
-                const {data, pending, error, refresh} = await useFetch('/api/logout', {
-                    baseUrl: baseUrl, method: 'POST', body: {type}
-                });
-
-            } catch (error) {
-                console.log(error)
-            }
-        }
-    }
-
-    const authClassMiddleware = new AuthClassMiddleware()
 
 
     if (process.server) {
@@ -39,39 +20,21 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         const type = useCookie(`${prefix}strategy`);
 
         if (type.value) {
-
             const token = useCookie(`${prefix}_token.${type.value}`);
             const expires = useCookie(`${prefix}_token_expiration.${type.value}`);
+            const time = ((expires.value - Date.now()) / 60000)
 
-            let i = ((expires.value - Date.now()) / 60000);
-
-            if (!Boolean(i)) {
-                await authClassMiddleware.logout(type)
+            if (!time) {
                 abortNavigation()
                 return navigateTo('/');
             }
 
-            if (token.value && type && !Boolean(i)) {
-                await authClassMiddleware.logout(type)
+            if (!token.value && !time) {
                 abortNavigation()
                 return navigateTo('/');
-
             }
 
-            if (typeof user !== 'object' || user === false) {
-                await $auth.logout(type)
-                return navigateTo('/');
-            }
 
-            if (typeof loggedIn !== 'boolean' || loggedIn === false) {
-                await authClassMiddleware.logout(type)
-                return navigateTo('/');
-            }
-
-            if (typeof strategy !== 'string' || !strategy) {
-                await authClassMiddleware.logout(type)
-                return navigateTo('/');
-            }
         }
 
         if (!type.value) {
@@ -79,5 +42,23 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
             return navigateTo('/');
         }
     }
+    if (process.client) {
 
+        if (strategy) {
+            if (typeof user !== 'object' || user === false) {
+                await $auth.logout(strategy)
+                return navigateTo('/');
+            }
+
+            if (typeof loggedIn !== 'boolean' || loggedIn === false) {
+                await $auth.logout(strategy)
+                return navigateTo('/');
+            }
+        }
+
+        if (!strategy) {
+            abortNavigation()
+            return navigateTo('/');
+        }
+    }
 })
