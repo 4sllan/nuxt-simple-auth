@@ -49,7 +49,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             profile.then(response => {
 
                 if (response) {
-                    this.httpHeaders = ['authorization', response.token]
+                    this._headers.set('authorization', response.token)
                     this._state = {user: response.profile, loggedIn: true, strategy: response.type,}
                     this._user = this._state.user
                     this._strategy = this._state.strategy
@@ -59,11 +59,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         }
 
         set httpHeaders(headers) {
-            return this._headers = new Headers([headers])
-        }
-
-        get httpHeaders() {
-            return this._headers
+            return this._headers = headers
         }
 
         set _Pinia(val) {
@@ -198,12 +194,14 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
     const $auth = new Auth()
 
+    $auth.httpHeaders = new Headers([])
+
     const t = await $auth._setProfile()
 
 
     if (t) {
 
-        $auth.httpHeaders = ['authorization', t?.token]
+        $auth._headers.set('authorization', t?.token)
     }
 
     $auth._Pinia = store.$state
