@@ -159,9 +159,9 @@ default: false
 loginWith(strategyName, ...args)
 ```
 
-Returns: Promise
+Return: Promise
 
-Set current strategy to strategyName and attempt login. Usage varies by current strategy.
+Set the current strategy as strategyName and attempt to log in. The usage may vary based on the current strategy.
 
 ``` js
 const {$auth} = useNuxtApp()
@@ -176,6 +176,8 @@ $auth.loginWith('local', data)
 logout(strategyName)
 ```
 
+Set the current strategy as strategyName and logout, ensuring the destruction of Pinia's cookies and state.
+
 ``` js
 const {$auth} = useNuxtApp()
 
@@ -186,14 +188,18 @@ $auth.logout(strategyName)
 _2fa(strategyName, ...args)
 ```
 
+Return: Promise
+
+Set the current strategy as strategyName and attempt to validate the code with a simplified two-factor authentication (
+2FA) and the creation of cookies with HttpOnly. The utilization of these features varies based on the current strategy.
+
 ``` js
 $auth._2fa('local', data).then(response => {
 
-  })
+})
 ```
 
 ``` js
-
  const {data, pending, error, refresh} = useFetch(url, {
     $fetch: useRequestFetch(),
     headers: $auth._headers,
