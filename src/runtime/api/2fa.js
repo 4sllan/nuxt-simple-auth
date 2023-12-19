@@ -3,6 +3,7 @@ import {useRuntimeConfig} from "#imports";
 export default defineEventHandler(async (event) => {
     let {strategyName, code} = await readBody(event)
 
+
     const {
         'nuxt-simple-auth': config,
         public: {
@@ -15,30 +16,45 @@ export default defineEventHandler(async (event) => {
     const prefix = cookie.prefix && !import.meta.dev ? cookie.prefix : 'auth.'
     const {endpoints: e, scheme: s, token: t, user: u} = strategies[strategyName]
 
-    const {token, expires} = await get2fa(e, code)
+    const getResponseToken = getCookie(event, `${prefix}_token.${strategyName}`)
 
-    if (token) {
-        setCookie(event, `${prefix}_2fa.${type}`, token, cookie.options)
-        setCookie(event, `${prefix}_2fa_expiration.${type}`, expires, cookie.options)
 
-        return {token, expires}
+    const {_2fa, expiration} = await get2fa(e, code, getResponseToken)
+
+
+    if (_2fa) {
+
+        setCookie(event, `${prefix}_2fa.${strategyName}`, _2fa, cookie.options)
+        setCookie(event, `${prefix}_2fa_expiration.${strategyName}`, expiration, cookie.options)
+
+        return {
+            _2fa,
+            expiration,
+            prefix,
+            strategyName
+        }
     }
 
-    async function get2fa(endpoints, value) {
+    return false
+
+    async function get2fa(endpoints, value, token) {
         try {
-            console.log(baseURL)
             const data = await $fetch(endpoints['2fa'].url, {
                 baseURL: baseURL,
                 method: endpoints['2fa'].method,
                 body: value,
+                onRequest({request, options}) {
+                    options.headers = options.headers || {}
+                    options.headers.Authorization = token
+                },
             });
 
-            const {token_type, expires_in, access_token, refresh_token} = data;
-            const token = token_type + " " + access_token;
-            const expires = expires_in + Date.now();
+            const {token_2fa, expiration} = data;
 
-            return {token, expires}
-
+            return {
+                _2fa: token_2fa,
+                expiration
+            }
 
         } catch (err) {
             console.log(err)

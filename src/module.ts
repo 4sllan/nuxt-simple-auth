@@ -28,6 +28,10 @@ export default defineNuxtModule<ModuleOptions>({
 
         nuxt.options.runtimeConfig[PACKAGE_NAME] = auth;
 
+        if(auth.cookie && auth.cookie.prefix){
+            nuxt.options.runtimeConfig.public.prefix = auth.cookie.prefix;
+        }
+
         if (auth['2fa']) {
             //add middleware 2fa
             addRouteMiddleware({

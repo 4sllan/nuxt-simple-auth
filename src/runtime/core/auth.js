@@ -22,6 +22,12 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         if (type.value) {
             const token = useCookie(`${prefix}_token.${type.value}`);
             const expires = useCookie(`${prefix}_token_expiration.${type.value}`);
+
+            if (!token.value) {
+                abortNavigation()
+                return navigateTo('/');
+            }
+
             const time = ((expires.value - Date.now()) / 60000)
 
             if (!time) {
@@ -29,20 +35,33 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
                 return navigateTo('/');
             }
 
-            if (!token.value && !time) {
-                abortNavigation()
-                return navigateTo('/');
-            }
-
 
         }
 
-        if (!type.value) {
-            abortNavigation()
-            return navigateTo('/');
-        }
     }
     if (process.client) {
+
+        const {public: {prefix}} = useRuntimeConfig(nuxtApp)
+        const usePrefix = prefix && !import.meta.dev ? prefix : 'auth.'
+
+        const token = sessionStorage.getItem(`${usePrefix}_token.${strategy}`)
+        const expires = sessionStorage.getItem(`${usePrefix}_token_expiration.${strategy}`)
+
+        $auth._headers.set('authorization', token)
+
+        if (!token) {
+            await $auth.logout(strategy)
+            sessionStorage.clear()
+            return navigateTo('/');
+        }
+
+        const time = ((expires - Date.now()) / 60000)
+
+        if (!time) {
+            await $auth.logout(strategy)
+            sessionStorage.clear()
+            return navigateTo('/');
+        }
 
         if (strategy) {
             if (typeof user !== 'object' || user === false) {

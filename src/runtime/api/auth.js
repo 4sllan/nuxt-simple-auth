@@ -2,7 +2,7 @@ import {useRuntimeConfig} from '#imports'
 import {setHeaders, getRequestHeaders} from 'h3'
 
 export default defineEventHandler(async (event) => {
-    let {type, value} = await readBody(event)
+    let {strategyName, value} = await readBody(event)
 
     const {
         'nuxt-simple-auth': config,
@@ -17,17 +17,19 @@ export default defineEventHandler(async (event) => {
 
     const {cookie, strategies} = config
     const prefix = cookie.prefix && !import.meta.dev ? cookie.prefix : 'auth.'
-    const {endpoints: e, scheme: s, token: t, user: u} = strategies[type]
+    const {endpoints: e, scheme: s, token: t, user: u} = strategies[strategyName]
 
     const {token, expires} = await getToken(e, value)
 
     if (token) {
-        setCookie(event, `${prefix}_token.${type}`, token, cookie.options)
-        setCookie(event, `${prefix}strategy`, type, cookie.options)
-        setCookie(event, `${prefix}_token_expiration.${type}`, expires, cookie.options)
+        setCookie(event, `${prefix}_token.${strategyName}`, token, cookie.options)
+        setCookie(event, `${prefix}strategy`, strategyName, cookie.options)
+        setCookie(event, `${prefix}_token_expiration.${strategyName}`, expires, cookie.options)
 
-        return {...await getProfile(e, token), type, token}
+        return {...await getProfile(e, token), strategyName, token, expires, prefix}
     }
+
+    return false
 
     async function getToken(endpoints, value) {
         try {
@@ -55,7 +57,7 @@ export default defineEventHandler(async (event) => {
             return await $fetch(endpoints.user.url, {
                 baseURL: baseURL,
                 method: endpoints.user.method,
-                onRequest({ request, options }) {
+                onRequest({request, options}) {
                     // Set the request headers
                     options.headers = options.headers || {}
                     options.headers.Authorization = token
