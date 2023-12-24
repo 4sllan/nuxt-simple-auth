@@ -1,5 +1,5 @@
 import {useRuntimeConfig} from '#imports'
-import {setHeaders, getRequestHeaders} from 'h3'
+import {defineEventHandler, readBody, setCookie} from 'h3'
 
 export default defineEventHandler(async (event) => {
     let {strategyName, value} = await readBody(event)

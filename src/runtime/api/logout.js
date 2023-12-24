@@ -1,5 +1,5 @@
 import {useRuntimeConfig} from '#imports'
-import {deleteCookie} from 'h3'
+import {deleteCookie, defineEventHandler, readBody} from 'h3'
 
 export default defineEventHandler(async (event) => {
     let {strategyName} = await readBody(event)

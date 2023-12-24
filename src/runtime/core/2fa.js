@@ -1,5 +1,5 @@
-import {useRuntimeConfig} from '#imports'
-
+import {useRuntimeConfig, defineNuxtRouteMiddleware, useNuxtApp, useCookie} from '#imports'
+import {getActivePinia} from 'pinia';
 export default defineNuxtRouteMiddleware(async (to, from) => {
 
     const nuxtApp = useNuxtApp()

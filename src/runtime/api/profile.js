@@ -1,5 +1,5 @@
 import {useRuntimeConfig} from '#imports'
-import {setHeaders} from 'h3'
+import {defineEventHandler, getCookie} from 'h3'
 
 export default defineEventHandler(async (event) => {
 
