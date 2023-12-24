@@ -4,7 +4,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
     const nuxtApp = useNuxtApp()
 
-    const {_s: store} = usePinia('auth')
+    const {_s: store} = getActivePinia('auth')
 
     const {user, loggedIn, strategy, state, $reset,} = store.get('auth')
 
