@@ -36,41 +36,41 @@ export default defineNuxtModule<ModuleOptions>({
             //add middleware 2fa
             addRouteMiddleware({
                 name: '_2fa',
-                path: resolve('./runtime/core/2fa.js'),
+                path: resolve('./runtime/core/2fa'),
             })
             //add server-plugin 2fa
             addServerHandler({
                 route: '/api/2fa',
-                handler: resolve('./runtime/api/2fa.js')
+                handler: resolve('./runtime/api/2fa')
             })
         }
 
         // Add middleware template
         addRouteMiddleware({
             name: 'auth',
-            path: resolve('./runtime/core/auth.js'),
+            path: resolve('./runtime/core/auth'),
         })
 
         // Add plugin template
         addPlugin({
-            src: resolve('./runtime/plugin.js'),
+            src: resolve('./runtime/plugin'),
             mode: 'all',
         })
 
         // Add server-plugin auth
         addServerHandler({
             route: '/api/auth',
-            handler: resolve('./runtime/api/auth.js')
+            handler: resolve('./runtime/api/auth')
         })
         // Add server-plugin profile
         addServerHandler({
             route: '/api/profile',
-            handler: resolve('./runtime/api/profile.js')
+            handler: resolve('./runtime/api/profile')
         })
         // Add server-plugin logout
         addServerHandler({
             route: '/api/logout',
-            handler: resolve('./runtime/api/logout.js')
+            handler: resolve('./runtime/api/logout')
         })
 
 
