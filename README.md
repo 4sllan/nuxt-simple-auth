@@ -211,6 +211,6 @@ $auth._2fa('local', data).then(response => {
  $auth._headers.get('name', 'value ')
 ```
 
-## License
+## ⚖️ License
 
-[MIT License](./LICENSE) - Copyright (c) Nuxt Community
+Released under [MIT](/LICENSE) by [@4slan](https://github.com/4sllan).
