@@ -3,6 +3,7 @@
   "version": "1.2.0",
   "description": "Authentication module simple for Nuxt.js",
   "repository": "4slanK/nuxt-simple-auth",
+  "author": "Aslan Gama <@4slan>",
   "license": "MIT",
   "type": "module",
   "exports": {
