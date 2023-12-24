@@ -23,10 +23,6 @@
 > nuxt-simple-auth is a feature-rich open source authentication module for Nuxt3 applications. supports static Nuxt
 > applications
 
-> **Note**: CommonJS usage
-> nuxt-simple-auth é um módulo de autenticação de código aberto repleto de recursos para aplicativos Nuxt 3. oferece
-> suporte a aplicativos Nuxt estáticos
-
 ## Quick Start
 
 ```sh
@@ -36,10 +32,6 @@ npm i nuxt-simple-auth
 ```sh
 yarn add nuxt-simple-auth
 ```
-
-<!-- <a href="https://auth.nuxtjs.org">Read Documentation</a>
-
-**🚧 please see [status page](http://auth.nuxtjs.org/status) in documentation.** -->
 
 ## Setup
 
@@ -104,6 +96,15 @@ subdomains.
 <br/>
 **secure** - defines whether the cookie requires a secure protocol (https). Default is false, should be set to true if
 possible.
+<br/>
+
+**Note:** By default, the prefix on localhost is set to "auth."
+<br/>
+**__Secure- prefix:** Cookies with names starting with **__Secure-** (dash is part of the prefix) must be set with the
+secure flag from a secure page (HTTPS).
+<br/>
+**__Host- prefix:** Cookies with names starting with **__Host-** must be set with the secure flag, must be from a secure
+page (HTTPS), must not have a domain specified (and therefore, are not sent to subdomains), and the path must be /.
 
 ``` js
 cookie: {
