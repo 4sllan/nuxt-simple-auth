@@ -1,6 +1,6 @@
 {
   "name": "nuxt-simple-auth",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Authentication module simple for Nuxt.js",
   "repository": "https://github.com/4sllan/nuxt-simple-auth",
   "author": "Aslan Gama <@4slan>",
@@ -35,9 +35,9 @@
   },
   "dependencies": {
     "@nuxt/kit": "^3.8.2",
-    "@pinia/nuxt": "^0.5.1",
     "@vueuse/core": "^10.7.0",
     "h3": "^1.9.0",
+    "pinia": "^2.1.7",
     "requrl": "^3.0.2"
   }
 }
