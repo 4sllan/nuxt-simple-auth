@@ -1,8 +1,6 @@
 <h1 align="center">🔐 Auth Module Simple</h1>
     <p align="center">
-        <span>Authentication support for Nuxt</span>
-            <br>
-        <span>Suporte de autenticação para Nuxt</span>
+        <span>Authentication support for Nuxt 3</span>
     </p>
 <br>
 
