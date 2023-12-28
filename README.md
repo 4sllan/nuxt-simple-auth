@@ -17,9 +17,7 @@
 
 ## Installation
 
-> **Note**: CommonJS usage
-> nuxt-simple-auth is a feature-rich open source authentication module for Nuxt3 applications. supports static Nuxt
-> applications
+> nuxt-simple-auth is a feature-rich open source authentication module for Nuxt3 applications.
 
 ## Quick Start
 
