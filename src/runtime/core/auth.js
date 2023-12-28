@@ -1,4 +1,4 @@
-import {useRuntimeConfig, defineNuxtRouteMiddleware, useNuxtApp, useCookie} from '#imports'
+import {navigateTo, useRuntimeConfig, defineNuxtRouteMiddleware, useNuxtApp, useCookie} from '#imports'
 import {getActivePinia} from 'pinia';
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
@@ -25,14 +25,14 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
             const expires = useCookie(`${prefix}_token_expiration.${type.value}`);
 
             if (!token.value) {
-                abortNavigation()
+                //abortNavigation()
                 return navigateTo('/');
             }
 
             const time = ((expires.value - Date.now()) / 60000)
 
             if (!time) {
-                abortNavigation()
+                //abortNavigation()
                 return navigateTo('/');
             }
 
@@ -77,7 +77,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         }
 
         if (!strategy) {
-            abortNavigation()
+            //abortNavigation()
             return navigateTo('/');
         }
     }
