@@ -1,6 +1,6 @@
 import getURL from 'requrl'
 import {defineStore, storeToRefs} from 'pinia';
-import {defineNuxtPlugin, useRuntimeConfig, useFetch, useRequestEvent, useCookie} from '#imports'
+import {defineNuxtPlugin, useRuntimeConfig, useFetch, useRequestEvent, navigateTo} from '#imports'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
 

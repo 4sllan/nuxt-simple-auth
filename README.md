@@ -7,9 +7,10 @@
 <div align="center">
 
 
-[![Static Badge](https://img.shields.io/badge/NPM:nuxt-simple-auth)](https://www.npmjs.com/package/nuxt-simple-auth)
-[![Static Badge](https://img.shields.io/badge/GITHUB:nuxt-simple-auth)](https://github.com/4slanK/nuxt-simple-auth)
+[![Static Badge](https://img.shields.io/badge/NPM:nuxt-simple-auth?style=flat-square)](https://www.npmjs.com/package/nuxt-simple-auth)
+[![Static Badge](https://img.shields.io/badge/GITHUB:nuxt-simple-auth?style=flat-square)](https://github.com/4slanK/nuxt-simple-auth)
 [![npm version](https://img.shields.io/npm/v/nuxt-simple-auth/latest.svg?style=flat-square)](https://www.npmjs.com/package/nuxt-simple-auth)
+![GitHub License](https://img.shields.io/github/license/4sllan/nuxt-simple-auth?style=flat-square)
 [![npm downloads](https://img.shields.io/npm/dt/nuxt-simple-auth.svg?style=flat-square)](https://www.npmjs.com/package/nuxt-simple-auth)
 [![Static Badge](https://img.shields.io/badge/-%E2%99%A5%20Sponsors-ec5cc6?style=flat-square)](https://github.com/sponsors/4sllan)
 
