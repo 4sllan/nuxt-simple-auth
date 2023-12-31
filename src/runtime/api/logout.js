@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
 
     const {cookie, strategies, "2fa": s} = config
     const prefix = cookie.prefix && !import.meta.dev ? cookie.prefix : 'auth.'
+    const {redirect: r, token: t, user: u, endpoints: e} = strategies[strategyName]
 
     if (strategyName) {
 
@@ -20,7 +21,7 @@ export default defineEventHandler(async (event) => {
             deleteCookie(event, `${prefix}_2fa_expiration.${strategyName}`, cookie.options)
         }
 
-        return true
+        return r
     }
 
     return false

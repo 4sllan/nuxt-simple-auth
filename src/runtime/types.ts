@@ -1,7 +1,3 @@
-export interface ModuleOptions {
-
-}
-
 export interface ModuleHooks {
     'my-module:init': any
 }
@@ -17,7 +13,7 @@ export interface ModulePublicRuntimeConfig {
 type CookieOption = {
     httpOnly?: boolean
     secure?: boolean
-    sameSite?: boolean | string
+    sameSite?: string
     priority?: string
     maxAge?: number
     domain?: string
@@ -38,13 +34,13 @@ type EndpointsOptions = {
     login: fetchOption
     user: fetchOption
     "2fa"?: fetchOption
-    logout?: boolean,
+    logout?: boolean
 }
 
 type redirectOptions = {
-    login?: string,
-    logout: string,
-    callback?: string,
+    login?: string
+    logout: string
+    callback?: string
     home?: string
 }
 
@@ -63,7 +59,7 @@ type AuthOptionsStrategies = {
     [key: string]: StrategiesOptions
 }
 
-export interface ModuleAuthOptions {
+export interface ModuleOptions {
     cookie?: AuthOptionsCookie
     "2fa"?: boolean
     strategies: AuthOptionsStrategies

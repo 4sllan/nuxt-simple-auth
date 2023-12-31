@@ -11,7 +11,7 @@ import type {
 } from './runtime/types'
 
 
-const PACKAGE_NAME = 'nuxt-simple-auth'
+const PACKAGE_NAME:string = 'nuxt-simple-auth'
 export default defineNuxtModule<ModuleOptions>({
 
     meta: {
@@ -19,20 +19,18 @@ export default defineNuxtModule<ModuleOptions>({
         configKey: 'auth'
     },
 
-    async setup(options, nuxt: any) {
+    async setup(options, nuxt) {
         const logger = useLogger(PACKAGE_NAME)
 
-
         const {resolve} = createResolver(import.meta.url)
-        const auth = nuxt.options?.auth;
 
-        nuxt.options.runtimeConfig[PACKAGE_NAME] = auth;
+        nuxt.options.runtimeConfig[PACKAGE_NAME] = options;
 
-        if(auth.cookie && auth.cookie.prefix){
-            nuxt.options.runtimeConfig.public.prefix = auth.cookie.prefix;
+        if (options.cookie && options.cookie.prefix) {
+            nuxt.options.runtimeConfig.public.prefix = options.cookie.prefix;
         }
 
-        if (auth['2fa']) {
+        if (options['2fa']) {
             //add middleware 2fa
             addRouteMiddleware({
                 name: '_2fa',

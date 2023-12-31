@@ -125,14 +125,16 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         async logout(strategyName) {
             try {
                 const {data, pending, error, refresh} = await useFetch('/api/logout', {
-                    baseUrl: siteURL || baseUrl, method: 'POST', body: {strategyName}
+                    baseUrl: siteURL || baseUrl, method: 'POST', body: {strategyName},
+
+                    onResponse({request, response, options}) {
+                        const {logout} = response._data
+                        return navigateTo(logout ?? '/');
+                    }
                 });
                 store.$reset()
                 sessionStorage.clear()
-
-                if (data.value) {
-                    return navigateTo('/');
-                }
+                return data.value
 
             } catch (error) {
                 console.log(error)
