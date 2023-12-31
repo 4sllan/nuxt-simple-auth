@@ -61,7 +61,7 @@ Then, add nuxt-simple-auth to the modules section of nuxt.config.js:
  strategies: {
         local: {
             redirect: {
-               logout: "/test/logout"
+               logout: "/logout"
             },
             token: {
                 property: 'access_token',
