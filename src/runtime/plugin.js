@@ -99,7 +99,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                         } = response._data;
 
                         sessionStorage.setItem(`${prefix}_token.${strategyName}`, token)
-                        sessionStorage.setItem(`${prefix}strategy`, expires)
+                        sessionStorage.setItem(`${prefix}strategy`, strategyName)
                         sessionStorage.setItem(`${prefix}_token_expiration.${strategyName}`, expires)
                     },
                 });
