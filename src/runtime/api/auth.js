@@ -1,5 +1,5 @@
 import {useRuntimeConfig} from '#imports'
-import {defineEventHandler, readBody, setCookie} from 'h3'
+import {defineEventHandler, readBody, setCookie, createError} from 'h3'
 
 export default defineEventHandler(async (event) => {
     let {strategyName, value} = await readBody(event)
@@ -17,9 +17,20 @@ export default defineEventHandler(async (event) => {
 
     const {cookie, strategies} = config
     const prefix = cookie.prefix && !import.meta.dev ? cookie.prefix : 'auth.'
-    const {endpoints: e, scheme: s, token: t, user: u} = strategies[strategyName]
+    const {redirect: r, token: t, user: u, endpoints: e} = strategies[strategyName]
 
-    const {token, expires} = await getToken(e, value)
+
+    const j = await getToken(e, value)
+
+    if (j.status) {
+        throw createError({
+            statusCode: j.status,
+            statusMessage: j.message,
+        })
+    }
+
+    const {token, expires} = j
+
 
     if (token) {
         setCookie(event, `${prefix}_token.${strategyName}`, token, cookie.options)
@@ -28,6 +39,7 @@ export default defineEventHandler(async (event) => {
 
         return {...await getProfile(e, token), strategyName, token, expires, prefix}
     }
+
 
     return false
 
@@ -45,9 +57,8 @@ export default defineEventHandler(async (event) => {
 
             return {token, expires}
 
-
-        } catch (err) {
-            console.log(err)
+        } catch (error) {
+            return error
         }
     }
 
@@ -65,8 +76,8 @@ export default defineEventHandler(async (event) => {
                 },
             });
 
-        } catch (err) {
-            console.log(err)
+        } catch (error) {
+            console.log(error)
         }
     }
 })

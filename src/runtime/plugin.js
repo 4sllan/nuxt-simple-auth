@@ -87,7 +87,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
         async loginWith(strategyName, value) {
             try {
-                const {data, pending, error, refresh} = await useFetch('/api/auth', {
+                const {data, error} = await useFetch('/api/auth', {
                     baseUrl: siteURL || baseUrl, method: 'POST', body: {strategyName, value},
 
                     onResponse({request, response, options}) {
@@ -104,21 +104,28 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                     },
                 });
 
-                const property = 'profile'
-                store.setUser(data.value[property])
-                store.setStrategy(strategyName)
+                if (!error?.value) {
+                    const property = 'profile'
+                    store.setUser(data.value[property])
+                    store.setStrategy(strategyName)
 
-                return new Promise((resolve, reject) => {
-                    if (data.value) {
-                        return resolve(data.value)
-                    }
+                    return new Promise((resolve, reject) => {
+                        if (data.value) {
+                            return resolve(data.value)
+                        }
 
-                    return reject()
+                        return reject()
 
-                })
+                    })
+                } else {
+                    const e = error.value;
+                    throw new Error(e.statusMessage, {
+                        cause: {status: e.statusCode, message: e.statusMessage},
+                    })
+                }
 
-            } catch (error) {
-                console.log(error)
+            } catch (e) {
+                return Promise.reject(e.cause)
             }
         }
 
