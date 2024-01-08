@@ -109,6 +109,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                     store.setUser(data.value[property])
                     store.setStrategy(strategyName)
 
+                    $auth._Pinia = store.$state
+
                     return new Promise((resolve, reject) => {
                         if (data.value) {
                             return resolve(data.value)
@@ -186,6 +188,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                     store.setUser(data.value[property])
                     store.setStrategy(data.value.type)
 
+                    $auth._Pinia = store.$state
 
                     return data.value
 
