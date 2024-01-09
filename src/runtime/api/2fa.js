@@ -1,5 +1,5 @@
 import {useRuntimeConfig} from "#imports";
-import {defineEventHandler, readBody, getCookie, setCookie} from 'h3'
+import {defineEventHandler, readBody, getCookie, setCookie, createError} from 'h3'
 
 export default defineEventHandler(async (event) => {
     let {strategyName, code} = await readBody(event)
@@ -20,8 +20,16 @@ export default defineEventHandler(async (event) => {
     const getResponseToken = getCookie(event, `${prefix}_token.${strategyName}`)
 
 
-    const {_2fa, expiration} = await get2fa(e, code, getResponseToken)
+    const j = await get2fa(e, code, getResponseToken)
 
+    if (j.status) {
+        throw createError({
+            statusCode: j.status,
+            statusMessage: j.message,
+        })
+    }
+
+    const {_2fa, expiration} = j
 
     if (_2fa) {
 
@@ -57,8 +65,8 @@ export default defineEventHandler(async (event) => {
                 expiration
             }
 
-        } catch (err) {
-            console.log(err)
+        } catch (error) {
+            return error
         }
     }
 })

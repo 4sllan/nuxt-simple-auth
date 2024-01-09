@@ -151,29 +151,40 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         }
 
         async _2fa(strategyName, code) {
-            const {data} = await useFetch('/api/2fa', {
-                baseUrl: siteURL || baseUrl, method: 'POST', body: {strategyName, code},
+            try {
+                const {data, error} = await useFetch('/api/2fa', {
+                    baseUrl: siteURL || baseUrl, method: 'POST', body: {strategyName, code},
 
-                onResponse({request, response, options}) {
-                    const {
-                        _2fa,
-                        expiration,
-                        prefix,
-                        strategyName
-                    } = response._data;
+                    onResponse({request, response, options}) {
+                        const {
+                            _2fa,
+                            expiration,
+                            prefix,
+                            strategyName
+                        } = response._data;
 
-                    sessionStorage.setItem(`${prefix}_2fa.${strategyName}`, _2fa)
-                    sessionStorage.setItem(`${prefix}_2fa_expiration.${strategyName}`, expiration)
-                },
-            })
+                        sessionStorage.setItem(`${prefix}_2fa.${strategyName}`, _2fa)
+                        sessionStorage.setItem(`${prefix}_2fa_expiration.${strategyName}`, expiration)
+                    },
+                })
 
-
-            return new Promise((resolve, reject) => {
-                if (data.value) {
-                    return resolve(data.value)
+                if (!error?.value) {
+                    return new Promise((resolve, reject) => {
+                        if (data.value) {
+                            return resolve(data.value)
+                        }
+                        return reject()
+                    })
+                } else {
+                    const e = error.value;
+                    throw new Error(e.statusMessage, {
+                        cause: {status: e.statusCode, message: e.statusMessage},
+                    })
                 }
-                return reject()
-            })
+
+            } catch (e) {
+                return Promise.reject(e.cause)
+            }
         }
 
         async _setProfile() {
