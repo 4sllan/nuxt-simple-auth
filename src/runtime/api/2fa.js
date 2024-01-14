@@ -33,18 +33,24 @@ export default defineEventHandler(async (event) => {
 
     if (_2fa) {
 
+        const expires =
+            Number.isNaN(Number(expiration)) ? new Date(expiration).getTime() : expiration;
+
         setCookie(event, `${prefix}_2fa.${strategyName}`, _2fa, cookie.options)
-        setCookie(event, `${prefix}_2fa_expiration.${strategyName}`, expiration, cookie.options)
+        setCookie(event, `${prefix}_2fa_expiration.${strategyName}`, expires, cookie.options)
 
         return {
             _2fa,
-            expiration,
+            expiration: expires,
             prefix,
             strategyName
         }
     }
 
-    return false
+    throw createError({
+        statusCode: 500,
+        statusMessage: j.message,
+    })
 
     async function get2fa(endpoints, value, token) {
         try {

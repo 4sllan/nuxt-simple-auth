@@ -41,7 +41,10 @@ export default defineEventHandler(async (event) => {
     }
 
 
-    return false
+    throw createError({
+        statusCode: 500,
+        statusMessage: j.message,
+    })
 
     async function getToken(endpoints, value) {
         try {
@@ -64,15 +67,12 @@ export default defineEventHandler(async (event) => {
 
     async function getProfile(endpoints, token) {
         try {
-            //console.log(getRequestHeaders(event, 'headers'))
             return await $fetch(endpoints.user.url, {
                 baseURL: baseURL,
                 method: endpoints.user.method,
                 onRequest({request, options}) {
-                    // Set the request headers
                     options.headers = options.headers || {}
                     options.headers.Authorization = token
-                    //console.log(options)
                 },
             });
 

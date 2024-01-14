@@ -18,25 +18,21 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         const {cookie} = config
         const prefix = cookie.prefix && !import.meta.dev ? cookie.prefix : 'auth.'
 
-        const type = useCookie(`${prefix}strategy`);
+        const strategyName = useCookie(`${prefix}strategy`);
 
-        if (type.value) {
-            const token = useCookie(`${prefix}_token.${type.value}`);
-            const expires = useCookie(`${prefix}_token_expiration.${type.value}`);
+        if (strategyName.value) {
+            const token = useCookie(`${prefix}_token.${strategyName.value}`);
+            const expires = useCookie(`${prefix}_token_expiration.${strategyName.value}`);
 
             if (!token.value) {
-                //abortNavigation()
                 return navigateTo('/');
             }
 
             const time = ((expires.value - Date.now()) / 60000)
 
             if (!time) {
-                //abortNavigation()
                 return navigateTo('/');
             }
-
-
         }
 
     }
@@ -47,11 +43,12 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
         const token = sessionStorage.getItem(`${usePrefix}_token.${strategy}`)
         const expires = sessionStorage.getItem(`${usePrefix}_token_expiration.${strategy}`)
+        const strategyName = sessionStorage.getItem(`${usePrefix}strategy`)
 
         $auth._headers.set('authorization', token)
 
         if (!token) {
-            await $auth.logout(strategy)
+            await $auth.logout(strategy ?? strategyName)
             sessionStorage.clear()
             return navigateTo('/');
         }
@@ -59,7 +56,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         const time = ((expires - Date.now()) / 60000)
 
         if (!time) {
-            await $auth.logout(strategy)
+            await $auth.logout(strategy ?? strategyName)
             sessionStorage.clear()
             return navigateTo('/');
         }
@@ -77,7 +74,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         }
 
         if (!strategy) {
-            //abortNavigation()
             return navigateTo('/');
         }
     }

@@ -28,8 +28,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
             $auth._headers.set('2fa', token.value)
 
 
-            // const time = ((expires - Date.now()) / 60000)
+            const time = ((expires.value - Date.now()) / 60000)
 
+            if (!time) {
+                return navigateTo('/');
+            }
 
         }
     }
@@ -39,22 +42,23 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         const usePrefix = prefix && !import.meta.dev ? prefix : 'auth.'
 
         const token = sessionStorage.getItem(`${usePrefix}_2fa.${strategy}`)
-        const expiration = sessionStorage.getItem(`${usePrefix}_2fa_expiration.${strategy}`)
+        const expires = sessionStorage.getItem(`${usePrefix}_2fa_expiration.${strategy}`)
+        const strategyName = sessionStorage.getItem(`${usePrefix}strategy`)
 
         $auth._headers.set('2fa', token)
 
         if (!token) {
-            await $auth.logout(strategy)
+            await $auth.logout(strategy ?? strategyName)
             sessionStorage.clear()
             return navigateTo('/');
         }
 
-        // const time = ((expires - Date.now()) / 60000)
-        //
-        // if (!time) {
-        //     await $auth.logout(strategy)
-        //     sessionStorage.clear()
-        //     return navigateTo('/');
-        // }
+        const time = ((expires - Date.now()) / 60000)
+
+        if (!time) {
+            await $auth.logout(strategy)
+            sessionStorage.clear()
+            return navigateTo('/');
+        }
     }
 })
