@@ -1,10 +1,11 @@
-import {useRuntimeConfig} from '#imports'
+import {navigateTo, useRuntimeConfig, defineNuxtRouteMiddleware, useNuxtApp, useCookie} from '#imports'
+import {getActivePinia} from 'pinia';
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
 
     const nuxtApp = useNuxtApp()
 
-    const {_s: store} = usePinia('auth')
+    const {_s: store} = getActivePinia('auth')
 
     const {user, loggedIn, strategy, state, $reset,} = store.get('auth')
 
@@ -24,11 +25,14 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
             const token = useCookie(`${prefix}_2fa.${type.value}`);
             const expires = useCookie(`${prefix}_2fa_expiration.${type.value}`);
 
-            $auth._headers.set('2fa', token.value)
+            $auth.$headers.set('2fa', token.value)
 
 
-            // const time = ((expires - Date.now()) / 60000)
+            const time = ((expires.value - Date.now()) / 60000)
 
+            if (!time) {
+                return navigateTo('/');
+            }
 
         }
     }
@@ -37,23 +41,24 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         const {public: {prefix}} = useRuntimeConfig(nuxtApp)
         const usePrefix = prefix && !import.meta.dev ? prefix : 'auth.'
 
+        const strategyName = sessionStorage.getItem(`${usePrefix}strategy`)
         const token = sessionStorage.getItem(`${usePrefix}_2fa.${strategy}`)
-        const expiration = sessionStorage.getItem(`${usePrefix}_2fa_expiration.${strategy}`)
+        const expires = sessionStorage.getItem(`${usePrefix}_2fa_expiration.${strategy}`)
 
-        $auth._headers.set('2fa', token)
+        $auth.$headers.set('2fa', token)
 
         if (!token) {
-            await $auth.logout(strategy)
+            await $auth.logout(strategy ?? strategyName)
             sessionStorage.clear()
             return navigateTo('/');
         }
 
-        // const time = ((expires - Date.now()) / 60000)
-        //
-        // if (!time) {
-        //     await $auth.logout(strategy)
-        //     sessionStorage.clear()
-        //     return navigateTo('/');
-        // }
+        const time = ((expires - Date.now()) / 60000)
+
+        if (!time) {
+            await $auth.logout(strategy)
+            sessionStorage.clear()
+            return navigateTo('/');
+        }
     }
 })

@@ -5,67 +5,70 @@ import {
     addServerHandler,
     addPlugin,
     addRouteMiddleware
-} from 'nuxt/kit'
+} from '@nuxt/kit'
+import type {
+    ModuleOptions,
+} from './runtime/types'
 
 
-const PACKAGE_NAME = 'nuxt-simple-auth'
-export default defineNuxtModule({
+const PACKAGE_NAME:string = 'nuxt-simple-auth'
+export default defineNuxtModule<ModuleOptions>({
 
     meta: {
         name: PACKAGE_NAME,
         configKey: 'auth'
     },
+
     async setup(options, nuxt) {
         const logger = useLogger(PACKAGE_NAME)
 
         const {resolve} = createResolver(import.meta.url)
-        const auth = nuxt.options?.auth;
 
-        nuxt.options.runtimeConfig[PACKAGE_NAME] = auth;
+        nuxt.options.runtimeConfig[PACKAGE_NAME] = options;
 
-        if(auth.cookie && auth.cookie.prefix){
-            nuxt.options.runtimeConfig.public.prefix = auth.cookie.prefix;
+        if (options.cookie && options.cookie.prefix) {
+            nuxt.options.runtimeConfig.public.prefix = options.cookie.prefix;
         }
 
-        if (auth['2fa']) {
+        if (options['2fa']) {
             //add middleware 2fa
             addRouteMiddleware({
                 name: '_2fa',
-                path: resolve('./core/2fa.js'),
+                path: resolve('./runtime/core/2fa'),
             })
             //add server-plugin 2fa
             addServerHandler({
                 route: '/api/2fa',
-                handler: resolve('./api/2fa.js')
+                handler: resolve('./runtime/api/2fa')
             })
         }
 
         // Add middleware template
         addRouteMiddleware({
             name: 'auth',
-            path: resolve('./core/auth.js'),
+            path: resolve('./runtime/core/auth'),
         })
 
         // Add plugin template
         addPlugin({
-            src: resolve('plugin.js'),
+            src: resolve('./runtime/plugin'),
             mode: 'all',
         })
 
         // Add server-plugin auth
         addServerHandler({
             route: '/api/auth',
-            handler: resolve('./api/auth.js')
+            handler: resolve('./runtime/api/auth')
         })
         // Add server-plugin profile
         addServerHandler({
             route: '/api/profile',
-            handler: resolve('./api/profile.js')
+            handler: resolve('./runtime/api/profile')
         })
         // Add server-plugin logout
         addServerHandler({
             route: '/api/logout',
-            handler: resolve('./api/logout.js')
+            handler: resolve('./runtime/api/logout')
         })
 
 

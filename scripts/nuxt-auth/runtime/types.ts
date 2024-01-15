@@ -64,27 +64,3 @@ export interface ModuleOptions {
     "2fa"?: boolean
     strategies: AuthOptionsStrategies
 }
-
-export type AuthState = {
-    user: any,
-    loggedIn: boolean
-    strategy: string
-}
-
-export interface IAuth {
-
-    state(): AuthState
-
-    strategy(): string
-
-    user(): any
-
-    loggedIn(): boolean
-
-    loginWith(strategyName: string, value: []): Promise<any>
-
-    logout(strategyName: string): boolean | string | Promise<any>
-
-    _2fa(strategyName: string, code: []): Promise<any>
-}
-
