@@ -205,7 +205,7 @@ $auth._2fa('local', data).then(response => {
 ``` js
  const {data, pending, error, refresh} = useFetch(url, {
     $fetch: useRequestFetch(),
-    headers: $auth._headers,
+    headers: $auth.$headers,
   })
 ```
 
