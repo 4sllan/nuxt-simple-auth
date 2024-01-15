@@ -210,8 +210,8 @@ $auth._2fa('local', data).then(response => {
 ```
 
 ``` js
- $auth._headers.set('name', 'value ')
- $auth._headers.get('name', 'value ')
+ $auth.$headers.set('name', 'value ')
+ $auth.$headers.get('name', 'value ')
 ```
 
 ## ⚖️ License
