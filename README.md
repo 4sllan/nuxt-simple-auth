@@ -45,7 +45,8 @@ Then, add nuxt-simple-auth to the modules section of nuxt.config.js:
 ``` js
 {
      modules: [
-        'nuxt-simple-auth'
+        'nuxt-simple-auth',
+        '@pinia/nuxt'
     ],
   
     auth: {
