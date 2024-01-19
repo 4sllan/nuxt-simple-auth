@@ -4,8 +4,7 @@ import {
     defineNuxtModule,
     addServerHandler,
     addPlugin,
-    addRouteMiddleware,
-    installModule
+    addRouteMiddleware
 } from '@nuxt/kit'
 import type {
     ModuleOptions,
@@ -22,9 +21,6 @@ export default defineNuxtModule<ModuleOptions>({
 
     async setup(options, nuxt) {
         const logger = useLogger(PACKAGE_NAME)
-
-        await installModule('pinia')
-        await installModule('@pinia/nuxt')
 
         const {resolve} = createResolver(import.meta.url)
 
