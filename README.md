@@ -5,8 +5,9 @@
     <p align="center">Authentication support for Nuxt 3</p>
 <br>
 
-<div align="center">
 
+<h1>Nuxt Simple Auth</h1>
+<br>
 
 [![Static Badge](https://img.shields.io/badge/NPM:nuxt-simple-auth?style=flat-square&colorA=18181B&colorB=28CF8D)](https://www.npmjs.com/package/nuxt-simple-auth)
 [![Static Badge](https://img.shields.io/badge/GITHUB:nuxt-simple-auth?style=flat-square&colorA=18181B&colorB=28CF8D)](https://github.com/4slanK/nuxt-simple-auth)
@@ -16,7 +17,7 @@
 [![npm downloads](https://img.shields.io/npm/dt/nuxt-simple-auth.svg?style=flat-square&colorA=18181B&colorB=28CF8D)](https://www.npmjs.com/package/nuxt-simple-auth)
 [![Static Badge](https://img.shields.io/badge/-%E2%99%A5%20Sponsors-ec5cc6?style=flat-square)](https://github.com/sponsors/4sllan)
 
-</div>
+
 
 ## Installation
 
