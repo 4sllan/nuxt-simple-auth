@@ -13,8 +13,8 @@
 [![Static Badge](https://img.shields.io/badge/GITHUB:nuxt-simple-auth?style=flat-square&colorA=18181B&colorB=28CF8D)](https://github.com/4slanK/nuxt-simple-auth)
 [![npm version](https://img.shields.io/npm/v/nuxt-simple-auth/latest.svg?style=flat-square&colorA=18181B&colorB=28CF8D)](https://www.npmjs.com/package/nuxt-simple-auth)
 ![GitHub License][license]
-[![Nuxt][nuxt-src]][nuxt-href]
 [![npm downloads](https://img.shields.io/npm/dt/nuxt-simple-auth.svg?style=flat-square&colorA=18181B&colorB=28CF8D)](https://www.npmjs.com/package/nuxt-simple-auth)
+[![Nuxt][nuxt-src]][nuxt-href]
 [![Static Badge](https://img.shields.io/badge/-%E2%99%A5%20Sponsors-ec5cc6?style=flat-square)](https://github.com/sponsors/4sllan)
 
 
