@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "nuxt-feather-icons",
+  "name": "nuxt-simple-auth",
   "type": "module",
   "scripts": {
     "dev": "nuxi dev",
