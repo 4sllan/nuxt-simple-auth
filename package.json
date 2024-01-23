@@ -21,9 +21,8 @@
     "prepack": "nuxt-module-build",
     "build": "nuxi build",
     "lint": "eslint . --max-warnings=0",
-    "clean": "rm -rf scripts/.nuxt dist .nuxt",
-    "typecheck": "nuxi prepare scripts && tsc --noEmit",
-    "typecheck:refresh": "nuxi prepare scripts && tsc --noEmit",
+    "typecheck": "nuxi prepare playground && tsc --noEmit",
+    "dev": "nuxi dev playground",
     "dev:prepare": "nuxt-module-build --stub"
   },
   "devDependencies": {
