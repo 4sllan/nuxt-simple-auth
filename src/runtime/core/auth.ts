@@ -3,14 +3,12 @@ import {getActivePinia} from 'pinia';
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
 
-    const nuxtApp = useNuxtApp()
+    const {nuxtApp, $auth} = useNuxtApp()
     const {_s: store} = getActivePinia('auth')
 
     const {user, loggedIn, strategy, state, $reset,} = store.get('auth')
 
     const {'nuxt-simple-auth': config} = useRuntimeConfig(nuxtApp)
-
-    const {$auth} = useNuxtApp()
 
 
     if (process.server) {
@@ -23,6 +21,8 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         if (strategyName.value) {
             const token = useCookie(`${prefix}_token.${strategyName.value}`);
             const expires = useCookie(`${prefix}_token_expiration.${strategyName.value}`);
+
+            $auth.$headers.set('authorization', token.value)
 
             if (!token.value) {
                 return navigateTo('/');

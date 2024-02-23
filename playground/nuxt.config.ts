@@ -1,16 +1,13 @@
 export default defineNuxtConfig({
     devtools: {
       enabled: true,
-
-      timeline: {
-        enabled: true
-      }
     },
 
     // Modules:
 
     modules: [
-
+        "nuxt-simple-auth",
+        "@pinia/nuxt"
     ],
 
     // Nuxt-simple-auth Configuration
@@ -26,6 +23,7 @@ export default defineNuxtConfig({
             },
             prefix: '__Secure-auth.',
         },
+        "2fa": true,
         strategies: {
             local: {
                 redirect: {
