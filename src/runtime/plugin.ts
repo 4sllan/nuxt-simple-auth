@@ -207,16 +207,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
         async _setProfile() {
             try {
-                const {
-                    data,
-                    error
-                } = await useFetch('/api/profile', {
-                    baseURL: baseUrl, method: 'GET'
-                })
-
+                const {data} = await useFetch('/api/profile')
 
                 if (data?.value) {
-
                     const property: string = 'profile'
                     store.setUser(data.value[property])
                     store.setStrategy(data.value.strategyName)
