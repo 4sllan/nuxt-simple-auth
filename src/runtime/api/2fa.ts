@@ -21,9 +21,6 @@ export default defineEventHandler(async (event) => {
 
     const getResponseToken: string = getCookie(event, `${prefix}_token.${strategyName}`) || ''
 
-    console.log(getResponseToken)
-    console.log('getResponseToken')
-
     const j: any = await get2fa(e, code, getResponseToken)
 
     if (j.status) {
