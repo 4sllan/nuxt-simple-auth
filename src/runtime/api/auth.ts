@@ -1,5 +1,6 @@
 import {useRuntimeConfig} from '#imports'
 import {defineEventHandler, readBody, setCookie, createError, setHeader} from 'h3'
+import { defu } from 'defu';
 import type {
     ModuleOptions
 } from '../types'
@@ -50,7 +51,7 @@ export default defineEventHandler(async (event) => {
             const data = await $fetch(endpoints.login.url, {
                 baseURL: <string>baseURL,
                 method: endpoints.login.method || 'POST',
-                body: {...value, ...secret[strategyName]},
+                body: defu(value, secret[strategyName])
             });
 
             const {token_type, expires_in, access_token, refresh_token} = data;
