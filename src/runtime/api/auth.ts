@@ -12,9 +12,7 @@ export default defineEventHandler(async (event) => {
         public: {
             baseURL,
         },
-        grant_type,
-        client_id,
-        client_secret
+        secret,
     } = useRuntimeConfig()
 
     const {cookie, strategies} = <ModuleOptions>config
@@ -52,7 +50,7 @@ export default defineEventHandler(async (event) => {
             const data = await $fetch(endpoints.login.url, {
                 baseURL: <string>baseURL,
                 method: endpoints.login.method || 'POST',
-                body: {...value, grant_type, client_id, client_secret},
+                body: {...value, ...secret[strategyName]},
             });
 
             const {token_type, expires_in, access_token, refresh_token} = data;

@@ -1,6 +1,6 @@
 export default defineNuxtConfig({
     devtools: {
-      enabled: true,
+        enabled: true,
     },
 
     // Modules:
@@ -12,7 +12,7 @@ export default defineNuxtConfig({
 
     // Nuxt-simple-auth Configuration
 
-    auth:{
+    auth: {
         cookie: {
             options: {
                 httpOnly: true,
@@ -48,9 +48,12 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         // The private keys which are only available server-side
-        grant_type: 'password',
-        client_id: 2,
-        client_secret: 'UL2yaCLcSQIxjyi2PRkLaZrDzcsCHlGwNgSIN788',
+        local: {
+            grant_type: 'password',
+            client_id: 2,
+            client_secret: 'UL2yaCLcSQIxjyi2PRkLaZrDzcsCHlGwNgSIN788',
+        },
+
         // Keys within public are also exposed client-side
         public: {
             apiBase: '/api',

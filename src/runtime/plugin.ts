@@ -1,9 +1,9 @@
-import getURL from 'requrl'
 import {defineStore, storeToRefs} from 'pinia';
 import {defineNuxtPlugin, useRuntimeConfig, useFetch, useRequestEvent, navigateTo} from '#imports'
 import type {
     IAuth,
     AuthState,
+    PropertyProfile
 } from './types'
 
 
@@ -39,9 +39,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     /**
      * Auth
      */
-
-    const getBaseUrl: string = process.server ? getURL(useRequestEvent().req) : window.location.origin
-    const baseUrl: string = <string>useRuntimeConfig().public.siteURL || getBaseUrl;
 
     class Auth implements IAuth {
         $headers: any;
@@ -97,8 +94,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 const {
                     data,
                     error
-                } = await useFetch('/api/auth', {
-                    baseURL: baseUrl, method: 'POST', body: {strategyName, value},
+                } = await useFetch<any>('/api/auth', {
+                    method: 'POST', body: {strategyName, value},
 
                     onResponse({request, response, options}) {
                         const {
@@ -147,8 +144,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 const {
                     data, pending,
                     error, refresh
-                } = await useFetch('/api/logout', {
-                    baseURL: baseUrl, method: 'POST', body: {strategyName},
+                } = await useFetch<any>('/api/logout', {
+                    method: 'POST', body: {strategyName},
 
                     onResponse({request, response, options}) {
                         const {logout} = response._data
@@ -169,8 +166,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 const {
                     data,
                     error
-                } = await useFetch('/api/2fa', {
-                    baseURL: baseUrl, method: 'POST', body: {strategyName, code},
+                } = await useFetch<any>('/api/2fa', {
+                    method: 'POST', body: {strategyName, code},
 
                     onResponse({request, response, options}) {
                         const {
@@ -207,7 +204,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
         async _setProfile() {
             try {
-                const {data} = await useFetch('/api/profile')
+                const {data} = await useFetch<any>('/api/profile')
 
                 if (data?.value) {
                     const property: string = 'profile'
@@ -232,7 +229,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
     $auth.httpHeaders = new Headers([])
 
-    const t = await $auth._setProfile()
+    const t: any = await $auth._setProfile()
 
     if (t) {
         $auth.$headers.set('authorization', t?.token)

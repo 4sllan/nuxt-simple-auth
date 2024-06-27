@@ -142,17 +142,17 @@ default: false
 
 ### runtimeConfig
 
-**nuxt.config.js**
+**nuxt.config.js **
 
 ``` js
- grant_type: 'password',
- client_id: 0,
- client_secret: '',
-        
-        
+strategyName:{
+    grant_type: 'password',
+     client_id: 0,
+     client_secret: '',
+}
+  
  public: {
      apiBase: '/api',
-     siteURL: 'http://localhost:3000/' || URL,
      baseURL: process.env.baseURL,
  }
         

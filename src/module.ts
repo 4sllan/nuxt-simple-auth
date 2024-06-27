@@ -6,8 +6,11 @@ import {
     addPlugin,
     addRouteMiddleware
 } from '@nuxt/kit'
+import { defu } from 'defu';
+import { type NuxtModule } from 'nuxt/schema';
 import type {
     ModuleOptions,
+    ClientSecret
 } from './runtime/types'
 
 
@@ -75,3 +78,9 @@ export default defineNuxtModule<ModuleOptions>({
         logger.success('`nuxt-simple-auth` setup done')
     }
 })
+
+declare module 'nuxt/schema' {
+    interface RuntimeConfig {
+        secret: ClientSecret
+    }
+}

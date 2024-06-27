@@ -65,6 +65,14 @@ export interface ModuleOptions {
     strategies: AuthOptionsStrategies
 }
 
+export interface ClientSecret {
+    [key: string]: {
+        grant_type: string,
+        client_id: number,
+        client_secret: string
+    }
+}
+
 export type AuthState = {
     user: any,
     loggedIn: boolean
@@ -88,3 +96,6 @@ export interface IAuth {
     _2fa(strategyName: string, code: []): Promise<any>
 }
 
+export interface PropertyProfile {
+
+}
