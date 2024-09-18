@@ -54,7 +54,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
                 if (response) {
                     this.$headers.set('authorization', response.token)
-                    this._state = {user: response.profile, loggedIn: true, strategy: response.type}
+                    this._state = {user: response.profile, loggedIn: true, strategy: response.strategyName}
                     this._user = this._state.user
                     this._strategy = this._state.strategy
                     this._loggedIn = this._state.loggedIn
