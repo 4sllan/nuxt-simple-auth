@@ -1,0 +1,28 @@
+{
+  "name": "playground",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "start": "node .output/server/index.mjs"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.4.47",
+    "@tailwindcss/postcss": "^4.0.7",
+    "@vee-validate/i18n": "^4.15.0",
+    "@vee-validate/rules": "^4.15.0",
+    "postcss": "^8.5.3",
+    "postcss-import": "^16.1.0",
+    "postcss-nested": "^7.0.2",
+    "tailwindcss": "^4.0.7",
+    "vue3-toastify": "^0.2.8"
+  },
+  "devDependencies": {
+    "vite-plugin-vuetify": "^2.1.0",
+    "vuetify": "^3.7.13"
+  }
+}

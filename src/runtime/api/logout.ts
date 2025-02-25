@@ -1,32 +1,44 @@
-import {useRuntimeConfig} from '#imports'
-import {deleteCookie, defineEventHandler, readBody} from 'h3'
-import type {
-    ModuleOptions
-} from '../types'
+import {useRuntimeConfig} from '#imports';
+import {deleteCookie, defineEventHandler, readBody} from 'h3';
+import type {ModuleOptions} from '../types';
 
 export default defineEventHandler(async (event) => {
-    let {strategyName} = await readBody(event)
+    try {
+        const body = await readBody<{ strategyName?: string }>(event);
+        const strategyName = body?.strategyName;
 
-    const {'nuxt-simple-auth': config} = useRuntimeConfig()
-
-    const {cookie, strategies, "2fa": _2fa} = <ModuleOptions>config
-    const prefix = cookie?.prefix && !import.meta.dev ? cookie?.prefix : 'auth.'
-    const {redirect, token: t, user: u, endpoints: e} = strategies[strategyName]
-
-    if (strategyName) {
-
-        deleteCookie(event, `${prefix}_token.${strategyName}`, <{}>cookie?.options)
-        deleteCookie(event, `${prefix}strategy`, <{}>cookie?.options)
-        deleteCookie(event, `${prefix}_token_expiration.${strategyName}`, <{}>cookie?.options)
-
-        if (_2fa) {
-            deleteCookie(event, `${prefix}_2fa.${strategyName}`, <{}>cookie?.options)
-            deleteCookie(event, `${prefix}_2fa_expiration.${strategyName}`, <{}>cookie?.options)
+        if (!strategyName) {
+            throw new Error('Strategy name is required.');
         }
 
-        return redirect
+        const {'nuxt-simple-auth': config} = useRuntimeConfig();
+        if (!config) {
+            throw new Error('Auth configuration is missing.');
+        }
+
+        const {cookie, strategies, "2fa": _2fa} = config as ModuleOptions;
+        const prefix = (cookie?.prefix && !import.meta.dev ? cookie.prefix : 'auth.') + '';
+        const strategyConfig = strategies[strategyName];
+
+        if (!strategyConfig) {
+            throw new Error('Strategy ' + strategyName + ' is not defined in the configuration.');
+        }
+
+        const {redirect} = strategyConfig;
+
+        const cookieOptions = cookie?.options ?? {};
+        deleteCookie(event, prefix + '_token.' + strategyName, cookieOptions);
+        deleteCookie(event, prefix + 'strategy', cookieOptions);
+        deleteCookie(event, prefix + '_token_expiration.' + strategyName, cookieOptions);
+
+        if (_2fa) {
+            deleteCookie(event, prefix + '_2fa.' + strategyName, cookieOptions);
+            deleteCookie(event, prefix + '_2fa_expiration.' + strategyName, cookieOptions);
+        }
+
+        return {success: true, redirect};
+    } catch (error) {
+        console.error('Error in logout handler:', error);
+        return {success: false, error: (error as Error).message};
     }
-
-    return false
-
-})
+});

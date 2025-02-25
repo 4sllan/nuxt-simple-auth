@@ -4,17 +4,25 @@ import {
     defineNuxtModule,
     addServerHandler,
     addPlugin,
-    addRouteMiddleware
+    addPluginTemplate,
+    addRouteMiddleware,
+    addImportsDir
 } from '@nuxt/kit'
-import { defu } from 'defu';
-import { type NuxtModule } from 'nuxt/schema';
+import {defu} from 'defu';
+import kebabCase from 'lodash.kebabcase';
 import type {
     ModuleOptions,
-    ClientSecret
+    ClientSecret,
+    StrategiesOptions
 } from './runtime/types'
 
+interface Endpoint {
+    url: string;
+    method: string;
+    alias?: string;
+}
 
-const PACKAGE_NAME:string = 'nuxt-simple-auth'
+const PACKAGE_NAME: string = 'nuxt-simple-auth'
 export default defineNuxtModule<ModuleOptions>({
 
     meta: {
@@ -24,56 +32,70 @@ export default defineNuxtModule<ModuleOptions>({
 
     async setup(options, nuxt) {
         const logger = useLogger(PACKAGE_NAME)
-
         const {resolve} = createResolver(import.meta.url)
+        const isDev = nuxt.options.dev;
 
-        nuxt.options.runtimeConfig[PACKAGE_NAME] = options;
+        options = defu(options, {
+            cookie: {
+                options: {
+                    httpOnly: false,
+                    secure: false,
+                    sameSite: 'Lax',
+                    priority: 'high',
+                },
+                prefix: 'auth.'
+            }
+        });
 
-        if (options.cookie && options.cookie.prefix) {
-            nuxt.options.runtimeConfig.public.prefix = options.cookie.prefix;
+        if (isDev) {
+            options.cookie.prefix = 'auth.';
+            options.cookie.options.secure = false
         }
 
-        if (options['2fa']) {
-            //add middleware 2fa
-            addRouteMiddleware({
-                name: '_2fa',
-                path: resolve('./runtime/core/2fa'),
-            })
-            //add server-plugin 2fa
-            addServerHandler({
-                route: '/api/2fa',
-                handler: resolve('./runtime/api/2fa')
-            })
-        }
+        addImportsDir(resolve('./runtime/composables'))
 
         // Add middleware template
         addRouteMiddleware({
             name: 'auth',
-            path: resolve('./runtime/core/auth'),
+            path: resolve('./runtime/middleware/auth'),
         })
 
-        // Add plugin template
-        addPlugin({
-            src: resolve('./runtime/plugin'),
-            mode: 'all',
-        })
-
-        // Add server-plugin auth
-        addServerHandler({
-            route: '/api/auth',
-            handler: resolve('./runtime/api/auth')
-        })
-        // Add server-plugin profile
-        addServerHandler({
-            route: '/api/profile',
-            handler: resolve('./runtime/api/profile')
-        })
         // Add server-plugin logout
         addServerHandler({
             route: '/api/logout',
             handler: resolve('./runtime/api/logout')
         })
 
+        Object.entries(options.strategies).forEach(([strategyName, strategy]: [string, StrategiesOptions]) => {
+            strategy.handler = [];
+
+            Object.entries(strategy.endpoints).forEach(([key, endpoint]: [string, Endpoint]) => {
+                if (!endpoint.url) return;
+
+                const route = `/api/${kebabCase(endpoint.alias) || endpoint.url.replace(/^\/(api|oauth)\//, '')}`;
+                const handlerFile = resolve(`./runtime/api/${key}`);
+
+                strategy.handler.push({[key]: route});
+
+                addServerHandler({
+                    route,
+                    handler: handlerFile
+                })
+            })
+        })
+
+        // Add plugin template
+        addPluginTemplate({
+            src: resolve('./runtime/plugin.ts'),
+            filename: 'plugin.ts',
+            mode: 'all',
+            options: {
+                ...options,
+            }
+        })
+
+
+        nuxt.options.runtimeConfig[PACKAGE_NAME] = options;
 
         logger.success('`nuxt-simple-auth` setup done')
     }

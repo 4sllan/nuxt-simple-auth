@@ -1,241 +1,210 @@
-import {defineStore, storeToRefs} from 'pinia';
-import {defineNuxtPlugin, useRuntimeConfig, useFetch, useRequestEvent, navigateTo} from '#imports'
+import {
+    defineNuxtPlugin,
+    useRequestEvent,
+    navigateTo,
+    useAuthStore,
+    useFetch,
+    reloadNuxtApp
+} from '#imports'
+import {parseCookies} from 'h3';
+import { $fetch } from 'ofetch';
 import type {
-    IAuth,
     AuthState,
-    PropertyProfile
+    ProfileResponse,
+    AuthResponse,
+    redirectOptions
 } from './types'
 
-
 export default defineNuxtPlugin(async (nuxtApp) => {
-    /**
-     * Pinia
-     */
-    const authState: AuthState = {
-        user: false, loggedIn: false, strategy: "",
-    }
-
-    const useAuthStore = defineStore('auth', {
-        state: () => authState, actions: {
-            setUser(data: any): void {
-                this.user = data;
-                this.loggedIn = true;
-            },
-            setStrategy(data: string): void {
-                this.strategy = data
-            },
-        },
-    })
-
-
     const store = useAuthStore()
 
-    const {
-        user,
-        loggedIn,
-        strategy
-    } = storeToRefs(store)
+    class Auth {
+        private $headers: Headers;
+        private _state: AuthState = {user: null, loggedIn: false, strategy: null};
+        private prefix: string;
+        private readonly options: Record<string, any>;
+        constructor(options: Record<string, any>) {
+            this.$headers = new Headers();
+            this.prefix = options.cookie.prefix;
+            this.options = options;
 
-    /**
-     * Auth
-     */
-
-    class Auth implements IAuth {
-        $headers: any;
-        private _state: any;
-        private _user: any;
-        private _strategy: any;
-        private _loggedIn: any;
-
-        constructor() {
-            const profile = this._setProfile()
-
-            profile.then(response => {
-
-                if (response) {
-                    this.$headers.set('authorization', response.token)
-                    this._state = {user: response.profile, loggedIn: true, strategy: response.strategyName}
-                    this._user = this._state.user
-                    this._strategy = this._state.strategy
-                    this._loggedIn = this._state.loggedIn
-                }
-            })
+            this.initialize();
         }
 
-        set httpHeaders(headers: any) {
-            this.$headers = headers
+        get state(): AuthState {
+            return this._state;
         }
 
-        set _Pinia(val: AuthState) {
-            this._state = val
-            this._user = val.user
-            this._strategy = val.strategy
-            this._loggedIn = val.loggedIn
+        get user(): any | null {
+            return this._state.user;
         }
 
-        get state() {
-            return this._state
+        get strategy(): string | null {
+            return this._state.strategy;
         }
 
-        get user() {
-            return this._user
+        get loggedIn(): boolean {
+            return this._state.loggedIn;
         }
 
-        get strategy() {
-            return this._strategy
+        set httpHeaders(headers: Headers) {
+            this.$headers = headers;
         }
 
-        get loggedIn() {
-            return this._loggedIn
+        set state(val: AuthState) {
+            this._state = val;
         }
 
-        async loginWith(strategyName: string, value: any) {
+        private getRedirect(strategyName: string): Record<string, string> | null {
+            return this.options.strategies?.[strategyName]?.redirect ?? null;
+        }
+        private getUserProperty(strategyName: string): string | null {
+            return this.options.strategies?.[strategyName]?.user?.property ?? null;
+        }
+        private getHandler(strategyName: string, key: string): string | null {
+            return (
+                this.options.strategies?.[strategyName]?.handler?.find((value: any) => value[key])?.[key] ?? null
+            );
+        }
+
+        private async initialize(): Promise<void> {
             try {
-                const {
-                    data,
-                    error
-                } = await useFetch<any>('/api/auth', {
-                    method: 'POST', body: {strategyName, value},
 
-                    onResponse({request, response, options}) {
-                        const {
-                            strategyName,
-                            token,
-                            expires,
-                            prefix
-                        } = response._data;
+                if (import.meta.server) {
 
-                        sessionStorage.setItem(`${prefix}_token.${strategyName}`, token)
-                        sessionStorage.setItem(`${prefix}strategy`, strategyName)
-                        sessionStorage.setItem(`${prefix}_token_expiration.${strategyName}`, expires)
-                    },
-                });
+                    const event = useRequestEvent();
 
-                if (!error?.value) {
-                    const property: string = 'profile'
-                    store.setUser(data.value[property])
-                    store.setStrategy(strategyName)
-
-                    $auth._Pinia = store.$state
-
-                    return new Promise((resolve, reject) => {
-                        if (data.value) {
-                            return resolve(data.value)
-                        }
-
-                        return reject()
-
-                    })
-                } else {
-                    const e = error.value;
-                    throw new Error(e.statusMessage, {
-                        cause: {status: e.statusCode, message: e.statusMessage},
-                    })
-                }
-
-            } catch (error) {
-                if (error instanceof Error) return Promise.reject(error.cause)
-                else reportError(error)
-            }
-        }
-
-        async logout(strategyName: string) {
-            try {
-                const {
-                    data, pending,
-                    error, refresh
-                } = await useFetch<any>('/api/logout', {
-                    method: 'POST', body: {strategyName},
-
-                    onResponse({request, response, options}) {
-                        const {logout} = response._data
-                        return navigateTo(logout ?? '/');
+                    if (!event) {
+                        console.warn("No request event available. Skipping initialization.");
+                        return;
                     }
+
+                    const cookies = parseCookies(event);
+
+                    const strategy = cookies[this.prefix + `strategy`]
+                    const token = strategy ? cookies[this.prefix + `_token.` + strategy] : null;
+
+                    if (!strategy || !token) {
+                        console.warn("No valid session found. Skipping profile fetch.");
+                        return;
+                    }
+
+                    this._state.strategy = strategy
+                }
+                if (import.meta.client) {
+
+                    const strategy = sessionStorage.getItem(this.prefix + `strategy`);
+                    const token = strategy ? sessionStorage.getItem(this.prefix + `_token.` + strategy) : null;
+
+                    if (!strategy || !token) {
+                        console.warn("No valid session found. Skipping profile fetch.");
+                        return;
+                    }
+
+                    this._state.strategy = strategy
+                }
+
+                const profile = await this._setProfile();
+                if (profile) {
+                    this.$headers.set('authorization', profile.token);
+                    this._state = {
+                        user: profile.profile,
+                        loggedIn: true,
+                        strategy: profile.strategyName,
+                    };
+                }
+            } catch (error) {
+                console.error('Failed to initialize auth:', error);
+            }
+        }
+
+        async loginWith(strategyName: string, value: any): Promise<any> {
+            try {
+                const loginUrl = this.getHandler(strategyName, 'login');
+                if (!loginUrl) throw new Error("Login endpoint not found");
+
+                const response = await $fetch<AuthResponse>(loginUrl, {
+                    method: 'POST',
+                    body: {strategyName, value}
                 });
-                store.$reset()
-                sessionStorage.clear()
-                return data.value
 
-            } catch (error) {
-                reportError(error)
-            }
-        }
+                if (import.meta.client) {
 
-        async _2fa(strategyName: string, code: any) {
-            try {
-                const {
-                    data,
-                    error
-                } = await useFetch<any>('/api/2fa', {
-                    method: 'POST', body: {strategyName, code},
+                    const {token, expires} = response;
 
-                    onResponse({request, response, options}) {
-                        const {
-                            _2fa,
-                            expiration,
-                            prefix,
-                            strategyName
-                        } = response._data;
+                    if (!token) throw new Error("Token is missing in the response");
 
-                        sessionStorage.setItem(`${prefix}_2fa.${strategyName}`, _2fa)
-                        sessionStorage.setItem(`${prefix}_2fa_expiration.${strategyName}`, expiration)
-                    },
-                })
-
-                if (!error?.value) {
-                    return new Promise((resolve, reject) => {
-                        if (data.value) {
-                            return resolve(data.value)
-                        }
-                        return reject()
-                    })
-                } else {
-                    const e = error.value;
-                    throw new Error(e.statusMessage, {
-                        cause: {status: e.statusCode, message: e.statusMessage},
-                    })
+                    sessionStorage.setItem(this.prefix + `_token.` + strategyName, token);
+                    sessionStorage.setItem(this.prefix + `strategy`, strategyName);
+                    sessionStorage.setItem(this.prefix + `_token_expiration.` + strategyName, expires);
                 }
 
+                const property = this.getUserProperty(strategyName) as keyof AuthResponse;
+                store.value.user = response[property];
+                store.value.strategy = strategyName;
+                store.value.loggedIn = true;
+
+                this._state = store.value;
+
+                return response ?? Promise.reject('No data returned');
+
             } catch (error) {
-                if (error instanceof Error) return Promise.reject(error.cause)
-                else reportError(error)
+                console.error('Login failed:', error);
+                return Promise.reject(error);
             }
         }
 
-        async _setProfile() {
+        async logout(strategyName: string): Promise<void> {
             try {
-                const {data} = await useFetch<any>('/api/profile')
+                const response = await $fetch<{ logout?: string }>('/api/logout', {
+                    method: 'POST',
+                    body: {strategyName},
+                });
 
-                if (data?.value) {
-                    const property: string = 'profile'
-                    store.setUser(data.value[property])
-                    store.setStrategy(data.value.strategyName)
+                this._state = {
+                    user: null,
+                    loggedIn: false,
+                    strategy: "",
+                };
+                store.value = this._state
 
-                    $auth._Pinia = store.$state
+                sessionStorage.clear();
 
-                    return data.value
-                }
-
-                return false
+                const redirectUrl = this.getRedirect(strategyName)?.logout ?? '/';
+                await navigateTo(redirectUrl);
 
             } catch (error) {
-                return error
+                console.error('Logout failed:', error);
             }
         }
 
+        private async _setProfile(): Promise<ProfileResponse | false> {
+            try {
+                const profileUrl = this.getHandler(this._state.strategy!, 'user');
+                if (!profileUrl) return false;
+
+
+                const {data, error} = await useFetch<ProfileResponse>(profileUrl);
+
+                if (error.value || !data.value) return false;
+
+                const property = this.getUserProperty(data.value.strategyName)as keyof ProfileResponse;
+                store.value.user = data.value[property];
+                store.value.strategy = data.value.strategyName;
+                store.value.loggedIn = true;
+
+                this._state = store.value;
+
+                return data.value;
+
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+                return false;
+            }
+        }
     }
 
-    const $auth = new Auth()
-
-    $auth.httpHeaders = new Headers([])
-
-    const t: any = await $auth._setProfile()
-
-    if (t) {
-        $auth.$headers.set('authorization', t?.token)
-    }
-
-    $auth._Pinia = store.$state
+    const $auth = new Auth(JSON.parse(`<%= JSON.stringify(options, null, 2) %>`));
 
     nuxtApp.provide('auth', $auth)
 })
