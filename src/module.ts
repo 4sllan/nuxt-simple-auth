@@ -91,7 +91,7 @@ export default defineNuxtModule<ModuleOptions>({
 
         // Add plugin template
         addPluginTemplate({
-            src: resolve('./runtime/plugin.ts'),
+            src: resolve('./runtime/plugin.js'),
             filename: 'plugin.js',
             mode: 'all',
             options: {
