@@ -1,64 +1,113 @@
+import myModule from '../src/module'
+import vuetify, {transformAssetUrls} from 'vite-plugin-vuetify'
+
 export default defineNuxtConfig({
     devtools: {
         enabled: true,
     },
 
+    css: ['~/assets/css/tailwind.pcss'],
+
     // Modules:
 
     modules: [
-        "nuxt-simple-auth",
-        "@pinia/nuxt"
+        (_options, nuxt) => {
+            nuxt.hooks.hook('vite:extendConfig', (config) => {
+                // @ts-expect-error
+                config.plugins.push(vuetify({autoImport: true}))
+            })
+        },
+        myModule
     ],
 
     // Nuxt-simple-auth Configuration
 
     auth: {
+        csrf: '/csrf-token',
         cookie: {
             options: {
                 httpOnly: true,
                 secure: true,
                 sameSite: 'Lax',
                 priority: 'high',
-                //maxAge: 24 * 60 * 60 * 1000,
             },
-            prefix: '__Secure-auth.',
+            prefix: '__Secure-auth.'
         },
         "2fa": true,
         strategies: {
             local: {
                 redirect: {
-                    logout: "/app/auth"
+                    logout: "/auth",
+                    login: "/auth"
                 },
                 token: {
-                    property: 'access_token',
+                    property: "access_token",
                 },
                 user: {
-                    property: 'profile',
+                    property: "profile",
                 },
                 endpoints: {
-                    login: {url: '/oauth/token', method: 'post'},
-                    user: {url: '/api/profile', method: 'get'},
-                    "2fa": {url: '/api/token_2fa', method: 'post'},
+                    login: {url: "/oauth/token", method: "post", alias: "auth token"},
+                    user: {url: "/api/profile", method: "get"},
+                    "2fa": {url: "/api/send-token-2fa", method: "post"},
                 },
             },
+            client:{
+                redirect: {
+                    logout: "/auth",
+                    login: "/auth"
+                },
+                token: {
+                    property: "access_token",
+                },
+                user: {
+                    property: "profile",
+                },
+                endpoints: {
+                    login: {url: "/oauth/token", method: "post"},
+                    user: {url: "/api/profile", method: "get"},
+                    "2fa": {url: "/api/send-token-2fa", method: "post"},
+                },
+            }
         }
     },
 
-    // Configuration
+    // Postcss Configuration
+    postcss: {
+        plugins: {
+            "@tailwindcss/postcss": {},
+        }
+    },
 
     runtimeConfig: {
         // The private keys which are only available server-side
-        local: {
-            grant_type: 'password',
-            client_id: 2,
-            client_secret: 'UL2yaCLcSQIxjyi2PRkLaZrDzcsCHlGwNgSIN788',
+        secret: {
+            local: {
+                client_id: 1,
+                client_secret: "1yU9bPrjspLF9FS7SMPah5O7KXWMA04Kv6dfnTMd",
+                grant_type: "password",
+            },
         },
+
 
         // Keys within public are also exposed client-side
         public: {
             apiBase: '/api',
-            siteURL: 'http://localhost:3000/',
             baseURL: process.env.baseURL,
         }
     },
+
+    build: {
+        transpile: ['vuetify'],
+    },
+
+    vite: {
+        vue: {
+            template: {
+                transformAssetUrls,
+            },
+        },
+    },
+
+    compatibilityDate: '2025-02-16',
 })

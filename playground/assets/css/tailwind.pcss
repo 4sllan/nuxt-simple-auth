@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+form.theme__form {
+
+    label {
+        @apply block text-black text-sm mb-[10px];
+        line-height: 1;
+
+        sup {
+            color: rgb(var(--v-theme-error));
+        }
+    }
+
+    .v-text-field {
+        @apply mb-3;
+
+        .v-input__control {
+            .v-field:not(.v-field--error) {
+                .v-field__outline:not(.text-primary) {
+
+                    .v-field__outline__start, .v-field__outline__end {
+                        @apply border-y border-[#e6e6e6];
+                    }
+
+                    .v-field__outline__start {
+                        @apply border-l;
+                    }
+
+                    .v-field__outline__end {
+                        @apply border-r;
+                    }
+                }
+
+
+            }
+
+            .v-field {
+                background: white;
+
+                .v-field__outline{
+                    .v-field__outline__start, .v-field__outline__end {
+                        @apply border-y opacity-100;
+                    }
+
+                    .v-field__outline__start {
+                        @apply border-l;
+                    }
+
+                    .v-field__outline__end {
+                        @apply border-r;
+                    }
+                }
+
+                input {
+                    @apply text-black text-sm;
+                }
+
+                input::placeholder {
+                    @apply text-[#808080];
+                }
+            }
+
+            .v-field:hover {
+                .v-field__outline__start, .v-field__outline__end {
+                    @apply opacity-100;
+                }
+
+            }
+        }
+    }
+}

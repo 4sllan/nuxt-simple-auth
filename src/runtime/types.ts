@@ -28,16 +28,17 @@ type AuthOptionsCookie = {
 type fetchOption = {
     url: string
     method: string
+    alias?: string
 }
 
 type EndpointsOptions = {
     login: fetchOption
     user: fetchOption
     "2fa"?: fetchOption
-    logout?: boolean
+    logout?: { alias?: string }
 }
 
-type redirectOptions = {
+export type redirectOptions = {
     login?: string
     logout: string
     callback?: string
@@ -48,11 +49,12 @@ type Property = {
     property: string
 }
 
-type StrategiesOptions = {
+export type StrategiesOptions = {
     token: Property
     user: Property
     endpoints: EndpointsOptions
     redirect: redirectOptions
+    handler?: Record<string, string>[];
 }
 
 type AuthOptionsStrategies = {
@@ -60,6 +62,7 @@ type AuthOptionsStrategies = {
 }
 
 export interface ModuleOptions {
+    csrf: string
     cookie?: AuthOptionsCookie
     "2fa"?: boolean
     strategies: AuthOptionsStrategies
@@ -74,26 +77,22 @@ export interface ClientSecret {
 }
 
 export type AuthState = {
-    user: any,
-    loggedIn: boolean
-    strategy: string
+    user: Record<string, any> | null;
+    loggedIn: boolean;
+    strategy: string;
+};
+
+export interface ProfileResponse {
+    profile: any;
+    strategyName: string;
+    token: string;
 }
 
-export interface IAuth {
-
-    state(): AuthState
-
-    strategy(): string
-
-    user(): any
-
-    loggedIn(): boolean
-
-    loginWith(strategyName: string, value: []): Promise<any>
-
-    logout(strategyName: string): boolean | string | Promise<any>
-
-    _2fa(strategyName: string, code: []): Promise<any>
+export interface AuthResponse {
+    token: string;
+    expires: string;
+    prefix: string;
+    strategyName: string;
 }
 
 export interface PropertyProfile {
