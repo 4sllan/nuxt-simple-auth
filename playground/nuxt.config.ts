@@ -84,7 +84,7 @@ export default defineNuxtConfig({
         secret: {
             local: {
                 client_id: 1,
-                client_secret: "1yU9bPrjspLF9FS7SMPah5O7KXWMA04Kv6dfnTMd",
+                client_secret: "fnTMd1yUXWMA04Kv6dPah5O7Prjsp9bLF9FS7SMK",
                 grant_type: "password",
             },
         },
