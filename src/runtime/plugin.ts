@@ -206,5 +206,10 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
     const $auth = new Auth(JSON.parse(`<%= JSON.stringify(options, null, 2) %>`));
 
+    console.log($auth._state, 'this._state')
+    console.log(store.value, 'store.value')
+    console.log($auth.state, '$auth.state')
+
+
     nuxtApp.provide('auth', $auth)
 })

@@ -1,8 +1,10 @@
-export function useRequest<T = any>(request: string, options = {}): Promise<T> {
+import { $fetch } from 'ofetch';
+export function $autx<T = any>(request: string, options = {}): Promise<T> {
     const { $auth } = useNuxtApp();
     const { public: { baseURL } } = useRuntimeConfig();
+    const url = new URL(request, baseURL).href;
 
-    return $fetch(`${baseURL}${request}`, {
+    return $fetch(url, {
         ...options,
         headers: $auth.$headers,
         async onResponseError({ request, response }) {
@@ -17,10 +19,9 @@ export function useRequest<T = any>(request: string, options = {}): Promise<T> {
             );
 
             if (response.status === 401) {
-                $auth.logout("local");
                 reloadNuxtApp();
             } else {
-                throw new Error(response._data?.data || "Erro desconhecido na API");
+                throw new Error(response.body);
             }
         },
     });
