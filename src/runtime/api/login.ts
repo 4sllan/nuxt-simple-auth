@@ -75,7 +75,10 @@ async function getToken(endpoints: any, value: Record<string, any>, baseURL: str
             baseURL,
             method: endpoints.login.method || 'POST',
             body: defu(value, secret),
-            timeout: 10000, //10s timeout to prevent hanging requests
+            timeout: 10000,
+            headers: {
+                'Content-Type': 'application/json',
+            },
         });
 
         const {token_type, expires_in, access_token} = data;
@@ -85,6 +88,8 @@ async function getToken(endpoints: any, value: Record<string, any>, baseURL: str
             return {status: 522, message: 'Error 522: Laravel server did not respond in time.'};
         } else if (error.name === 'FetchError' && error.code === 'ECONNABORTED') {
             return {status: 522, message: 'Request to Laravel timed out. Please check server availability.'};
+        } else if (error.message.includes('Failed to fetch')) {
+            return {status: 403, message: 'CORS Error: The server does not allow requests from this origin. Check Laravel CORS settings.'};
         } else {
             return {status: error.status || 500, message: error.message || 'Failed to retrieve token'};
         }
@@ -115,6 +120,8 @@ async function getProfile(endpoints: any, token: string, baseURL: string, event:
                 status: 522,
                 message: 'Request to Laravel for profile data timed out. Please check server availability.'
             };
+        } else if (error.message.includes('Failed to fetch')) {
+            return {status: 403, message: 'CORS Error: The server blocked the request. Check backend permissions.'};
         } else if (error.status >= 500) {
             return {status: error.status, message: 'Server error occurred while fetching the profile.'};
         } else {
