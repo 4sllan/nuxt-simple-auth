@@ -24,11 +24,11 @@
 ## Quick Start
 
 ```sh
-npm i nuxt-simple-auth pinia @pinia/nuxt
+npm i nuxt-simple-auth
 ```
 
 ```sh
-yarn add nuxt-simple-auth pinia @pinia/nuxt
+yarn add nuxt-simple-auth
 ```
 
 ## Setup

@@ -47,6 +47,9 @@ export default defineNuxtModule<ModuleOptions>({
             }
         });
 
+        options.cookie = options.cookie ?? { prefix: 'auth.', options: {} };
+        options.cookie.options = options.cookie.options ?? { httpOnly: false, secure: false, sameSite: 'Lax', priority: 'high' };
+
         if (isDev) {
             options.cookie.prefix = 'auth.';
             options.cookie.options.secure = false
@@ -67,22 +70,24 @@ export default defineNuxtModule<ModuleOptions>({
         })
 
         Object.entries(options.strategies).forEach(([strategyName, strategy]: [string, StrategiesOptions]) => {
-            strategy.handler = [];
+            strategy.handler = strategy.handler ?? [];
 
-            Object.entries(strategy.endpoints).forEach(([key, endpoint]: [string, Endpoint]) => {
-                if (!endpoint.url) return;
+            Object.entries(strategy.endpoints)
+                .filter(([_, endpoint]) => (endpoint as Endpoint).url && (endpoint as Endpoint).method)
+                .forEach(([key, endpoint]) => {
+                    const typedEndpoint = endpoint as Endpoint;
+                    const route = `/api/${kebabCase(typedEndpoint.alias) || typedEndpoint.url.replace(/^\/(api|oauth)\//, '')}`;
+                    const handlerFile = resolve(`./runtime/api/${key}`);
 
-                const route = `/api/${kebabCase(endpoint.alias) || endpoint.url.replace(/^\/(api|oauth)\//, '')}`;
-                const handlerFile = resolve(`./runtime/api/${key}`);
+                    strategy.handler!.push({ [key]: route });
 
-                strategy.handler.push({[key]: route});
+                    addServerHandler({
+                        route,
+                        handler: handlerFile
+                    });
+                });
+        });
 
-                addServerHandler({
-                    route,
-                    handler: handlerFile
-                })
-            })
-        })
 
         // Add plugin template
         addPluginTemplate({
