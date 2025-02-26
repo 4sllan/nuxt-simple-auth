@@ -12,13 +12,13 @@ import type {
     AuthState,
     ProfileResponse,
     AuthResponse,
-    redirectOptions
+    AuthInstance
 } from './types'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
     const store = useAuthStore()
 
-    class Auth {
+    class Auth implements AuthInstance{
         private $headers: Headers;
         private _state: AuthState = {user: null, loggedIn: false, strategy: null};
         private prefix: string;
@@ -204,12 +204,10 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         }
     }
 
-    const $auth = new Auth(JSON.parse(`<%= JSON.stringify(options, null, 2) %>`));
+    const $auth: AuthInstance  = new Auth(JSON.parse(`<%= JSON.stringify(options, null, 2) %>`));
 
-    console.log($auth._state, 'this._state')
     console.log(store.value, 'store.value')
     console.log($auth.state, '$auth.state')
-
 
     nuxtApp.provide('auth', $auth)
 })

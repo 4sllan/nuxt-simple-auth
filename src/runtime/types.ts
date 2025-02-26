@@ -94,7 +94,16 @@ export interface AuthResponse {
     prefix: string;
     strategyName: string;
 }
+export interface AuthInstance {
+    $headers: Headers;
+    readonly prefix: string;
+    readonly options: ModuleOptions;
+    readonly state: AuthState;
 
-export interface PropertyProfile {
+    get user(): any | null;
+    get strategy(): string | null;
+    get loggedIn(): boolean;
 
+    loginWith(strategyName: string, value: any): Promise<any>;
+    logout(strategyName: string): Promise<void>;
 }
