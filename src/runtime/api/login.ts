@@ -1,6 +1,7 @@
 import {useRuntimeConfig} from '#imports'
 import {defineEventHandler, readBody, setCookie, createError, setHeader} from 'h3'
 import {defu} from 'defu';
+import { $fetch } from 'ofetch';
 import type {ModuleOptions, StrategiesOptions} from '../types'
 
 type TokenResponse = {

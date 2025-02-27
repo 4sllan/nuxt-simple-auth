@@ -3,7 +3,11 @@ import vuetify, {transformAssetUrls} from 'vite-plugin-vuetify'
 
 export default defineNuxtConfig({
     devtools: {
+      enabled: true,
+
+      timeline: {
         enabled: true,
+      },
     },
 
     css: ['~/assets/css/tailwind.pcss'],
@@ -84,7 +88,7 @@ export default defineNuxtConfig({
         secret: {
             local: {
                 client_id: 1,
-                client_secret: "fnTMd1yUXWMA04Kv6dPah5O7Prjsp9bLF9FS7SMK",
+                client_secret: "1yU9bPrjspLF9FS7SMPah5O7KXWMA04Kv6dfnTMd",
                 grant_type: "password",
             },
         },

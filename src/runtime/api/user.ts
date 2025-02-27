@@ -1,5 +1,6 @@
 import {useRuntimeConfig} from '#imports';
 import {defineEventHandler, getCookie, createError} from 'h3';
+import { $fetch } from 'ofetch';
 import type {ModuleOptions, StrategiesOptions} from '../types';
 
 export default defineEventHandler(async (event) => {
