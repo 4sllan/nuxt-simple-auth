@@ -12,6 +12,7 @@ export default defineNuxtRouteMiddleware(async () => {
     const {$auth} = useNuxtApp();
     const store = useAuthStore();
 
+
     if (!$auth) {
         throw showError({
             statusCode: 500,
@@ -43,7 +44,7 @@ export default defineNuxtRouteMiddleware(async () => {
 
     const getRedirectPath = (strategy: string | null): string => {
         if (!strategy) return '/';
-        const {login, callback, home} = $auth.redirect(strategy);
+        const {login, callback, home} = $auth.getRedirect(strategy)
         return login || callback || home || '/';
     };
 

@@ -55,7 +55,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             this._state = val;
         }
 
-        private getRedirect(strategyName: string): Record<string, string> | null {
+        public getRedirect(strategyName: string): Record<string, string> | null {
             return this.options.strategies?.[strategyName]?.redirect ?? null;
         }
         private getUserProperty(strategyName: string): string | null {
