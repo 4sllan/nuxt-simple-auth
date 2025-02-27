@@ -3,7 +3,9 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   const {$auth} = useNuxtApp();
   setTimeout(() => {
-    console.log($auth.user)
+   // console.log($auth.user)
   }, 600)
+
+  console.log($auth.strategy)
 
 });

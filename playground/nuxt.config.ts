@@ -3,7 +3,11 @@ import vuetify, {transformAssetUrls} from 'vite-plugin-vuetify'
 
 export default defineNuxtConfig({
     devtools: {
+      enabled: true,
+
+      timeline: {
         enabled: true,
+      },
     },
 
     css: ['~/assets/css/tailwind.pcss'],
