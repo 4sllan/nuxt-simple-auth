@@ -22,12 +22,12 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     class Auth implements AuthInstance {
         private $headers: Headers;
         private _state: AuthState = {user: null, loggedIn: false, strategy: null};
-        private prefix: string;
+        private _prefix: string;
         private readonly options: Record<string, any>;
 
         constructor(options: Record<string, any>) {
             this.$headers = new Headers();
-            this.prefix = options.cookie.prefix;
+            this._prefix = options.cookie.prefix;
             this.options = options;
         }
 
@@ -49,6 +49,10 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
         get headers(): Headers {
             return this.$headers;
+        }
+
+        get prefix(): string | null {
+            return this._prefix;
         }
 
         set headers(headers: Headers) {
@@ -90,11 +94,11 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                     }
 
                     const cookies = parseCookies(event);
-                    strategy = cookies[this.prefix + `strategy`]
-                    token = strategy ? cookies[this.prefix + `_token.` + strategy] : null;
+                    strategy = cookies[this._prefix + `strategy`]
+                    token = strategy ? cookies[this._prefix + `_token.` + strategy] : null;
                 } else {
-                    strategy = sessionStorage.getItem(this.prefix + `strategy`);
-                    token = strategy ? sessionStorage.getItem(this.prefix + `_token.` + strategy) : null;
+                    strategy = sessionStorage.getItem(this._prefix + `strategy`);
+                    token = strategy ? sessionStorage.getItem(this._prefix + `_token.` + strategy) : null;
                 }
 
                 if (!strategy || !token) {
@@ -135,9 +139,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
                     if (!token) throw new Error("Token is missing in the response");
 
-                    sessionStorage.setItem(this.prefix + `_token.` + strategyName, token);
-                    sessionStorage.setItem(this.prefix + `strategy`, strategyName);
-                    sessionStorage.setItem(this.prefix + `_token_expiration.` + strategyName, expires);
+                    sessionStorage.setItem(this._prefix + `_token.` + strategyName, token);
+                    sessionStorage.setItem(this._prefix + `strategy`, strategyName);
+                    sessionStorage.setItem(this._prefix + `_token_expiration.` + strategyName, expires);
                 }
 
                 const property = this.getUserProperty(strategyName) as keyof AuthResponse;
@@ -229,7 +233,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             set: (headers: Headers) => {
                 $auth.headers = headers;
             }
-        }
+        },
+        prefix: {get: () => $auth.prefix},
     });
 
     exposed.getRedirect = (strategyName: string) => {

@@ -10,5 +10,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   console.log($auth.headers)
   console.log($auth.headers.get("aslan"))
   console.log($auth.strategy)
+  console.log($auth.prefix)
 
 });

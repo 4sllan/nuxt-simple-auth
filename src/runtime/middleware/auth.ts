@@ -49,38 +49,38 @@ export default defineNuxtRouteMiddleware(async () => {
     };
 
     if (import.meta.server) {
-        // const event = useRequestEvent();
-        // if (!event) return;
-        //
-        // const strategyName = useCookie<string | null>($auth.prefix + `strategy`).value;
-        // const token = strategyName ? useCookie<string | null>($auth.prefix + `_token.` + strategyName).value : null;
-        // const expires = strategyName ? useCookie<string | null>($auth.prefix + `_token_expiration.` + strategyName).value : null;
-        //
-        //
-        // if (!validateSession(strategyName, token, expires)) {
-        //     return await handleLogout(strategyName, getRedirectPath(strategyName));
-        // }
-        //
-        // if (token) {
-        //     $auth.$headers.set('authorization', token);
-        // }
+        const event = useRequestEvent();
+        if (!event) return;
+
+        const strategyName = useCookie<string | null>($auth.prefix + `strategy`).value;
+        const token = strategyName ? useCookie<string | null>($auth.prefix + `_token.` + strategyName).value : null;
+        const expires = strategyName ? useCookie<string | null>($auth.prefix + `_token_expiration.` + strategyName).value : null;
+
+
+        if (!validateSession(strategyName, token, expires)) {
+            return await handleLogout(strategyName, getRedirectPath(strategyName));
+        }
+
+        if (token) {
+            $auth.headers.set('Authorization', token);
+        }
     }
 
     if (import.meta.client) {
-        // const strategy = sessionStorage.getItem($auth.prefix + `strategy`);
-        // const token = strategy ? sessionStorage.getItem($auth.prefix + `_token.` + strategy) : null;
-        // const expires = strategy ? sessionStorage.getItem($auth.prefix + `_token_expiration.` + strategy) : null;
-        // //
-        // if (!validateSession(strategy, token, expires) || $auth.strategy !== strategy || $auth.strategy !== store.value.strategy) {
-        //     return await handleLogout(strategy, getRedirectPath(strategy));
-        // }
+        const strategy = sessionStorage.getItem($auth.prefix + `strategy`);
+        const token = strategy ? sessionStorage.getItem($auth.prefix + `_token.` + strategy) : null;
+        const expires = strategy ? sessionStorage.getItem($auth.prefix + `_token_expiration.` + strategy) : null;
         //
-        // if (token) {
-        //     $auth.$headers.set('authorization', token);
-        // }
-        //
-        // if (!$auth.user || !$auth.loggedIn || !store.value.user || !store.value.loggedIn) {
-        //     return await handleLogout(strategy, getRedirectPath(strategy));
-        // }
+        if (!validateSession(strategy, token, expires) || $auth.strategy !== strategy || $auth.strategy !== store.value.strategy) {
+            return await handleLogout(strategy, getRedirectPath(strategy));
+        }
+
+        if (token) {
+            $auth.headers.set('Authorization', token);
+        }
+
+        if (!$auth.user || !$auth.loggedIn || !store.value.user || !store.value.loggedIn) {
+            return await handleLogout(strategy, getRedirectPath(strategy));
+        }
     }
 });

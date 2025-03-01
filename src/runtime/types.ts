@@ -97,7 +97,7 @@ export interface AuthResponse {
 
 export interface AuthInstance {
     $headers: Headers;
-    readonly prefix: string;
+    readonly _prefix: string;
     readonly options: ModuleOptions;
     readonly state: AuthState;
 
@@ -108,6 +108,8 @@ export interface AuthInstance {
     get loggedIn(): boolean;
 
     get headers(): Headers;
+
+    get prefix(): string | null;
 
     set headers(headers: Headers)
 
