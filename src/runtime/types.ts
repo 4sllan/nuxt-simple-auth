@@ -33,7 +33,7 @@ type fetchOption = {
 
 type EndpointsOptions = {
     login: fetchOption
-    user: fetchOption
+    user: { url: string, method: string }
     "2fa"?: fetchOption
     logout?: { alias?: string }
 }
@@ -94,6 +94,7 @@ export interface AuthResponse {
     prefix: string;
     strategyName: string;
 }
+
 export interface AuthInstance {
     $headers: Headers;
     readonly prefix: string;
@@ -101,12 +102,22 @@ export interface AuthInstance {
     readonly state: AuthState;
 
     get user(): any | null;
+
     get strategy(): string | null;
+
     get loggedIn(): boolean;
+
+    get headers(): Headers;
+
+    set headers(headers: Headers)
+
 
     getRedirect(strategyName: string): Record<string, string> | null
 
     initialize(): Promise<void>
+
     loginWith(strategyName: string, value: any): Promise<any>;
+
     logout(strategyName: string): Promise<void>;
+
 }

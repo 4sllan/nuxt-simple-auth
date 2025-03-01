@@ -4,7 +4,8 @@ import {
     navigateTo,
     useAuthStore,
     useFetch,
-    reloadNuxtApp
+    reloadNuxtApp,
+    useRuntimeConfig
 } from '#imports'
 import {parseCookies} from 'h3';
 import {$fetch} from 'ofetch';
@@ -28,8 +29,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             this.$headers = new Headers();
             this.prefix = options.cookie.prefix;
             this.options = options;
-
-            this.initialize();
         }
 
         get state(): AuthState {
@@ -68,6 +67,10 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             return this.options.strategies?.[strategyName]?.user?.property ?? null;
         }
 
+        private getEndpointsUser(strategyName: string): { url: string, method: string } | null {
+            return this.options.strategies?.[strategyName]?.endpoints.user ?? null
+        }
+
         private getHandler(strategyName: string, key: string): string | null {
             return (
                 this.options.strategies?.[strategyName]?.handler?.find((value: any) => value[key])?.[key] ?? null
@@ -80,16 +83,13 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 let token: string | null = null;
 
                 if (import.meta.server) {
-
                     const event = useRequestEvent();
-
                     if (!event) {
                         console.warn("No request event available. Skipping initialization.");
                         return;
                     }
 
                     const cookies = parseCookies(event);
-
                     strategy = cookies[this.prefix + `strategy`]
                     token = strategy ? cookies[this.prefix + `_token.` + strategy] : null;
                 } else {
@@ -103,10 +103,10 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 }
 
                 this._state.strategy = strategy ?? null;
+                this.$headers.set('Authorization', token);
 
                 const data = await this._setProfile();
                 if (data) {
-                    this.$headers.set('authorization', token);
                     const property = this.getUserProperty(this._state.strategy);
                     this._state = {
                         user: data[property as keyof ProfileResponse] ?? null,
@@ -141,9 +141,11 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 }
 
                 const property = this.getUserProperty(strategyName) as keyof AuthResponse;
-                store.value.user = response[property];
-                store.value.strategy = strategyName;
-                store.value.loggedIn = true;
+                store.value = {
+                    user: response[property],
+                    strategy: strategyName,
+                    loggedIn: true
+                };
 
                 this._state = store.value;
 
@@ -181,26 +183,30 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
         private async _setProfile(): Promise<ProfileResponse | false> {
             try {
-                const profileUrl = this.getHandler(this._state.strategy!, 'user');
-                if (!profileUrl) return false;
+                const {public: {baseURL}} = useRuntimeConfig();
 
+                const endpoint = this.getEndpointsUser(this._state.strategy!)
+                if (!endpoint?.url || !endpoint?.method) return false;
 
-                const {data, error} = await useFetch<ProfileResponse>(profileUrl);
+                this.$headers.set('Content-Type', 'application/json');
 
-                if (error.value || !data.value) return false;
+                const data = await $fetch<ProfileResponse>(endpoint.url, {
+                    baseURL,
+                    method: endpoint.method,
+                    headers: this.$headers
+                });
+
+                if (!data) return false;
 
                 const property = this.getUserProperty(this._state.strategy);
-
                 store.value = {
-                    user: data.value[property as keyof ProfileResponse] ?? null,
+                    user: data[property as keyof ProfileResponse] ?? null,
                     strategy: this._state.strategy ?? null,
                     loggedIn: true
                 }
 
                 this._state = store.value
-
-                return data.value;
-
+                return data;
             } catch (error) {
                 console.error('Error fetching profile:', error);
                 return false;
@@ -221,9 +227,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         headers: {
             get: () => $auth.headers,
             set: (headers: Headers) => {
-                headers.forEach((value, key) => {
-                    $auth.headers.set(key, value);
-                });
+                $auth.headers = headers;
             }
         }
     });

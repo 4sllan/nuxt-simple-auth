@@ -8,6 +8,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   $auth.headers.set("aslan", "sdsds")
   console.log($auth.headers)
+  console.log($auth.headers.get("aslan"))
   console.log($auth.strategy)
 
 });
