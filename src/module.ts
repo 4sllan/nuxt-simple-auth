@@ -90,6 +90,18 @@ export default defineNuxtModule<ModuleOptions>({
                 });
         });
 
+        const has2FA = Object.values(options.strategies).some(strategy =>
+            strategy.endpoints?.['2fa']?.url && strategy.endpoints?.['2fa']?.method
+        );
+
+        if (has2FA) {
+            addRouteMiddleware({
+                name: '_2fa',
+                path: resolve('./runtime/middleware/2fa'),
+            });
+            logger.success('Middleware `_2fa` enabled');
+        }
+
         // Add plugin template
         addPluginTemplate({
             src: resolve('./runtime/plugin.ts'),
