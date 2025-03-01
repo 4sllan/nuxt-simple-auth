@@ -76,6 +76,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
         async initialize(): Promise<void> {
             try {
+                let strategy: string | null = null;
+                let token: string | null = null;
 
                 if (import.meta.server) {
 
@@ -88,37 +90,28 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
                     const cookies = parseCookies(event);
 
-                    const strategy = cookies[this.prefix + `strategy`]
-                    const token = strategy ? cookies[this.prefix + `_token.` + strategy] : null;
-
-                    if (!strategy || !token) {
-                        console.warn("No valid session found. Skipping profile fetch.");
-                        return;
-                    }
-
-                    this._state.strategy = strategy ?? null;
+                    strategy = cookies[this.prefix + `strategy`]
+                    token = strategy ? cookies[this.prefix + `_token.` + strategy] : null;
+                } else {
+                    strategy = sessionStorage.getItem(this.prefix + `strategy`);
+                    token = strategy ? sessionStorage.getItem(this.prefix + `_token.` + strategy) : null;
                 }
-                if (import.meta.client) {
 
-                    const strategy = sessionStorage.getItem(this.prefix + `strategy`);
-                    const token = strategy ? sessionStorage.getItem(this.prefix + `_token.` + strategy) : null;
-
-                    if (!strategy || !token) {
-                        console.warn("No valid session found. Skipping profile fetch.");
-                        return;
-                    }
-
-                    this._state.strategy = strategy ?? null;
+                if (!strategy || !token) {
+                    console.warn("No valid session found. Skipping profile fetch.");
+                    return;
                 }
+
+                this._state.strategy = strategy ?? null;
 
                 const data = await this._setProfile();
                 if (data) {
-                    this.$headers.set('authorization', data.token);
-                    const property = this.getUserProperty(this._state.strategy)!;
+                    this.$headers.set('authorization', token);
+                    const property = this.getUserProperty(this._state.strategy);
                     this._state = {
                         user: data[property as keyof ProfileResponse] ?? null,
                         loggedIn: true,
-                        strategy: data.strategyName,
+                        strategy: strategy ?? null,
                     };
                 }
             } catch (error) {
@@ -196,12 +189,15 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
                 if (error.value || !data.value) return false;
 
-                const property = this.getUserProperty(data.value.strategyName) as keyof ProfileResponse;
-                store.value.user = data.value[property];
-                store.value.strategy = data.value.strategyName;
-                store.value.loggedIn = true;
+                const property = this.getUserProperty(this._state.strategy);
 
-                this._state = store.value;
+                store.value = {
+                    user: data.value[property as keyof ProfileResponse] ?? null,
+                    strategy: this._state.strategy ?? null,
+                    loggedIn: true
+                }
+
+                this._state = store.value
 
                 return data.value;
 
