@@ -7,7 +7,7 @@ import {
     reloadNuxtApp
 } from '#imports'
 import {parseCookies} from 'h3';
-import { $fetch } from 'ofetch';
+import {$fetch} from 'ofetch';
 import type {
     AuthState,
     ProfileResponse,
@@ -18,11 +18,12 @@ import type {
 export default defineNuxtPlugin(async (nuxtApp) => {
     const store = useAuthStore()
 
-    class Auth implements AuthInstance{
+    class Auth implements AuthInstance {
         private $headers: Headers;
         private _state: AuthState = {user: null, loggedIn: false, strategy: null};
         private prefix: string;
         private readonly options: Record<string, any>;
+
         constructor(options: Record<string, any>) {
             this.$headers = new Headers();
             this.prefix = options.cookie.prefix;
@@ -47,8 +48,12 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             return this._state.loggedIn;
         }
 
-        set httpHeaders(headers: Headers) {
-            this.$headers = headers;
+        get headers(): Headers {
+            return this.$headers;
+        }
+
+        set headers(headers: Headers) {
+            this.$headers = new Headers(headers);
         }
 
         set state(val: AuthState) {
@@ -58,16 +63,18 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         public getRedirect(strategyName: string): Record<string, string> | null {
             return this.options.strategies?.[strategyName]?.redirect ?? null;
         }
+
         private getUserProperty(strategyName: string): string | null {
             return this.options.strategies?.[strategyName]?.user?.property ?? null;
         }
+
         private getHandler(strategyName: string, key: string): string | null {
             return (
                 this.options.strategies?.[strategyName]?.handler?.find((value: any) => value[key])?.[key] ?? null
             );
         }
 
-        private async initialize(): Promise<void> {
+        async initialize(): Promise<void> {
             try {
 
                 if (import.meta.server) {
@@ -89,7 +96,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                         return;
                     }
 
-                    this._state.strategy = strategy
+                    this._state.strategy = strategy ?? null;
                 }
                 if (import.meta.client) {
 
@@ -101,16 +108,17 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                         return;
                     }
 
-                    this._state.strategy = strategy
+                    this._state.strategy = strategy ?? null;
                 }
 
-                const profile = await this._setProfile();
-                if (profile) {
-                    this.$headers.set('authorization', profile.token);
+                const data = await this._setProfile();
+                if (data) {
+                    this.$headers.set('authorization', data.token);
+                    const property = this.getUserProperty(this._state.strategy)!;
                     this._state = {
-                        user: profile.profile,
+                        user: data[property as keyof ProfileResponse] ?? null,
                         loggedIn: true,
-                        strategy: profile.strategyName,
+                        strategy: data.strategyName,
                     };
                 }
             } catch (error) {
@@ -188,7 +196,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
                 if (error.value || !data.value) return false;
 
-                const property = this.getUserProperty(data.value.strategyName)as keyof ProfileResponse;
+                const property = this.getUserProperty(data.value.strategyName) as keyof ProfileResponse;
                 store.value.user = data.value[property];
                 store.value.strategy = data.value.strategyName;
                 store.value.loggedIn = true;
@@ -204,10 +212,37 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         }
     }
 
-    const $auth: AuthInstance  = new Auth(JSON.parse(`<%= JSON.stringify(options, null, 2) %>`));
+    const $auth: AuthInstance = new Auth(JSON.parse(`<%= JSON.stringify(options, null, 2) %>`));
 
-    console.log(store.value, 'store.value')
-    console.log($auth.state, '$auth.state')
+    await $auth.initialize();
 
-    nuxtApp.provide('auth', $auth)
+
+    const exposed = Object.defineProperties({}, {
+        state: {get: () => $auth.state},
+        user: {get: () => $auth.user},
+        strategy: {get: () => $auth.strategy},
+        loggedIn: {get: () => $auth.loggedIn},
+        headers: {
+            get: () => $auth.headers,
+            set: (headers: Headers) => {
+                headers.forEach((value, key) => {
+                    $auth.headers.set(key, value);
+                });
+            }
+        }
+    });
+
+    exposed.getRedirect = (strategyName: string) => {
+        return $auth.getRedirect?.(strategyName) ?? null;
+    };
+
+    exposed.loginWith = async (strategyName: string, value: any) => {
+        return await $auth.loginWith(strategyName, value);
+    };
+
+    exposed.logout = async (strategyName: string) => {
+        return await $auth.logout(strategyName);
+    };
+
+    nuxtApp.provide('auth', exposed)
 })

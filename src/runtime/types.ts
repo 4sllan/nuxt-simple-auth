@@ -104,6 +104,9 @@ export interface AuthInstance {
     get strategy(): string | null;
     get loggedIn(): boolean;
 
+    getRedirect(strategyName: string): Record<string, string> | null
+
+    initialize(): Promise<void>
     loginWith(strategyName: string, value: any): Promise<any>;
     logout(strategyName: string): Promise<void>;
 }
