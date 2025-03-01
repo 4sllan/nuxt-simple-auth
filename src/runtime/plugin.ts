@@ -163,7 +163,10 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
         async logout(strategyName: string): Promise<void> {
             try {
-                const response = await $fetch<{ logout?: string }>('/api/logout', {
+                const logoutUrl = this.getHandler(strategyName, 'logout');
+                if (!logoutUrl) throw new Error("Logout endpoint not found");
+
+                const response = await $fetch<{ logout?: string }>(logoutUrl, {
                     method: 'POST',
                     body: {strategyName},
                 });

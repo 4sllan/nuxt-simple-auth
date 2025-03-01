@@ -58,24 +58,42 @@ Then, add nuxt-simple-auth to the modules section of nuxt.config.js:
 
 ``` js
  strategies: {
-        local: {
-            redirect: {
-               logout: "/logout"
+            local: {
+                redirect: {
+                    logout: "/auth",
+                    login: "/auth"
+                },
+                token: {
+                    property: "access_token",
+                },
+                user: {
+                    property: "profile",
+                },
+                endpoints: {
+                    login: {url: "/oauth/token", method: "post", alias: "auth token"},
+                    user: {url: "/api/profile", method: "get"},
+                    "2fa": {url: "/api/send-token-2fa", method: "post"},
+                },
             },
-            token: {
-                property: 'access_token',
-            },
-            user: {
-                property: 'profile',
-            },
-            endpoints: {
-                login: {url: '/oauth/token', method: 'post'},
-                user: {url: '/api/profile', method: 'get'},
-                "2fa": {url: '/api/token_2fa', method: 'post'},
-                logout: false,
-            },
-        },
-    }
+            client:{
+                redirect: {
+                    logout: "/auth",
+                    login: "/auth"
+                },
+                token: {
+                    property: "access_token",
+                },
+                user: {
+                    property: "profile",
+                },
+                endpoints: {
+                    login: {url: "/oauth/token", method: "post"},
+                    user: {url: "/api/profile", method: "get"},
+                    "2fa": {url: "/api/send-token-2fa", method: "post"},
+                    logout: {alias: 'logout client'}
+                },
+            }
+        }
 ```
 
 ### Cookie
