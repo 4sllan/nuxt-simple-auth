@@ -10,6 +10,8 @@ import {
 } from '@nuxt/kit'
 import {defu} from 'defu';
 import kebabCase from 'lodash.kebabcase';
+import fs from 'fs'
+
 import type {
     ModuleOptions,
     AuthSecretConfig,
@@ -125,10 +127,12 @@ export default defineNuxtModule<ModuleOptions>({
             logger.success('Middleware `_2fa` enabled');
         }
 
+        const hasTsPlugin = fs.existsSync(resolve('./runtime/plugin.ts'))
+
         // Add plugin template
         addPluginTemplate({
-            src: resolve('./runtime/plugin.ts'),
-            filename: 'plugin.ts',
+            src: resolve(`./runtime/plugin.${hasTsPlugin ? 'ts' : 'js'}`),
+            filename: `plugin.${hasTsPlugin ? 'ts' : 'js'}`,
             mode: 'all',
             options: {
                 ...options,
