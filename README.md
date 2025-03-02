@@ -9,8 +9,6 @@
 
 <br>
 
-[![Static Badge](https://img.shields.io/badge/NPM:nuxt-simple-auth?style=flat-square&colorA=18181B&colorB=28CF8D)](https://www.npmjs.com/package/nuxt-simple-auth)
-[![Static Badge](https://img.shields.io/badge/GITHUB:nuxt-simple-auth?style=flat-square&colorA=18181B&colorB=28CF8D)](https://github.com/4slanK/nuxt-simple-auth)
 [![npm version](https://img.shields.io/npm/v/nuxt-simple-auth/latest.svg?style=flat-square&colorA=18181B&colorB=28CF8D)](https://www.npmjs.com/package/nuxt-simple-auth)
 ![GitHub License][license]
 [![npm downloads](https://img.shields.io/npm/dt/nuxt-simple-auth.svg?style=flat-square&colorA=18181B&colorB=28CF8D)](https://www.npmjs.com/package/nuxt-simple-auth)
