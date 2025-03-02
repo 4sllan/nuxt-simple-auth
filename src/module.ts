@@ -12,7 +12,7 @@ import {defu} from 'defu';
 import kebabCase from 'lodash.kebabcase';
 import type {
     ModuleOptions,
-    ClientSecret,
+    AuthSecretConfig,
     StrategiesOptions
 } from './runtime/types'
 
@@ -20,6 +20,12 @@ interface Endpoint {
     url: string;
     method: string;
     alias?: string;
+}
+
+interface RuntimeConfig {
+    secret: {
+        [key: string]: AuthSecretConfig;
+    };
 }
 
 const PACKAGE_NAME: string = 'nuxt-simple-auth'
@@ -32,8 +38,25 @@ export default defineNuxtModule<ModuleOptions>({
 
     async setup(options, nuxt) {
         const logger = useLogger(PACKAGE_NAME)
+        const runtimeConfig = nuxt.options.runtimeConfig as RuntimeConfig;
         const {resolve} = createResolver(import.meta.url)
         const isDev = nuxt.options.dev;
+
+        if (!runtimeConfig.secret || typeof runtimeConfig.secret !== 'object' || Object.keys(runtimeConfig.secret).length === 0) {
+            logger.error(`Missing "runtimeConfig.secret" in nuxt.config.ts`);
+            return;
+        }
+
+        Object.entries(runtimeConfig.secret).forEach(([key, config]) => {
+            if (!options.strategies[key]) {
+                logger.error(`[${PACKAGE_NAME}] Strategy "${key}" found in "runtimeConfig.secret" but not in "options.strategies". Skipping validation.`);
+                return;
+            }
+            if (!config.client_id || !config.client_secret || !config.grant_type) {
+                logger.error(`[${PACKAGE_NAME}] Invalid "secret.${key}" configuration. Required keys: client_id, client_secret, grant_type.`);
+                return;
+            }
+        });
 
         options = defu(options, {
             cookie: {
@@ -121,6 +144,6 @@ export default defineNuxtModule<ModuleOptions>({
 
 declare module 'nuxt/schema' {
     interface RuntimeConfig {
-        secret: ClientSecret
+        secret: Record<string, AuthSecretConfig>;
     }
 }

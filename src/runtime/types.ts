@@ -67,12 +67,10 @@ export interface ModuleOptions {
     strategies: AuthOptionsStrategies
 }
 
-export interface ClientSecret {
-    [key: string]: {
-        grant_type: string,
-        client_id: number,
-        client_secret: string
-    }
+export interface AuthSecretConfig {
+    client_id: string;
+    client_secret: string;
+    grant_type: 'password' | 'authorization_code';
 }
 
 export type AuthState = {
