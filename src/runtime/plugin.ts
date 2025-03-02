@@ -3,8 +3,6 @@ import {
     useRequestEvent,
     navigateTo,
     useAuthStore,
-    useFetch,
-    reloadNuxtApp,
     useRuntimeConfig
 } from '#imports'
 import {parseCookies} from 'h3';
