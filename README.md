@@ -52,17 +52,29 @@ npx nuxi@latest module add nuxt-simple-auth
 
 ### Configuration
 
-Configuration should be done in the `nuxt.config.js` file by adding the library to the modules section.
+The configuration must be set in the `nuxt.config.js` file by adding the library to the modules section.
 
-The options inside `"auth"` are **mandatory** for defining **strategies**, while the **cookie** settings are **optional
-**.
+Within the `auth` property, defining **strategies** is **required**, while **cookie** settings are **optional**.
+
+According to the package configuration, the `endpoints.login` property requires **Laravel Passport**, which must expose the `/oauth/token` route.  
+This route should return a JSON response containing the following attributes:
+
+- `access_token`
+- `refresh_token`
+- `expires_in`
 
 Below is an example configuration:
 
 A configuração deve ser feita no arquivo `nuxt.config.js`, adicionando a biblioteca na seção de módulos.
 
-As opções dentro de `"auth"` são obrigatórias para definir as **strategies**, enquanto as configurações de **cookie**
-são opcionais.
+Dentro da propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies** são **opcionais**.
+
+Conforme a configuração do pacote, a propriedade `endpoints.login` exige o uso do **Laravel Passport**, que deve expor a rota `/oauth/token`.  
+Essa rota precisa retornar uma resposta JSON contendo os seguintes atributos:
+
+- `access_token`
+- `refresh_token`
+- `expires_in`
 
 Abaixo, um exemplo de configuração:
 
