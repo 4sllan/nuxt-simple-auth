@@ -5,8 +5,8 @@
     <p align="center">Authentication support for Nuxt 3</p>
 <br>
 
-
 ## nuxt-simple-auth
+
 <br>
 
 [![Static Badge](https://img.shields.io/badge/NPM:nuxt-simple-auth?style=flat-square&colorA=18181B&colorB=28CF8D)](https://www.npmjs.com/package/nuxt-simple-auth)
@@ -126,10 +126,12 @@ export default defineNuxtConfig({
 ### Runtime Config
 
 The **runtimeConfig** of Nuxt 3 must also be configured to include a `secret` object.  
-This object should contain the names of your **strategies**, and within each strategy, the following keys are **required**:
+This object should contain the names of your **strategies**, and within each strategy, the following keys are **required
+**:
 
 A configuração do **runtimeConfig** do Nuxt 3 também precisa ser ajustada para incluir um objeto `secret`.  
-Este objeto deve conter os nomes das suas **strategies**, e dentro de cada uma delas, as seguintes chaves são **obrigatórias**:
+Este objeto deve conter os nomes das suas **strategies**, e dentro de cada uma delas, as seguintes chaves são *
+*obrigatórias**:
 
 - [`client_id`](https://laravel.com/docs/12.x/passport#main-content)
 - [`client_secret`](https://laravel.com/docs/12.x/passport#main-content)
@@ -139,53 +141,55 @@ Este objeto deve conter os nomes das suas **strategies**, e dentro de cada uma d
 
 ```js
 export default defineNuxtConfig({
-  runtimeConfig: {
-    secret: {
-      local: {
-        client_id: 'YOUR_CLIENT_ID',
-        client_secret: 'YOUR_CLIENT_SECRET',
-        grant_type: 'password',
-      },
-      client: {
-        client_id: 'YOUR_CLIENT_ID',
-        client_secret: 'YOUR_CLIENT_SECRET',
-        grant_type: 'authorization_code',
-      }
+    runtimeConfig: {
+        secret: {
+            local: {
+                client_id: 'YOUR_CLIENT_ID',
+                client_secret: 'YOUR_CLIENT_SECRET',
+                grant_type: 'password',
+            },
+            client: {
+                client_id: 'YOUR_CLIENT_ID',
+                client_secret: 'YOUR_CLIENT_SECRET',
+                grant_type: 'authorization_code',
+            }
+        }
     }
-  }
 });
 ```
 
 ### Strategies
 
-The **strategies** configuration follows the structure below, starting with a name of your choice to set up the package.  
+The **strategies** configuration follows the structure below, starting with a name of your choice to set up the
+package.  
 The available options are listed in the table, indicating which ones are required and which are optional.
 
-As configurações das **strategies** seguem a estrutura abaixo, iniciando com um nome de sua escolha para configurar o pacote.  
+As configurações das **strategies** seguem a estrutura abaixo, iniciando com um nome de sua escolha para configurar o
+pacote.  
 As opções disponíveis estão listadas na tabela, indicando quais são obrigatórias e quais são opcionais.
 
 #### Configuration
 
 - **`redirect`**: Defines the pages for redirection. _(Required)_
-  - `login`: _(Optional)_
-  - `logout`: _(Required)_
-  - `callback`: _(Optional)_
-  - `home`: _(Optional)_
+    - `login`: _(Optional)_
+    - `logout`: _(Required)_
+    - `callback`: _(Optional)_
+    - `home`: _(Optional)_
 
 - **`endpoints`**: Defines the API routes configured in Laravel. _(Required)_
-  - `login`: _(Required)_
-    - `url`: _(Required)_
-    - `method`: _(Required)_
-    - `alias`: _(Optional)_
-  - `user`: Contains user data. _(Required)_
-    - `url`: _(Required)_
-    - `method`: _(Required)_
-  - `"2fa"`: _(Optional)_
-    - `url`: _(Required)_
-    - `method`: _(Required)_
-    - `alias`: _(Optional)_
-  - `logout`: _(Optional)_
-    - `alias`: _(Optional)_
+    - `login`: _(Required)_
+        - `url`: _(Required)_
+        - `method`: _(Required)_
+        - `alias`: _(Optional)_
+    - `user`: Contains user data. _(Required)_
+        - `url`: _(Required)_
+        - `method`: _(Required)_
+    - `"2fa"`: _(Optional)_
+        - `url`: _(Required)_
+        - `method`: _(Required)_
+        - `alias`: _(Optional)_
+    - `logout`: _(Optional)_
+        - `alias`: _(Optional)_
 
 - **`token`**: Name of the object returned from Laravel authentication. It is usually `"access_token"`. _(Required)_
 
@@ -281,21 +285,13 @@ cookie: {
 
 ### Methods
 
-| Method                         | Description |
-|--------------------------------|-------------|
-| `loginWith(strategyName, ...args)` | Sets the current strategy and attempts to log in. Returns a `Promise`. |
-| `logout(strategyName)`         | Logs out, ensuring the destruction of cookies and authentication state. |
-| `_2fa(strategyName, ...args)`  | Attempts to validate the two-factor authentication (**2FA**) code. Returns a `Promise`. |
-| `$auth.headers.set(name, value)` | Manually sets an HTTP header. |
-| `$auth.headers.get(name)`      | Retrieves the value of an HTTP header. |
----
-| Método / Method         | Descrição (PT)                                                                 | Description (EN)                                                           |
-|-------------------------|-------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `loginWith(strategyName, ...args)` | Define a estratégia atual e tenta realizar o login. Retorna uma `Promise`.  | Sets the current strategy and attempts to log in. Returns a `Promise`.  |
-| `logout(strategyName)`  | Realiza o logout, garantindo a destruição dos cookies e do estado.            | Logs out, ensuring the destruction of cookies and state.                  |
-| `_2fa(strategyName, ...args)` | Tenta validar o código de autenticação em dois fatores (**2FA**). Retorna uma `Promise`. | Attempts to validate the two-factor authentication (**2FA**) code. Returns a `Promise`. |
-| `$auth.headers.set(name, value)` | Define um cabeçalho HTTP manualmente.                                 | Sets an HTTP header manually.                                             |
-| `$auth.headers.get(name)` | Obtém o valor de um cabeçalho HTTP.      
+| Método / Method                    | Descrição (PT)                                                                           | Description (EN)                                                                        |
+|------------------------------------|------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+| `loginWith(strategyName, ...args)` | Define a estratégia atual e tenta realizar o login. Retorna uma `Promise`.               | Sets the current strategy and attempts to log in. Returns a `Promise`.                  |
+| `logout(strategyName)`             | Realiza o logout, garantindo a destruição dos cookies e do estado.                       | Logs out, ensuring the destruction of cookies and state.                                |
+| `_2fa(strategyName, ...args)`      | Tenta validar o código de autenticação em dois fatores (**2FA**). Retorna uma `Promise`. | Attempts to validate the two-factor authentication (**2FA**) code. Returns a `Promise`. |
+| `$auth.headers.set(name, value)`   | Define um cabeçalho HTTP manualmente.                                                    | Sets an HTTP header manually.                                                           |
+| `$auth.headers.get(name)`          | Obtém o valor de um cabeçalho HTTP.                                                      | Retrieves the value of an HTTP header.                                                  |
 
 ---
 
@@ -307,10 +303,10 @@ cookie: {
 const {$auth} = useNuxtApp()
 
 $auth.loginWith('local', data)
-      .then(response => {
+    .then(response => {
         // Logic after login
-      })
-      
+    })
+
 ```
 
 #### `logout`
@@ -319,16 +315,16 @@ $auth.loginWith('local', data)
 const {$auth} = useNuxtApp()
 
 $auth.logout('local')
-      
+
 ```
 
 #### `_2fa`
 
 ```js
 $auth._2fa('local', data).then(response => {
-  // Logic after 2FA validation
+    // Logic after 2FA validation
 })
-      
+
 ```
 
 #### `Headers and Requests`
@@ -338,9 +334,9 @@ $auth.headers.set('name', 'value') // Sets a header
 $auth.headers.get('name') // Retrieves a header  
 
 const {data, pending, error, refresh} = useFetch(url, {
-  headers: $auth.headers,
+    headers: $auth.headers,
 })
-      
+
 ```
 
 ## ⚖️ License
