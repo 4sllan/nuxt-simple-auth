@@ -52,29 +52,47 @@ npx nuxi@latest module add nuxt-simple-auth
 
 ### Configuration
 
-The configuration must be set in the `nuxt.config.js` file by adding the library to the modules section.
+The configuration must be done in the `nuxt.config.js` file by adding the library to the **modules** section.
 
-Within the `auth` property, defining **strategies** is **required**, while **cookie** settings are **optional**.
+Within the `auth` property, defining **strategies** is **mandatory**, while **cookie** settings are **optional**.
 
-According to the package configuration, the `endpoints.login` property requires **Laravel Passport**, which must expose the `/oauth/token` route.  
+For authentication, the `endpoints.login` property requires the use of **Laravel Passport**, which must expose the `/oauth/token` route.  
 This route should return a JSON response containing the following attributes:
 
 - `access_token`
 - `refresh_token`
 - `expires_in`
 
+If you choose to use **2FA authentication**, the package requires the configuration of `endpoints.2fa`, which mandates that **Laravel** expose a specific route.  
+This route should return a JSON response containing the following attributes:
+
+- `access_token`
+- `expires_in`
+
+After **2FA** validation, the token will be automatically added to the **headers** of requests as a **Bearer Token**, with the name `"2fa"`.  
+This allows **Laravel APIs** to validate authentication on protected routes.
+
 Below is an example configuration:
 
-A configuração deve ser feita no arquivo `nuxt.config.js`, adicionando a biblioteca na seção de módulos.
+---
+
+A configuração deve ser realizada no arquivo `nuxt.config.js`, adicionando a biblioteca na seção de **módulos**.
 
 Dentro da propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies** são **opcionais**.
 
-Conforme a configuração do pacote, a propriedade `endpoints.login` exige o uso do **Laravel Passport**, que deve expor a rota `/oauth/token`.  
-Essa rota precisa retornar uma resposta JSON contendo os seguintes atributos:
+Para autenticação, a propriedade `endpoints.login` exige o uso do **Laravel Passport**, que deve expor a rota `/oauth/token`.  
+Essa rota deve retornar uma resposta JSON contendo os seguintes atributos:
 
 - `access_token`
 - `refresh_token`
 - `expires_in`
+
+Se optar por utilizar a autenticação **2FA**, o pacote requer a configuração de `endpoints.2fa`, que exige que o **Laravel** exponha uma rota específica. Essa rota deve retornar uma resposta JSON com os seguintes atributos:
+
+- `access_token`
+- `expires_in`
+
+Após a validação do **2FA**, o token será automaticamente adicionado aos **headers** das requisições como um **Bearer Token**, com o nome `"2fa"`. Isso permite que as **APIs do Laravel** validem a autenticação nas rotas protegidas.
 
 Abaixo, um exemplo de configuração:
 
@@ -292,6 +310,30 @@ cookie: {
         prefix: '__Secure-auth.',
     }
 ```
+
+### Middlewares
+
+The **nuxt-simple-auth** package provides two middlewares: **"auth"** and **"_2fa"**.  
+They are **not global** and can be applied selectively to Nuxt pages.
+
+- **auth**: Restricts access to protected pages, ensuring the user is authenticated via **Laravel Passport**, both on the client and server (**SSR**).
+- **_2fa**: Enhances authentication by verifying values stored in **cookies** and **sessionStorage** to validate **two-factor authentication (2FA)**, also working on both the client and server (**SSR**).
+
+---
+
+O pacote **nuxt-simple-auth** disponibiliza dois middlewares: **"auth"** e **"_2fa"**.  
+Eles **não são globais** e podem ser aplicados seletivamente às páginas do Nuxt.
+
+- **auth**: Restringe o acesso a páginas protegidas, garantindo que o usuário esteja autenticado via **Laravel Passport**, tanto no cliente quanto no servidor (**SSR**).
+- **_2fa**: Complementa a autenticação verificando os valores armazenados nos **cookies** e no **sessionStorage** para validar a autenticação de dois fatores (**2FA**), também funcionando no cliente e no servidor (**SSR**).
+
+
+``` js
+ definePageMeta({
+      middleware: ['auth', '_2fa']
+    });
+```
+
 
 ### Methods
 
