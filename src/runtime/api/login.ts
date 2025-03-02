@@ -28,8 +28,6 @@ export default defineEventHandler(async (event) => {
         secret,
     } = useRuntimeConfig();
 
-    console.log(config)
-
     const {cookie, strategies} = config as ModuleOptions;
     const prefix = cookie?.prefix || 'auth.';
     const strategy: StrategiesOptions | undefined = strategies[body.strategyName];
@@ -46,7 +44,6 @@ export default defineEventHandler(async (event) => {
     try {
         const response: TokenResponse = await getToken(endpoints, body.value, baseURL, secret[body.strategyName]);
         if (response.status) {
-            console.log(response.status)
             throw createError({
                 statusCode: response.status,
                 statusMessage: response.message,
