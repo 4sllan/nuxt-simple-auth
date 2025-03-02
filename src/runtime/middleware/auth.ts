@@ -62,7 +62,7 @@ export default defineNuxtRouteMiddleware(async () => {
         }
 
         if (token) {
-            $auth.$headers.set('authorization', token);
+            $auth.headers.set('Authorization', token);
         }
     }
 
@@ -76,7 +76,7 @@ export default defineNuxtRouteMiddleware(async () => {
         }
 
         if (token) {
-            $auth.$headers.set('authorization', token);
+            $auth.headers.set('Authorization', token);
         }
 
         if (!$auth.user || !$auth.loggedIn || !store.value.user || !store.value.loggedIn) {

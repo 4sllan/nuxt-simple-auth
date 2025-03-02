@@ -47,8 +47,13 @@ export default defineNuxtModule<ModuleOptions>({
             }
         });
 
-        options.cookie = options.cookie ?? { prefix: 'auth.', options: {} };
-        options.cookie.options = options.cookie.options ?? { httpOnly: false, secure: false, sameSite: 'Lax', priority: 'high' };
+        options.cookie = options.cookie ?? {prefix: 'auth.', options: {}};
+        options.cookie.options = options.cookie.options ?? {
+            httpOnly: false,
+            secure: false,
+            sameSite: 'Lax',
+            priority: 'high'
+        };
 
         if (isDev) {
             options.cookie.prefix = 'auth.';
@@ -63,23 +68,20 @@ export default defineNuxtModule<ModuleOptions>({
             path: resolve('./runtime/middleware/auth'),
         })
 
-        // Add server-plugin logout
-        addServerHandler({
-            route: '/api/logout',
-            handler: resolve('./runtime/api/logout')
-        })
-
         Object.entries(options.strategies).forEach(([strategyName, strategy]: [string, StrategiesOptions]) => {
             strategy.handler = strategy.handler ?? [];
-
+            strategy.endpoints = strategy.endpoints || {};
+            strategy.endpoints = defu(strategy.endpoints, {
+                logout: {alias: 'logout'}
+            });
             Object.entries(strategy.endpoints)
-                .filter(([_, endpoint]) => (endpoint as Endpoint).url && (endpoint as Endpoint).method)
+                .filter(([key, endpoint]) => key !== 'user' && (key === 'logout' || ((endpoint as Endpoint).url && (endpoint as Endpoint).method)))
                 .forEach(([key, endpoint]) => {
                     const typedEndpoint = endpoint as Endpoint;
                     const route = `/api/${kebabCase(typedEndpoint.alias) || typedEndpoint.url.replace(/^\/(api|oauth)\//, '')}`;
                     const handlerFile = resolve(`./runtime/api/${key}`);
 
-                    strategy.handler!.push({ [key]: route });
+                    strategy.handler!.push({[key]: route});
 
                     addServerHandler({
                         route,
@@ -88,11 +90,22 @@ export default defineNuxtModule<ModuleOptions>({
                 });
         });
 
+        const has2FA = Object.values(options.strategies).some(strategy =>
+            strategy.endpoints?.['2fa']?.url && strategy.endpoints?.['2fa']?.method
+        );
+
+        if (has2FA) {
+            addRouteMiddleware({
+                name: '_2fa',
+                path: resolve('./runtime/middleware/2fa'),
+            });
+            logger.success('Middleware `_2fa` enabled');
+        }
 
         // Add plugin template
         addPluginTemplate({
-            src: resolve('./runtime/plugin.js'),
-            filename: 'plugin.js',
+            src: resolve('./runtime/plugin.ts'),
+            filename: 'plugin.ts',
             mode: 'all',
             options: {
                 ...options,

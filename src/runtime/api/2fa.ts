@@ -1,83 +1,127 @@
-import {useRuntimeConfig} from "#imports";
-import {defineEventHandler, readBody, getCookie, setCookie, createError, setHeader} from 'h3'
-import type {
-    ModuleOptions
-} from '../types'
+import { useRuntimeConfig } from "#imports";
+import {
+    defineEventHandler,
+    readBody,
+    getCookie,
+    setCookie,
+    createError,
+    setHeader
+} from 'h3';
+import type { ModuleOptions, StrategiesOptions } from '../types';
+
+interface Get2FAResponse {
+    _2fa: string;
+    expiration: string;
+}
+
+interface RequestBody {
+    strategyName: string;
+    code: string;
+}
 
 export default defineEventHandler(async (event) => {
-    let {strategyName, code} = await readBody(event)
+    try {
+        const { strategyName, code } = await readBody<RequestBody>(event);
 
+        if (!strategyName || !code) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: "Missing required parameters: strategyName or code",
+            });
+        }
 
-    const {
-        'nuxt-simple-auth': config,
-        public: {
-            baseURL,
-        },
-    } = useRuntimeConfig()
+        const {
+            'nuxt-simple-auth': config,
+            public: { baseURL },
+        } = useRuntimeConfig();
 
-    const {cookie, strategies} = <ModuleOptions>config
-    const prefix = cookie?.prefix && !import.meta.dev ? cookie?.prefix : 'auth.'
-    const {endpoints: e, token: t, user: u} = strategies[strategyName]
+        const {cookie, strategies} = config as ModuleOptions;
+        const prefix = cookie?.prefix || 'auth.';
 
-    const getResponseToken: string = getCookie(event, `${prefix}_token.${strategyName}`) || ''
+        const strategy: StrategiesOptions | undefined = strategies?.[strategyName];
+        if (!strategy) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: `Strategy "${strategyName}" not found`,
+            });
+        }
 
-    const j: any = await get2fa(e, code, getResponseToken)
+        const { endpoints } = strategy;
+        if (!endpoints?.['2fa']) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: `2FA endpoint not configured for strategy "${strategyName}"`,
+            });
+        }
 
-    if (j.status) {
-        throw createError({
-            statusCode: j.status,
-            statusMessage: j.message,
-        })
-    }
+        const token = getCookie(event, `${prefix}_token.${strategyName}`) || '';
+        const response = await gethas2FA(endpoints['2fa'].url, baseURL, endpoints['2fa'].method, code, token, event);
 
-    const {_2fa, expiration} = j as { _2fa: string, expiration: string }
+        if (!response._2fa) {
+            throw createError({
+                statusCode: 500,
+                statusMessage: "2FA token not received",
+            });
+        }
 
-    if (_2fa) {
+        const expiration = Number.isNaN(Number(response.expiration))
+            ? new Date(response.expiration).getTime().toString()
+            : response.expiration;
 
-        const expires: string =
-            Number.isNaN(Number(expiration)) ? new Date(expiration).getTime().toString() : expiration;
-
-        setCookie(event, `${prefix}_2fa.${strategyName}`, _2fa, <{}>cookie?.options)
-        setCookie(event, `${prefix}_2fa_expiration.${strategyName}`, expires, <{}>cookie?.options)
+        setCookie(event, `${prefix}_2fa.${strategyName}`, response._2fa, <Partial<ModuleOptions['cookie']['options']>>cookie?.options);
+        setCookie(event, `${prefix}_2fa_expiration.${strategyName}`, expiration, <Partial<ModuleOptions['cookie']['options']>>cookie?.options);
 
         return {
-            _2fa,
-            expiration: expires,
+            _2fa: response._2fa,
+            expiration,
             prefix,
-            strategyName
-        }
+            strategyName,
+        };
+    } catch (error: any) {
+        throw createError({
+            statusCode: error.statusCode || 500,
+            statusMessage: error.statusMessage || "Internal Server Error",
+        });
     }
+});
+async function gethas2FA(
+    url: string,
+    baseURL: string,
+    method: string,
+    value: any,
+    token: string,
+    event: any
+): Promise<Get2FAResponse> {
+    try {
+        const data = await $fetch<{ token_2fa: string; expiration: string }>(url, {
+            baseURL,
+            method,
+            body: { value },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token,
+            },
+            onRequest({ options }) {
+                options.headers = options.headers || {};
+                setHeader(event, 'Authorization', token);
+            },
+        });
 
-    throw createError({
-        statusCode: 500,
-        statusMessage: j.message,
-    })
-
-    async function get2fa(endpoints: any, value: any, token: string) {
-        try {
-            const data = await $fetch(endpoints['2fa'].url, {
-                baseURL: <string>baseURL,
-                method: endpoints['2fa'].method,
-                body: value,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': token
-                },
-                onRequest({request, options}) {
-                    options.headers = options.headers || {}
-                    setHeader(event, 'Authorization', token)
-                },
+        if (!data.token_2fa || !data.expiration) {
+            throw createError({
+                statusCode: 500,
+                statusMessage: "Invalid 2FA response structure",
             });
-
-            const {token_2fa, expiration} = data;
-
-            return {
-                _2fa: token_2fa,
-                expiration
-            }
-
-        } catch (error) {
-            return error
         }
+
+        return {
+            _2fa: data.token_2fa,
+            expiration: data.expiration,
+        };
+    } catch (error: any) {
+        throw createError({
+            statusCode: error.statusCode || 500,
+            statusMessage: error.statusMessage || "Failed to fetch 2FA token",
+        });
     }
-})
+}

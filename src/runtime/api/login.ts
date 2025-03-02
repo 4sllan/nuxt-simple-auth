@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     } = useRuntimeConfig();
 
     const {cookie, strategies} = config as ModuleOptions;
-    const prefix = cookie?.prefix;
+    const prefix = cookie?.prefix || 'auth.';
     const strategy: StrategiesOptions | undefined = strategies[body.strategyName];
 
     if (!strategy) {

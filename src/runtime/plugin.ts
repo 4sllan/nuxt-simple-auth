@@ -3,32 +3,30 @@ import {
     useRequestEvent,
     navigateTo,
     useAuthStore,
-    useFetch,
-    reloadNuxtApp
+    useRuntimeConfig
 } from '#imports'
 import {parseCookies} from 'h3';
-import { $fetch } from 'ofetch';
+import {$fetch} from 'ofetch';
 import type {
     AuthState,
     ProfileResponse,
     AuthResponse,
-    AuthInstance,
+    AuthInstance
 } from './types'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
     const store = useAuthStore()
 
-    class Auth implements AuthInstance{
+    class Auth implements AuthInstance {
         private $headers: Headers;
         private _state: AuthState = {user: null, loggedIn: false, strategy: null};
-        private prefix: string;
+        private _prefix: string;
         private readonly options: Record<string, any>;
+
         constructor(options: Record<string, any>) {
             this.$headers = new Headers();
-            this.prefix = options.cookie.prefix;
+            this._prefix = options.cookie.prefix;
             this.options = options;
-
-            this.initialize();
         }
 
         get state(): AuthState {
@@ -47,8 +45,16 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             return this._state.loggedIn;
         }
 
-        set httpHeaders(headers: Headers) {
-            this.$headers = headers;
+        get headers(): Headers {
+            return this.$headers;
+        }
+
+        get prefix(): string | null {
+            return this._prefix;
+        }
+
+        set headers(headers: Headers) {
+            this.$headers = new Headers(headers);
         }
 
         set state(val: AuthState) {
@@ -58,59 +64,56 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         public getRedirect(strategyName: string): Record<string, string> | null {
             return this.options.strategies?.[strategyName]?.redirect ?? null;
         }
+
         private getUserProperty(strategyName: string): string | null {
             return this.options.strategies?.[strategyName]?.user?.property ?? null;
         }
+
+        private getEndpointsUser(strategyName: string): { url: string, method: string } | null {
+            return this.options.strategies?.[strategyName]?.endpoints.user ?? null
+        }
+
         private getHandler(strategyName: string, key: string): string | null {
             return (
                 this.options.strategies?.[strategyName]?.handler?.find((value: any) => value[key])?.[key] ?? null
             );
         }
 
-        private async initialize(): Promise<void> {
+        async initialize(): Promise<void> {
             try {
+                let strategy: string | null = null;
+                let token: string | null = null;
 
                 if (import.meta.server) {
-
                     const event = useRequestEvent();
-
                     if (!event) {
                         console.warn("No request event available. Skipping initialization.");
                         return;
                     }
 
                     const cookies = parseCookies(event);
-
-                    const strategy = cookies[this.prefix + `strategy`]
-                    const token = strategy ? cookies[this.prefix + `_token.` + strategy] : null;
-
-                    if (!strategy || !token) {
-                        console.warn("No valid session found. Skipping profile fetch.");
-                        return;
-                    }
-
-                    this._state.strategy = strategy
-                }
-                if (import.meta.client) {
-
-                    const strategy = sessionStorage.getItem(this.prefix + `strategy`);
-                    const token = strategy ? sessionStorage.getItem(this.prefix + `_token.` + strategy) : null;
-
-                    if (!strategy || !token) {
-                        console.warn("No valid session found. Skipping profile fetch.");
-                        return;
-                    }
-
-                    this._state.strategy = strategy
+                    strategy = cookies[this._prefix + `strategy`]
+                    token = strategy ? cookies[this._prefix + `_token.` + strategy] : null;
+                } else {
+                    strategy = sessionStorage.getItem(this._prefix + `strategy`);
+                    token = strategy ? sessionStorage.getItem(this._prefix + `_token.` + strategy) : null;
                 }
 
-                const profile = await this._setProfile();
-                if (profile) {
-                    this.$headers.set('authorization', profile.token);
+                if (!strategy || !token) {
+                    console.warn("No valid session found. Skipping profile fetch.");
+                    return;
+                }
+
+                this._state.strategy = strategy ?? null;
+                this.$headers.set('Authorization', token);
+
+                const data = await this._setProfile();
+                if (data) {
+                    const property = this.getUserProperty(this._state.strategy);
                     this._state = {
-                        user: profile.profile,
+                        user: data[property as keyof ProfileResponse] ?? null,
                         loggedIn: true,
-                        strategy: profile.strategyName,
+                        strategy: strategy ?? null,
                     };
                 }
             } catch (error) {
@@ -134,15 +137,17 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
                     if (!token) throw new Error("Token is missing in the response");
 
-                    sessionStorage.setItem(this.prefix + `_token.` + strategyName, token);
-                    sessionStorage.setItem(this.prefix + `strategy`, strategyName);
-                    sessionStorage.setItem(this.prefix + `_token_expiration.` + strategyName, expires);
+                    sessionStorage.setItem(this._prefix + `_token.` + strategyName, token);
+                    sessionStorage.setItem(this._prefix + `strategy`, strategyName);
+                    sessionStorage.setItem(this._prefix + `_token_expiration.` + strategyName, expires);
                 }
 
                 const property = this.getUserProperty(strategyName) as keyof AuthResponse;
-                store.value.user = response[property];
-                store.value.strategy = strategyName;
-                store.value.loggedIn = true;
+                store.value = {
+                    user: response[property],
+                    strategy: strategyName,
+                    loggedIn: true
+                };
 
                 this._state = store.value;
 
@@ -153,10 +158,12 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 return Promise.reject(error);
             }
         }
-
         async logout(strategyName: string): Promise<void> {
             try {
-                const response = await $fetch<{ logout?: string }>('/api/logout', {
+                const logoutUrl = this.getHandler(strategyName, 'logout');
+                if (!logoutUrl) throw new Error("Logout endpoint not found");
+
+                const response = await $fetch<{ logout?: string }>(logoutUrl, {
                     method: 'POST',
                     body: {strategyName},
                 });
@@ -177,26 +184,65 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 console.error('Logout failed:', error);
             }
         }
+        async _2fa(strategyName: string, code: string): Promise<{ success: boolean }> {
+            try {
+                if (!code) {
+                    throw new Error("2FA code is required");
+                }
+
+                const twoFaUrl = this.getHandler(strategyName, '2fa');
+                if (!twoFaUrl) {
+                    throw new Error("2FA endpoint not found");
+                }
+
+                const response = await $fetch<{ token?: string, expiration?: string }>(twoFaUrl, {
+                    method: 'POST',
+                    body: { strategyName, code }
+                });
+
+                if (!response?.token || !response?.expiration) {
+                    throw new Error("Invalid 2FA response");
+                }
+
+                if (import.meta.client) {
+                    sessionStorage.setItem(this._prefix + "_2fa." + strategyName, response.token);
+                    sessionStorage.setItem(this._prefix + "_2fa_expiration." + strategyName, response.expiration);
+                }
+
+                return { success: true };
+
+            } catch (error) {
+                console.error("2FA failed:", error);
+                return Promise.reject(error);
+            }
+        }
 
         private async _setProfile(): Promise<ProfileResponse | false> {
             try {
-                const profileUrl = this.getHandler(this._state.strategy!, 'user');
-                if (!profileUrl) return false;
+                const {public: {baseURL}} = useRuntimeConfig();
 
+                const endpoint = this.getEndpointsUser(this._state.strategy!)
+                if (!endpoint?.url || !endpoint?.method) return false;
 
-                const {data, error} = await useFetch<ProfileResponse>(profileUrl);
+                this.$headers.set('Content-Type', 'application/json');
 
-                if (error.value || !data.value) return false;
+                const data = await $fetch<ProfileResponse>(endpoint.url, {
+                    baseURL,
+                    method: endpoint.method,
+                    headers: this.$headers
+                });
 
-                const property = this.getUserProperty(data.value.strategyName)as keyof ProfileResponse;
-                store.value.user = data.value[property];
-                store.value.strategy = data.value.strategyName;
-                store.value.loggedIn = true;
+                if (!data) return false;
 
-                this._state = store.value;
+                const property = this.getUserProperty(this._state.strategy);
+                store.value = {
+                    user: data[property as keyof ProfileResponse] ?? null,
+                    strategy: this._state.strategy ?? null,
+                    loggedIn: true
+                }
 
-                return data.value;
-
+                this._state = store.value
+                return data;
             } catch (error) {
                 console.error('Error fetching profile:', error);
                 return false;
@@ -204,7 +250,40 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         }
     }
 
-    const $auth = new Auth(JSON.parse(`<%= JSON.stringify(options, null, 2) %>`));
+    const $auth: AuthInstance = new Auth(JSON.parse(`<%= JSON.stringify(options, null, 2) %>`));
 
-    nuxtApp.provide('auth', $auth)
+    await $auth.initialize();
+
+
+    const exposed = Object.defineProperties({}, {
+        state: {get: () => $auth.state},
+        user: {get: () => $auth.user},
+        strategy: {get: () => $auth.strategy},
+        loggedIn: {get: () => $auth.loggedIn},
+        headers: {
+            get: () => $auth.headers,
+            set: (headers: Headers) => {
+                $auth.headers = headers;
+            }
+        },
+        prefix: {get: () => $auth.prefix},
+    });
+
+    exposed.getRedirect = (strategyName: string) => {
+        return $auth.getRedirect?.(strategyName) ?? null;
+    };
+
+    exposed.loginWith = async (strategyName: string, value: any) => {
+        return await $auth.loginWith(strategyName, value);
+    };
+
+    exposed.logout = async (strategyName: string) => {
+        return await $auth.logout(strategyName);
+    };
+
+    exposed._2fa = async (strategyName: string, code: string) => {
+        return await $auth._2fa(strategyName, code);
+    };
+
+    nuxtApp.provide('auth', exposed)
 })
