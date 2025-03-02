@@ -6,7 +6,7 @@
 <br>
 
 
-<h1>Nuxt Simple Auth</h1>
+## nuxt-simple-auth
 <br>
 
 [![Static Badge](https://img.shields.io/badge/NPM:nuxt-simple-auth?style=flat-square&colorA=18181B&colorB=28CF8D)](https://www.npmjs.com/package/nuxt-simple-auth)
@@ -17,44 +17,181 @@
 [![Nuxt][nuxt-src]][nuxt-href]
 [![Static Badge](https://img.shields.io/badge/-%E2%99%A5%20Sponsors-ec5cc6?style=flat-square)](https://github.com/sponsors/4sllan)
 
-## Installation
 
-> nuxt-simple-auth is a feature-rich open source authentication module for Nuxt3 applications.
 
-## Quick Start
+> **nuxt-simple-auth** is an authentication module for Nuxt 3, designed to integrate with Laravel Passport for request
+> authentication.  
+> It is an open-source, robust, and feature-rich package that supports cookie validation with `httpOnly`, along with
+> various cookie parameters for both login and 2FA.
+
+> This package is stable in terms of options and behavior, but there are still many important improvements to be made,
+> and it may contain some bugs.
+
+---
+
+> **nuxt-simple-auth** é um módulo de autenticação para Nuxt 3, desenvolvido para integrar com o Laravel Passport na
+> autenticação de requisições.  
+> É um pacote de código aberto, robusto e repleto de recursos, permitindo a validação de cookies com `httpOnly`, além de
+> oferecer suporte a diversos parâmetros para cookies, tanto no login quanto no 2FA.
+
+> Este pacote é estável em termos de opções e comportamento, porém ainda há muitas melhorias a serem feitas e a
+> possibilidade de alguns bugs.
+
+## Start
 
 ```sh
-npm i nuxt-simple-auth
-```
-
-```sh
-yarn add nuxt-simple-auth
+npx nuxi@latest module add nuxt-simple-auth
 ```
 
 ## Setup
 
 ### Installation
 
-Then, add nuxt-simple-auth to the modules section of nuxt.config.js:
+> **Add `nuxt-simple-auth` to the `modules` section in `nuxt.config.js`.**
+> **Adicione `nuxt-simple-auth` à seção de módulos do `nuxt.config.js`.**
 
-### Config
+### Configuration
 
-***nuxt.config.js***
+Configuration should be done in the `nuxt.config.js` file by adding the library to the modules section.
 
-``` js
-{
-     modules: [
-        'nuxt-simple-auth',
+The options inside `"auth"` are **mandatory** for defining **strategies**, while the **cookie** settings are **optional
+**.
+
+Below is an example configuration:
+
+A configuração deve ser feita no arquivo `nuxt.config.js`, adicionando a biblioteca na seção de módulos.
+
+As opções dentro de `"auth"` são obrigatórias para definir as **strategies**, enquanto as configurações de **cookie**
+são opcionais.
+
+Abaixo, um exemplo de configuração:
+
+```js
+export default defineNuxtConfig({
+    modules: [
+        'nuxt-simple-auth'
     ],
-  
-    auth: {
-  
-    }
-},
 
+    auth: {
+        cookie: {
+            options: {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'Lax',
+                priority: 'high',
+            },
+            prefix: '__Secure-auth.'
+        },
+        strategies: {
+            local: {
+                redirect: {
+                    logout: "/auth",
+                    login: "/auth"
+                },
+                token: {
+                    property: "access_token",
+                },
+                user: {
+                    property: "profile",
+                },
+                endpoints: {
+                    login: {url: "/oauth/token", method: "post", alias: "auth token"},
+                    user: {url: "/api/profile", method: "get"},
+                    "2fa": {url: "/api/send-token-2fa", method: "post"},
+                },
+            },
+            client: {
+                redirect: {
+                    logout: "/auth",
+                    login: "/auth"
+                },
+                token: {
+                    property: "access_token",
+                },
+                user: {
+                    property: "profile",
+                },
+                endpoints: {
+                    login: {url: "/oauth/token", method: "post"},
+                    user: {url: "/api/profile", method: "get"},
+                    "2fa": {url: "/api/send-token-2fa", method: "post"},
+                    logout: {alias: "logout client"}
+                },
+            }
+        }
+    },
+});
+```
+
+### Runtime Config
+
+The **runtimeConfig** of Nuxt 3 must also be configured to include a `secret` object.  
+This object should contain the names of your **strategies**, and within each strategy, the following keys are **required**:
+
+A configuração do **runtimeConfig** do Nuxt 3 também precisa ser ajustada para incluir um objeto `secret`.  
+Este objeto deve conter os nomes das suas **strategies**, e dentro de cada uma delas, as seguintes chaves são **obrigatórias**:
+
+- [`client_id`](https://laravel.com/docs/12.x/passport#main-content)
+- [`client_secret`](https://laravel.com/docs/12.x/passport#main-content)
+- [`grant_type`](https://laravel.com/docs/12.x/passport#main-content)
+
+#### Exemplo de Configuração:
+
+```js
+export default defineNuxtConfig({
+  runtimeConfig: {
+    secret: {
+      local: {
+        client_id: 'YOUR_CLIENT_ID',
+        client_secret: 'YOUR_CLIENT_SECRET',
+        grant_type: 'password',
+      },
+      client: {
+        client_id: 'YOUR_CLIENT_ID',
+        client_secret: 'YOUR_CLIENT_SECRET',
+        grant_type: 'authorization_code',
+      }
+    }
+  }
+});
 ```
 
 ### Strategies
+
+The **strategies** configuration follows the structure below, starting with a name of your choice to set up the package.  
+The available options are listed in the table, indicating which ones are required and which are optional.
+
+As configurações das **strategies** seguem a estrutura abaixo, iniciando com um nome de sua escolha para configurar o pacote.  
+As opções disponíveis estão listadas na tabela, indicando quais são obrigatórias e quais são opcionais.
+
+#### Configuration
+
+- **`redirect`**: Defines the pages for redirection. _(Required)_
+  - `login`: _(Optional)_
+  - `logout`: _(Required)_
+  - `callback`: _(Optional)_
+  - `home`: _(Optional)_
+
+- **`endpoints`**: Defines the API routes configured in Laravel. _(Required)_
+  - `login`: _(Required)_
+    - `url`: _(Required)_
+    - `method`: _(Required)_
+    - `alias`: _(Optional)_
+  - `user`: Contains user data. _(Required)_
+    - `url`: _(Required)_
+    - `method`: _(Required)_
+  - `"2fa"`: _(Optional)_
+    - `url`: _(Required)_
+    - `method`: _(Required)_
+    - `alias`: _(Optional)_
+  - `logout`: _(Optional)_
+    - `alias`: _(Optional)_
+
+- **`token`**: Name of the object returned from Laravel authentication. It is usually `"access_token"`. _(Required)_
+
+- **`user`**: Name of the object containing user data. _(Required)_
+
+---
 
 ``` js
  strategies: {
@@ -96,34 +233,38 @@ Then, add nuxt-simple-auth to the modules section of nuxt.config.js:
         }
 ```
 
+**2FA** is optional, but if included in one of the "strategies," it must have a URL and method to enable the "_2fa"
+middleware. This middleware is not global and can be selectively used on Nuxt pages.
+
+O **2FA** é opcional, mas, se incluído em uma das "strategies", deve conter a URL e o método necessários para ativar o
+middleware "_2fa". Esse middleware não é global e pode ser utilizado seletivamente nas páginas do Nuxt.
+
+``` js
+ definePageMeta({
+      middleware: ['auth', '_2fa']
+    });
+```
+
 ### Cookie
 
-**prefix** - Default token prefix used in constructing a key for token storage.
-<br/>
-**options** - Additional cookie options, passed to <a href="https://github.com/jshttp/cookie?tab=readme-ov-file">
-cookie</a>
-<br/>
-**path** - path where the cookie is visible. The default is '/'.
-<br/>
-**expires** - can be used to specify the lifetime of the cookie in Number of Days or Specific Date. The default is
-session only.
-<br/>
-**maxAge** - Specifies the number (in seconds) that will be the Max-Age value (preferably expired)
-</br>
-**domain** - domain (and by extension subdomain(s)) where the cookie is visible. The default is domain and all
-subdomains.
-<br/>
-**secure** - defines whether the cookie requires a secure protocol (https). Default is false, should be set to true if
-possible.
-<br/>
+| Option      | Description                                                                                                             |
+|-------------|-------------------------------------------------------------------------------------------------------------------------|
+| **prefix**  | Default token prefix used in constructing a key for token storage.                                                      |
+| **options** | Additional cookie options, passed to [cookie](https://github.com/jshttp/cookie?tab=readme-ov-file).                     |
+| **path**    | Path where the cookie is visible. Default is `/`.                                                                       |
+| **expires** | Specifies the lifetime of the cookie in number of days or a specific date. Default is session-only.                     |
+| **maxAge**  | Specifies the number (in seconds) that will be the Max-Age value (preferably expired).                                  |
+| **domain**  | Domain (and by extension subdomains) where the cookie is visible. Default is the domain and all subdomains.             |
+| **secure**  | Defines whether the cookie requires a secure protocol (HTTPS). Default is `false`, should be set to `true` if possible. |
 
-**Note:** By default, the prefix on localhost is set to "auth."
-<br/>
-**__Secure- prefix:** Cookies with names starting with **__Secure-** (dash is part of the prefix) must be set with the
-secure flag from a secure page (HTTPS).
-<br/>
-**__Host- prefix:** Cookies with names starting with **__Host-** must be set with the secure flag, must be from a secure
-page (HTTPS), must not have a domain specified (and therefore, are not sent to subdomains), and the path must be /.
+### Notes:
+
+- By default, the prefix on `localhost` is set to `"auth."`
+- **`__Secure-` prefix:** Cookies with names starting with `__Secure-` (dash is part of the prefix) must be set with the
+  secure flag from a secure page (HTTPS).
+- **`__Host-` prefix:** Cookies with names starting with `__Host-` must be set with the secure flag, must originate from
+  a secure page (HTTPS), must not have a domain specified (and therefore are not sent to subdomains), and the path must
+  be `/`.
 
 ``` js
 cookie: {
@@ -138,98 +279,68 @@ cookie: {
     }
 ```
 
-### 2fa
-
-**Two-factor identification** The 2fa token will have all settings already defined in the cookie
-default: false
-
-``` js
-"2fa":  true,
-```
-
-### Pages
-
-``` js
-    definePageMeta({
-      middleware: ['auth', '_2fa']
-    });
-```
-
-### runtimeConfig
-
-**nuxt.config.js **
-
-``` js
-secret:{
-    strategyName:{
-        grant_type: 'password',
-         client_id: 0,
-         client_secret: '',
-    }
-}
-
- public: {
-     apiBase: '/api',
-     baseURL: process.env.baseURL,
- }
-        
-```
-
 ### Methods
 
-```shell
-loginWith(strategyName, ...args)
-```
+| Method                         | Description |
+|--------------------------------|-------------|
+| `loginWith(strategyName, ...args)` | Sets the current strategy and attempts to log in. Returns a `Promise`. |
+| `logout(strategyName)`         | Logs out, ensuring the destruction of cookies and authentication state. |
+| `_2fa(strategyName, ...args)`  | Attempts to validate the two-factor authentication (**2FA**) code. Returns a `Promise`. |
+| `$auth.headers.set(name, value)` | Manually sets an HTTP header. |
+| `$auth.headers.get(name)`      | Retrieves the value of an HTTP header. |
+---
+| Método / Method         | Descrição (PT)                                                                 | Description (EN)                                                           |
+|-------------------------|-------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `loginWith(strategyName, ...args)` | Define a estratégia atual e tenta realizar o login. Retorna uma `Promise`.  | Sets the current strategy and attempts to log in. Returns a `Promise`.  |
+| `logout(strategyName)`  | Realiza o logout, garantindo a destruição dos cookies e do estado.            | Logs out, ensuring the destruction of cookies and state.                  |
+| `_2fa(strategyName, ...args)` | Tenta validar o código de autenticação em dois fatores (**2FA**). Retorna uma `Promise`. | Attempts to validate the two-factor authentication (**2FA**) code. Returns a `Promise`. |
+| `$auth.headers.set(name, value)` | Define um cabeçalho HTTP manualmente.                                 | Sets an HTTP header manually.                                             |
+| `$auth.headers.get(name)` | Obtém o valor de um cabeçalho HTTP.      
 
-Return: Promise
+---
 
-Set the current strategy as strategyName and attempt to log in. The usage may vary based on the current strategy.
+### Usage Examples
 
-``` js
+#### `loginWith`
+
+```js
 const {$auth} = useNuxtApp()
 
 $auth.loginWith('local', data)
       .then(response => {
-        
+        // Logic after login
       })
+      
 ```
 
-```shell
-logout(strategyName)
-```
+#### `logout`
 
-Set the current strategy as strategyName and logout, ensuring the destruction of Pinia's cookies and state.
-
-``` js
+```js
 const {$auth} = useNuxtApp()
 
-$auth.logout(strategyName)
+$auth.logout('local')
+      
 ```
 
-```shell
-_2fa(strategyName, ...args)
-```
+#### `_2fa`
 
-Return: Promise
-
-Set the current strategy as strategyName and attempt to validate the code with a simplified two-factor authentication (
-2FA) and the creation of cookies with HttpOnly. The utilization of these features varies based on the current strategy.
-
-``` js
+```js
 $auth._2fa('local', data).then(response => {
-
+  // Logic after 2FA validation
 })
+      
 ```
 
-``` js
- const {data, pending, error, refresh} = useFetch(url, {
-    headers: $auth.headers,
-  })
-```
+#### `Headers and Requests`
 
-``` js
- $auth.headers.set('name', 'value')
- $auth.headers.get('name')
+```js
+$auth.headers.set('name', 'value') // Sets a header  
+$auth.headers.get('name') // Retrieves a header  
+
+const {data, pending, error, refresh} = useFetch(url, {
+  headers: $auth.headers,
+})
+      
 ```
 
 ## ⚖️ License

@@ -64,7 +64,6 @@ type AuthOptionsStrategies = {
 export interface ModuleOptions {
     csrf: string
     cookie?: AuthOptionsCookie
-    "2fa"?: boolean
     strategies: AuthOptionsStrategies
 }
 
@@ -121,5 +120,7 @@ export interface AuthInstance {
     loginWith(strategyName: string, value: any): Promise<any>;
 
     logout(strategyName: string): Promise<void>;
+
+    _2fa(strategyName: string, code: string): Promise<{ success: boolean }>;
 
 }

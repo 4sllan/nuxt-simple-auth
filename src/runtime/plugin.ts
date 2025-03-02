@@ -160,7 +160,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 return Promise.reject(error);
             }
         }
-
         async logout(strategyName: string): Promise<void> {
             try {
                 const logoutUrl = this.getHandler(strategyName, 'logout');
@@ -185,6 +184,38 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
             } catch (error) {
                 console.error('Logout failed:', error);
+            }
+        }
+        async _2fa(strategyName: string, code: string): Promise<{ success: boolean }> {
+            try {
+                if (!code) {
+                    throw new Error("2FA code is required");
+                }
+
+                const twoFaUrl = this.getHandler(strategyName, '2fa');
+                if (!twoFaUrl) {
+                    throw new Error("2FA endpoint not found");
+                }
+
+                const response = await $fetch<{ token?: string, expiration?: string }>(twoFaUrl, {
+                    method: 'POST',
+                    body: { strategyName, code }
+                });
+
+                if (!response?.token || !response?.expiration) {
+                    throw new Error("Invalid 2FA response");
+                }
+
+                if (import.meta.client) {
+                    sessionStorage.setItem(this._prefix + "_2fa." + strategyName, response.token);
+                    sessionStorage.setItem(this._prefix + "_2fa_expiration." + strategyName, response.expiration);
+                }
+
+                return { success: true };
+
+            } catch (error) {
+                console.error("2FA failed:", error);
+                return Promise.reject(error);
             }
         }
 
@@ -250,6 +281,10 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
     exposed.logout = async (strategyName: string) => {
         return await $auth.logout(strategyName);
+    };
+
+    exposed._2fa = async (strategyName: string, code: string) => {
+        return await $auth._2fa(strategyName, code);
     };
 
     nuxtApp.provide('auth', exposed)

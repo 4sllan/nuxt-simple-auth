@@ -37,7 +37,6 @@ export default defineNuxtConfig({
             },
             prefix: '__Secure-auth.'
         },
-        "2fa": true,
         strategies: {
             local: {
                 redirect: {
