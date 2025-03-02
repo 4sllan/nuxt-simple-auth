@@ -21,6 +21,7 @@ interface Endpoint {
     method: string;
     alias?: string;
 }
+
 interface RuntimeConfig {
     secret: {
         [key: string]: AuthSecretConfig;
@@ -41,13 +42,19 @@ export default defineNuxtModule<ModuleOptions>({
         const {resolve} = createResolver(import.meta.url)
         const isDev = nuxt.options.dev;
 
-        if (!runtimeConfig.secret || typeof runtimeConfig.secret !== 'object') {
-            throw new Error(`[${PACKAGE_NAME}] Missing "runtimeConfig.secret" in nuxt.config.ts`);
+        if (!runtimeConfig.secret || typeof runtimeConfig.secret !== 'object' || Object.keys(runtimeConfig.secret).length === 0) {
+            logger.error(`Missing "runtimeConfig.secret" in nuxt.config.ts`);
+            return;
         }
 
         Object.entries(runtimeConfig.secret).forEach(([key, config]) => {
+            if (!options.strategies[key]) {
+                logger.error(`[${PACKAGE_NAME}] Strategy "${key}" found in "runtimeConfig.secret" but not in "options.strategies". Skipping validation.`);
+                return;
+            }
             if (!config.client_id || !config.client_secret || !config.grant_type) {
-                throw new Error(`[${PACKAGE_NAME}] Invalid "secret.${key}" configuration. Required keys: client_id, client_secret, grant_type.`);
+                logger.error(`[${PACKAGE_NAME}] Invalid "secret.${key}" configuration. Required keys: client_id, client_secret, grant_type.`);
+                return;
             }
         });
 
