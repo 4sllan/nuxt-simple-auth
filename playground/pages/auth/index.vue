@@ -17,8 +17,7 @@ const submit = (value, { resetForm, setErrors }) => {
 
   $auth.loginWith("local", data)
     .then((response) => {
-      //router.push({ path: "/verification" });
-      router.push({ path: "/sys/" });
+      router.push({ path: "/auth/verification" });
     })
     .catch((errors) => {
       if (errors.status === 422) {
