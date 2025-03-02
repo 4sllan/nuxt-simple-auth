@@ -172,13 +172,11 @@ export default defineNuxtConfig({
 
 ### Strategies
 
-The **strategies** configuration follows the structure below, starting with a name of your choice to set up the
-package.  
-The available options are listed in the table, indicating which ones are required and which are optional.
+The **strategies** configuration follows the structure below, starting with a name of your choice to set up the package.  
+The available options are listed, indicating which are **required** and which are **optional**.
 
-As configurações das **strategies** seguem a estrutura abaixo, iniciando com um nome de sua escolha para configurar o
-pacote.  
-As opções disponíveis estão listadas na tabela, indicando quais são obrigatórias e quais são opcionais.
+As configurações das **strategies** seguem a estrutura abaixo, iniciando com um nome de sua escolha para configurar o pacote.  
+As opções disponíveis estão listadas, indicando quais são **obrigatórias** e quais são **opcionais**.
 
 #### Configuration
 
