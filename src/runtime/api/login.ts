@@ -6,6 +6,7 @@ import type {ModuleOptions, StrategiesOptions} from '../types'
 
 type TokenResponse = {
     token: string;
+    refresh_token: string
     expires: number;
 } | {
     status: number;
@@ -49,7 +50,7 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        const {token: accessToken, expires} = response;
+        const {token: accessToken, refresh_token, expires} = response;
         if (accessToken) {
             setCookie(event, prefix + `_token.` + body.strategyName, accessToken, cookie?.options || {});
             setCookie(event, prefix + `strategy`, body.strategyName, cookie?.options || {});
@@ -59,6 +60,7 @@ export default defineEventHandler(async (event) => {
                 ...await getProfile(endpoints, accessToken, baseURL, event),
                 strategyName: body.strategyName,
                 token: accessToken,
+                refresh_token,
                 expires
             };
         }
@@ -82,8 +84,13 @@ async function getToken(endpoints: any, value: Record<string, any>, baseURL: str
             },
         });
 
-        const {token_type, expires_in, access_token} = data;
-        return {token: `${token_type} ${access_token}`, expires: Date.now() + expires_in * 1000};
+        const {access_token, refresh_token, expires_in} = data;
+        const token_type = "Bearer";
+        return {
+            token: token_type + " " + access_token,
+            refresh_token,
+            expires: Date.now() + expires_in * 1000
+        };
     } catch (error: any) {
         if (error.status === 522) {
             return {status: 522, message: 'Error 522: Laravel server did not respond in time.'};

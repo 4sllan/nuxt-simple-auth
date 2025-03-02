@@ -1,28 +1,21 @@
 <script setup>
 definePageMeta({
   layout: 'auth',
+  middleware: ['auth'],
 });
-
-import snakeCase from 'lodash/snakeCase.js';
-
 const router = useRouter();
 const config = useRuntimeConfig();
 const {$auth, $toast} = useNuxtApp();
 
 const form = ref({});
-const disabled = ref(false)
 const submit = (value, {resetForm}) => {
-  const data = {
-    code: value.code,
-  };
+  const data = JSON.stringify(form.value.code, null, 2);
+
 
   $auth._2fa('local', data)
       .then((response) => {
-        if ($auth.user.type === 'User company') {
-          router.push({path: `/system/view/${$auth.user.company.id}`, query: {company: $auth.user.company.name}});
-          return;
-        }
-        router.push({path: '/system'});
+        console.log(response)
+        router.push({path: '/sys'});
       })
       .catch((error) => {
         $toast.error('Invalid code. Please try again', {
@@ -32,37 +25,29 @@ const submit = (value, {resetForm}) => {
 };
 
 const resendToken2fa = async () => {
-  await useFetch('/api/resend-token-2fa', {
+  await $fetch('/api/resend-token-2fa', {
     baseURL: config.public.baseURL,
     method: 'POST',
     headers: $auth.$headers,
-
-    onResponse({request, response, options}) {
-      if (response.status === 200) {
-        $toast.success(
-            'A verification code has been sent to your email. Please check your inbox and enter the code below.',
-            {
-              theme: 'colored',
-            },
-        );
-        return;
-      }
-      $toast.error(
-          'An error occurred while trying to send the code. Please try again',
-          {
-            theme: 'colored',
-          },
-      );
-    },
-  });
+  }).then(() => {
+    $toast.success(
+        'A verification code has been sent to your email. Please check your inbox and enter the code below.',
+        {
+          theme: 'colored',
+        },
+    );
+  }).catch(() => {
+    $toast.error(
+        'An error occurred while trying to send the code. Please try again',
+        {
+          theme: 'colored',
+        },
+    );
+  })
 };
 </script>
 <template>
   <div>
-    <div class="go-back" @click="router.go(-1)">
-      <ArrowLeftIcon/>
-      Back
-    </div>
     <v-card flat>
       <v-card-title>Enter your code</v-card-title>
       <v-card-text
@@ -71,21 +56,13 @@ const resendToken2fa = async () => {
       </v-card-text>
       <div class="wrapper">
         <Form @submit="submit" class="theme__form">
-          <Field
-              v-model="form.code"
-              name="code"
-              vid="code"
-              rules="required"
-              as="div"
-              v-slot="{ field, errors }"
-          >
+          <div>
             <v-otp-input
+                v-model="form.code"
                 length="8"
                 type="number"
-                v-bind="field"
-                :error-messages="errors[0]"
             />
-          </Field>
+          </div>
           <a
               class="flex justify-center mb-4 cursor-pointer"
               @click="resendToken2fa"
