@@ -18,21 +18,23 @@
 [![Static Badge](https://img.shields.io/badge/-%E2%99%A5%20Sponsors-ec5cc6?style=flat-square)](https://github.com/sponsors/4sllan)
 
 
+> **nuxt-simple-auth** is an authentication module for **Nuxt 3**, designed to integrate with **Laravel Passport** for request authentication.  
+> It is an **open-source**, **robust**, and **feature-rich** package that enables cookie validation with `httpOnly`, while also supporting various cookie parameters for both **login** and **2FA**.  
+> Additionally, it supports **SSR authentication**, ensuring that the user remains authenticated on both the **client** and the **server**.
 
-> **nuxt-simple-auth** is an authentication module for Nuxt 3, designed to integrate with Laravel Passport for request
-> authentication.  
-> It is an open-source, robust, and feature-rich package that supports cookie validation with `httpOnly`, along with
-> various cookie parameters for both login and 2FA.
 
 > This package is stable in terms of options and behavior, but there are still many important improvements to be made,
 > and it may contain some bugs.
 
 ---
 
-> **nuxt-simple-auth** é um módulo de autenticação para Nuxt 3, desenvolvido para integrar com o Laravel Passport na
-> autenticação de requisições.  
-> É um pacote de código aberto, robusto e repleto de recursos, permitindo a validação de cookies com `httpOnly`, além de
-> oferecer suporte a diversos parâmetros para cookies, tanto no login quanto no 2FA.
+> **nuxt-simple-auth** é um módulo de autenticação para **Nuxt 3**, projetado para integração com **Laravel Passport**
+> na autenticação de requisições.  
+> É um pacote de **código aberto**, **robusto** e **repleto de recursos**, permitindo a validação de cookies
+> com `httpOnly`, além de oferecer suporte a diversos parâmetros para cookies, tanto no **login** quanto no **2FA**.  
+> Conta ainda com suporte à **autenticação SSR**, garantindo que o usuário esteja autenticado tanto no **cliente**
+> quanto no **servidor**.
+
 
 > Este pacote é estável em termos de opções e comportamento, porém ainda há muitas melhorias a serem feitas e a
 > possibilidade de alguns bugs.
@@ -56,20 +58,23 @@ The configuration must be done in the `nuxt.config.js` file by adding the librar
 
 Within the `auth` property, defining **strategies** is **mandatory**, while **cookie** settings are **optional**.
 
-For authentication, the `endpoints.login` property requires the use of **Laravel Passport**, which must expose the `/oauth/token` route.  
+For authentication, the `endpoints.login` property requires the use of **Laravel Passport**, which must expose
+the `/oauth/token` route.  
 This route should return a JSON response containing the following attributes:
 
 - `access_token`
 - `refresh_token`
 - `expires_in`
 
-If you choose to use **2FA authentication**, the package requires the configuration of `endpoints.2fa`, which mandates that **Laravel** expose a specific route.  
+If you choose to use **2FA authentication**, the package requires the configuration of `endpoints.2fa`, which mandates
+that **Laravel** expose a specific route.  
 This route should return a JSON response containing the following attributes:
 
 - `access_token`
 - `expires_in`
 
-After **2FA** validation, the token will be automatically added to the **headers** of requests as a **Bearer Token**, with the name `"2fa"`.  
+After **2FA** validation, the token will be automatically added to the **headers** of requests as a **Bearer Token**,
+with the name `"2fa"`.  
 This allows **Laravel APIs** to validate authentication on protected routes.
 
 Below is an example configuration:
@@ -78,21 +83,25 @@ Below is an example configuration:
 
 A configuração deve ser realizada no arquivo `nuxt.config.js`, adicionando a biblioteca na seção de **módulos**.
 
-Dentro da propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies** são **opcionais**.
+Dentro da propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies**
+são **opcionais**.
 
-Para autenticação, a propriedade `endpoints.login` exige o uso do **Laravel Passport**, que deve expor a rota `/oauth/token`.  
+Para autenticação, a propriedade `endpoints.login` exige o uso do **Laravel Passport**, que deve expor a
+rota `/oauth/token`.  
 Essa rota deve retornar uma resposta JSON contendo os seguintes atributos:
 
 - `access_token`
 - `refresh_token`
 - `expires_in`
 
-Se optar por utilizar a autenticação **2FA**, o pacote requer a configuração de `endpoints.2fa`, que exige que o **Laravel** exponha uma rota específica. Essa rota deve retornar uma resposta JSON com os seguintes atributos:
+Se optar por utilizar a autenticação **2FA**, o pacote requer a configuração de `endpoints.2fa`, que exige que o *
+*Laravel** exponha uma rota específica. Essa rota deve retornar uma resposta JSON com os seguintes atributos:
 
 - `access_token`
 - `expires_in`
 
-Após a validação do **2FA**, o token será automaticamente adicionado aos **headers** das requisições como um **Bearer Token**, com o nome `"2fa"`. Isso permite que as **APIs do Laravel** validem a autenticação nas rotas protegidas.
+Após a validação do **2FA**, o token será automaticamente adicionado aos **headers** das requisições como um **Bearer
+Token**, com o nome `"2fa"`. Isso permite que as **APIs do Laravel** validem a autenticação nas rotas protegidas.
 
 Abaixo, um exemplo de configuração:
 
@@ -128,24 +137,6 @@ export default defineNuxtConfig({
                     login: {url: "/oauth/token", method: "post", alias: "auth token"},
                     user: {url: "/api/profile", method: "get"},
                     "2fa": {url: "/api/send-token-2fa", method: "post"},
-                },
-            },
-            client: {
-                redirect: {
-                    logout: "/auth",
-                    login: "/auth"
-                },
-                token: {
-                    property: "access_token",
-                },
-                user: {
-                    property: "profile",
-                },
-                endpoints: {
-                    login: {url: "/oauth/token", method: "post"},
-                    user: {url: "/api/profile", method: "get"},
-                    "2fa": {url: "/api/send-token-2fa", method: "post"},
-                    logout: {alias: "logout client"}
                 },
             }
         }
@@ -190,10 +181,12 @@ export default defineNuxtConfig({
 
 ### Strategies
 
-The **strategies** configuration follows the structure below, starting with a name of your choice to set up the package.  
+The **strategies** configuration follows the structure below, starting with a name of your choice to set up the
+package.  
 The available options are listed, indicating which are **required** and which are **optional**.
 
-As configurações das **strategies** seguem a estrutura abaixo, iniciando com um nome de sua escolha para configurar o pacote.  
+As configurações das **strategies** seguem a estrutura abaixo, iniciando com um nome de sua escolha para configurar o
+pacote.  
 As opções disponíveis estão listadas, indicando quais são **obrigatórias** e quais são **opcionais**.
 
 #### Configuration
@@ -316,24 +309,26 @@ cookie: {
 The **nuxt-simple-auth** package provides two middlewares: **"auth"** and **"_2fa"**.  
 They are **not global** and can be applied selectively to Nuxt pages.
 
-- **auth**: Restricts access to protected pages, ensuring the user is authenticated via **Laravel Passport**, both on the client and server (**SSR**).
-- **_2fa**: Enhances authentication by verifying values stored in **cookies** and **sessionStorage** to validate **two-factor authentication (2FA)**, also working on both the client and server (**SSR**).
+- **auth**: Restricts access to protected pages, ensuring the user is authenticated via **Laravel Passport**, both on
+  the client and server (**SSR**).
+- **_2fa**: Enhances authentication by verifying values stored in **cookies** and **sessionStorage** to validate *
+  *two-factor authentication (2FA)**, also working on both the client and server (**SSR**).
 
 ---
 
 O pacote **nuxt-simple-auth** disponibiliza dois middlewares: **"auth"** e **"_2fa"**.  
 Eles **não são globais** e podem ser aplicados seletivamente às páginas do Nuxt.
 
-- **auth**: Restringe o acesso a páginas protegidas, garantindo que o usuário esteja autenticado via **Laravel Passport**, tanto no cliente quanto no servidor (**SSR**).
-- **_2fa**: Complementa a autenticação verificando os valores armazenados nos **cookies** e no **sessionStorage** para validar a autenticação de dois fatores (**2FA**), também funcionando no cliente e no servidor (**SSR**).
-
+- **auth**: Restringe o acesso a páginas protegidas, garantindo que o usuário esteja autenticado via **Laravel Passport
+  **, tanto no cliente quanto no servidor (**SSR**).
+- **_2fa**: Complementa a autenticação verificando os valores armazenados nos **cookies** e no **sessionStorage** para
+  validar a autenticação de dois fatores (**2FA**), também funcionando no cliente e no servidor (**SSR**).
 
 ``` js
  definePageMeta({
       middleware: ['auth', '_2fa']
     });
 ```
-
 
 ### Methods
 
