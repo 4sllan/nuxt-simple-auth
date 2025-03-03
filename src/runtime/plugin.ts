@@ -131,25 +131,26 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                     body: {strategyName, value}
                 });
 
-                if (import.meta.client) {
+                if (!response.token) throw new Error("Token is missing in the response")
 
-                    const {token, expires} = response;
+                sessionStorage.setItem(this._prefix + `_token.` + strategyName, response.token)
+                sessionStorage.setItem(this._prefix + `strategy`, strategyName)
+                sessionStorage.setItem(this._prefix + `_token_expiration.` + strategyName, response.expires)
 
-                    if (!token) throw new Error("Token is missing in the response");
+                this._state.strategy = strategyName ?? null;
+                this.$headers.set('Authorization', response.token);
 
-                    sessionStorage.setItem(this._prefix + `_token.` + strategyName, token);
-                    sessionStorage.setItem(this._prefix + `strategy`, strategyName);
-                    sessionStorage.setItem(this._prefix + `_token_expiration.` + strategyName, expires);
+                const data = await this._setProfile();
+                if (data) {
+                    const property = this.getUserProperty(strategyName);
+                    this._state = {
+                        user: data[property as keyof ProfileResponse] ?? null,
+                        loggedIn: true,
+                        strategy: strategyName ?? null,
+                    };
+
+                    this._state = store.value;
                 }
-
-                const property = this.getUserProperty(strategyName) as keyof AuthResponse;
-                store.value = {
-                    user: response[property],
-                    strategy: strategyName,
-                    loggedIn: true
-                };
-
-                this._state = store.value;
 
                 return response ?? Promise.reject('No data returned');
 
@@ -158,6 +159,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 return Promise.reject(error);
             }
         }
+
         async logout(strategyName: string): Promise<void> {
             try {
                 const logoutUrl = this.getHandler(strategyName, 'logout');
@@ -184,6 +186,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 console.error('Logout failed:', error);
             }
         }
+
         async _2fa(strategyName: string, code: string): Promise<{ success: boolean }> {
             try {
                 if (!code) {
@@ -197,7 +200,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
                 const response = await $fetch<{ token?: string, expiration?: string }>(twoFaUrl, {
                     method: 'POST',
-                    body: { strategyName, code }
+                    body: {strategyName, code}
                 });
 
                 if (!response?.token || !response?.expiration) {
@@ -209,7 +212,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                     sessionStorage.setItem(this._prefix + "_2fa_expiration." + strategyName, response.expiration);
                 }
 
-                return { success: true };
+                return {success: true};
 
             } catch (error) {
                 console.error("2FA failed:", error);

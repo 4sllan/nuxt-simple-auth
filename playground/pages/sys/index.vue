@@ -6,19 +6,19 @@ definePageMeta({
 
 const {$auth} = useNuxtApp()
 
-// console.log($auth, '$auth')
-//
-// const store = useState("auth")
-//
-// console.log(store, 'store')
-//
-// $auth.$headers.set('test', 'test headers')
-//
-// console.log($auth.$headers)
-//
-// const headers = $auth.$headers.get('test')
-//
-// console.log(headers)
+console.log($auth, 'Page')
+
+const store = useState("auth")
+
+console.log(store, 'storePage')
+
+$auth.headers.set('X-XSRF-TOKEN', '1yU9bPrjspLF9FS7SMPah5O7KXWMA')
+
+console.log($auth.headers, 'Page')
+
+const headers = $auth.headers.get('X-XSRF-TOKEN')
+
+console.log(headers, 'Page')
 
 </script>
 
