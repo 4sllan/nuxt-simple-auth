@@ -48,6 +48,7 @@ npx nuxi@latest module add nuxt-simple-auth
 ### Installation
 
 > **Add `nuxt-simple-auth` to the `modules` section in `nuxt.config.js`.**
+
 > **Adicione `nuxt-simple-auth` à seção de módulos do `nuxt.config.js`.**
 
 ### Configuration
@@ -56,52 +57,53 @@ The configuration must be done in the `nuxt.config.js` file by adding the librar
 
 Within the `auth` property, defining **strategies** is **mandatory**, while **cookie** settings are **optional**.
 
-For authentication, the `endpoints.login` property requires the use of **Laravel Passport**, which must expose
-the `/oauth/token` route.  
-This route should return a JSON response containing the following attributes:
+For authentication, the `endpoints.login` property requires the use of **Laravel Passport**, which must expose the `/oauth/token` route.  
+[Laravel Passport Documentation - Client Credentials Grant Tokens](https://laravel.com/docs/12.x/passport#client-credentials-grant-tokens)
+
+This route must return a JSON response containing the following attributes:
 
 - `access_token`
 - `refresh_token`
 - `expires_in`
 
-If you choose to use **2FA authentication**, the package requires the configuration of `endpoints.2fa`, which mandates
-that **Laravel** expose a specific route.  
-This route should return a JSON response containing the following attributes:
+If you choose to use **2FA** authentication, the package requires the configuration of `endpoints.2fa`, which mandates that **Laravel** exposes a specific route.  
+This route should return a JSON response with the following attributes:
 
 - `access_token`
 - `expires_in`
 
-After **2FA** validation, the token will be automatically added to the **headers** of requests as a **Bearer Token**,
-with the name `"2fa"`.  
-This allows **Laravel APIs** to validate authentication on protected routes.
+`expires_in`: Must be the number of seconds until the **2FA** access token expires.
 
-Below is an example configuration:
+After **2FA** validation, the token will be automatically added to the **headers** of requests as a **Bearer Token**, with the name `"2fa"`.  
+This allows **Laravel APIs** to validate authentication on protected routes.
 
 ---
 
 A configuração deve ser realizada no arquivo `nuxt.config.js`, adicionando a biblioteca na seção de **módulos**.
 
-Dentro da propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies**
-são **opcionais**.
+Dentro da propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies** são **opcionais**.
 
-Para autenticação, a propriedade `endpoints.login` exige o uso do **Laravel Passport**, que deve expor a
-rota `/oauth/token`.  
+Para autenticação, a propriedade `endpoints.login` exige o uso do **Laravel Passport**, que deve expor a rota `/oauth/token`.  
+[Documentação do Laravel Passport - Client Credentials Grant Tokens](https://laravel.com/docs/12.x/passport#client-credentials-grant-tokens)
+
 Essa rota deve retornar uma resposta JSON contendo os seguintes atributos:
 
 - `access_token`
 - `refresh_token`
 - `expires_in`
 
-Se optar por utilizar a autenticação **2FA**, o pacote requer a configuração de `endpoints.2fa`, que exige que o *
-*Laravel** exponha uma rota específica. Essa rota deve retornar uma resposta JSON com os seguintes atributos:
+Se optar por utilizar a autenticação **2FA**, o pacote requer a configuração de `endpoints.2fa`, que exige que o **Laravel** exponha uma rota específica.  
+Essa rota deve retornar uma resposta JSON com os seguintes atributos:
 
 - `access_token`
 - `expires_in`
 
-Após a validação do **2FA**, o token será automaticamente adicionado aos **headers** das requisições como um **Bearer
-Token**, com o nome `"2fa"`. Isso permite que as **APIs do Laravel** validem a autenticação nas rotas protegidas.
+`expires_in`: Deve ser o número de segundos até que o token de acesso do **2FA** expire.
 
-Abaixo, um exemplo de configuração:
+Após a validação do **2FA**, o token será automaticamente adicionado aos **headers** das requisições como um **Bearer Token**, com o nome `"2fa"`.  
+Isso permite que as **APIs do Laravel** validem a autenticação nas rotas protegidas.
+
+#### Example
 
 ```js
 export default defineNuxtConfig({
@@ -124,9 +126,6 @@ export default defineNuxtConfig({
                 redirect: {
                     logout: "/auth",
                     login: "/auth"
-                },
-                token: {
-                    property: "access_token",
                 },
                 user: {
                     property: "profile",
@@ -210,7 +209,7 @@ As opções disponíveis estão listadas, indicando quais são **obrigatórias**
     - `logout`: _(Optional)_
         - `alias`: _(Optional)_
 
-- **`token`**: Name of the object returned from Laravel authentication. It is usually `"access_token"`. _(Required)_
+- ~~**`token`**: Name of the object returned from Laravel authentication. It is usually `"access_token"`. _(Required)_~~
 
 - **`user`**: Name of the object containing user data. _(Required)_
 
