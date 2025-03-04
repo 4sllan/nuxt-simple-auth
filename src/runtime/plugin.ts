@@ -198,19 +198,21 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                     throw new Error("2FA endpoint not found");
                 }
 
-                const response = await $fetch<{ token?: string, expiration?: string }>(twoFaUrl, {
+                const response = await $fetch<{ token?: string, expires?: string }>(twoFaUrl, {
                     method: 'POST',
                     body: {strategyName, code}
                 });
 
-                if (!response?.token || !response?.expiration) {
+                if (!response?.token || !response?.expires) {
                     throw new Error("Invalid 2FA response");
                 }
 
                 if (import.meta.client) {
                     sessionStorage.setItem(this._prefix + "_2fa." + strategyName, response.token);
-                    sessionStorage.setItem(this._prefix + "_2fa_expiration." + strategyName, response.expiration);
+                    sessionStorage.setItem(this._prefix + "_2fa_expiration." + strategyName, response.expires);
                 }
+
+                this.$headers.set('2fa', response.token);
 
                 return {success: true};
 

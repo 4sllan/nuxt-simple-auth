@@ -1,4 +1,6 @@
 <script setup>
+import {useMounted} from "@vueuse/core";
+
 definePageMeta({
   layout: 'auth',
   middleware: ['auth'],
@@ -8,13 +10,19 @@ const config = useRuntimeConfig();
 const {$auth, $toast} = useNuxtApp();
 
 const form = ref({});
+const errors = ref([])
 const submit = (value, {resetForm}) => {
-  const data = JSON.stringify(form.value.code, null, 2);
+  if(!form.value.code || form.value.code.length !== 8){
+    errors.value.push({
+      message: "not code"
+    });
+    return;
+  }
 
+  const code = JSON.parse(JSON.stringify(form.value.code));
 
-  $auth._2fa('local', data)
+  $auth._2fa('local', code)
       .then((response) => {
-        console.log(response)
         router.push({path: '/sys'});
       })
       .catch((error) => {
@@ -28,15 +36,16 @@ const resendToken2fa = async () => {
   await $fetch('/api/resend-token-2fa', {
     baseURL: config.public.baseURL,
     method: 'POST',
-    headers: $auth.$headers,
-  }).then(() => {
-    $toast.success(
-        'A verification code has been sent to your email. Please check your inbox and enter the code below.',
-        {
-          theme: 'colored',
-        },
-    );
-  }).catch(() => {
+    headers: $auth.headers,
+  })
+      .then(() => {
+        $toast.success(
+            'A verification code has been sent to your email. Please check your inbox and enter the code below.',
+            {
+              theme: 'colored',
+            },
+        );
+      }).catch(() => {
     $toast.error(
         'An error occurred while trying to send the code. Please try again',
         {
@@ -45,6 +54,12 @@ const resendToken2fa = async () => {
     );
   })
 };
+
+useAsyncData(() => {
+  if(import.meta.client){
+    resendToken2fa()
+  }
+})
 </script>
 <template>
   <div>
@@ -61,6 +76,7 @@ const resendToken2fa = async () => {
                 v-model="form.code"
                 length="8"
                 type="number"
+                :error-messages="errors"
             />
           </div>
           <a
@@ -78,6 +94,14 @@ const resendToken2fa = async () => {
           </div>
         </Form>
       </div>
+      <v-card-actions>
+        <div class="grid">
+          <div>Access the page without authentication.&nbsp;<a href="/sys" class="text-primary">Enter</a></div>
+          <v-btn size="large" color="secondary" variant="flat" to="/sys">
+            <span class="normal-case text-[14px]"> Enter </span>
+          </v-btn>
+        </div>
+      </v-card-actions>
     </v-card>
   </div>
 </template>
