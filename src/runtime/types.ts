@@ -54,7 +54,6 @@ export type StrategiesOptions = {
     user: Property
     endpoints: EndpointsOptions
     redirect: redirectOptions
-    handler?: Record<string, string>[];
 }
 
 type AuthOptionsStrategies = {

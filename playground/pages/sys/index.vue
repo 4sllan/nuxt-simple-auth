@@ -1,7 +1,7 @@
 <script setup>
 definePageMeta({
   layout: "front",
-  middleware: ['auth'],
+  middleware: ['auth', '_2fa'],
 })
 
 const {$auth} = useNuxtApp()
@@ -20,6 +20,9 @@ const headers = $auth.headers.get('X-XSRF-TOKEN')
 
 console.log(headers, 'Page')
 
+const has2fa = $auth.headers.get('2fa')
+
+console.log(has2fa, '2fa page')
 </script>
 
 <template>

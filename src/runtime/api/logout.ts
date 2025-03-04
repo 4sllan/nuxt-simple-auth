@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
             throw new Error('Auth configuration is missing.');
         }
 
-        const {cookie, strategies, "2fa": _2fa} = config as ModuleOptions;
+        const {cookie, strategies, twoFactorAuth} = config as ModuleOptions & { twoFactorAuth: boolean };
         const prefix = (cookie?.prefix && !import.meta.dev ? cookie.prefix : 'auth.') + '';
         const strategyConfig = strategies[strategyName];
 
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
         deleteCookie(event, prefix + 'strategy', cookieOptions);
         deleteCookie(event, prefix + '_token_expiration.' + strategyName, cookieOptions);
 
-        if (_2fa) {
+        if (twoFactorAuth) {
             deleteCookie(event, prefix + '_2fa.' + strategyName, cookieOptions);
             deleteCookie(event, prefix + '_2fa_expiration.' + strategyName, cookieOptions);
         }

@@ -31,7 +31,7 @@ interface RuntimeConfig {
 }
 
 const PACKAGE_NAME: string = 'nuxt-simple-auth'
-export default defineNuxtModule<ModuleOptions>({
+export default defineNuxtModule<ModuleOptions & { twoFactorAuth: boolean }>({
 
     meta: {
         name: PACKAGE_NAME,
@@ -69,7 +69,8 @@ export default defineNuxtModule<ModuleOptions>({
                     priority: 'high',
                 },
                 prefix: 'auth.'
-            }
+            },
+            twoFactorAuth: false
         });
 
         options.cookie = options.cookie ?? {prefix: 'auth.', options: {}};
@@ -93,7 +94,9 @@ export default defineNuxtModule<ModuleOptions>({
             path: resolve('./runtime/middleware/auth'),
         })
 
-        Object.entries(options.strategies).forEach(([strategyName, strategy]: [string, StrategiesOptions]) => {
+        Object.entries(options.strategies).forEach(([strategyName, strategy]: [string, StrategiesOptions & {
+            handler?: Record<string, string>[]
+        }]) => {
             strategy.handler = strategy.handler ?? [];
             strategy.endpoints = strategy.endpoints || {};
             strategy.endpoints = defu(strategy.endpoints, {
@@ -120,6 +123,8 @@ export default defineNuxtModule<ModuleOptions>({
         );
 
         if (has2FA) {
+            options.twoFactorAuth = true;
+
             addRouteMiddleware({
                 name: '_2fa',
                 path: resolve('./runtime/middleware/2fa'),

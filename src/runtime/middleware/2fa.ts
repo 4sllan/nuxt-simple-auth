@@ -1,64 +1,86 @@
-import {navigateTo, useRuntimeConfig, defineNuxtRouteMiddleware, useNuxtApp, useCookie} from '#imports'
-import {getActivePinia} from 'pinia';
+import {
+    navigateTo,
+    useNuxtApp,
+    useCookie,
+    useAuthStore,
+    showError,
+    useRequestEvent,
+    defineNuxtRouteMiddleware
+} from '#imports';
 
-export default defineNuxtRouteMiddleware(async (to, from) => {
-
-    const nuxtApp = useNuxtApp()
-
-    const {_s: store} = getActivePinia('auth')
-
-    const {user, loggedIn, strategy, state, $reset,} = store.get('auth')
-
-    const {'nuxt-simple-auth': config} = useRuntimeConfig(nuxtApp)
-
-    const {$auth} = useNuxtApp()
-
-
-    if (process.server) {
-
-        const {cookie} = config
-        const prefix = cookie.prefix && !import.meta.dev ? cookie.prefix : 'auth.'
-
-        const type = useCookie(`${prefix}strategy`);
-
-        if (type.value) {
-            const token = useCookie(`${prefix}_2fa.${type.value}`);
-            const expires = useCookie(`${prefix}_2fa_expiration.${type.value}`);
-
-            $auth.$headers.set('2fa', token.value)
+export default defineNuxtRouteMiddleware(async () => {
+    const {$auth} = useNuxtApp();
+    const store = useAuthStore();
 
 
-            const time = ((expires.value - Date.now()) / 60000)
+    if (!$auth) {
+        throw showError({
+            statusCode: 500,
+            statusMessage: "Auth plugin is not initialized"
+        });
+    }
 
-            if (!time) {
-                return navigateTo('/');
-            }
+    const handleLogout = async (strategy: string | null, redirectPath: string) => {
+        if (strategy) {
+            await $auth.logout(strategy);
+        }
 
+        if (import.meta.client) {
+            sessionStorage.clear();
+        }
+
+        throw showError({
+            statusCode: 401,
+            statusMessage: "You do not have permission to access this page without two-factor authentication."
+        })
+    };
+
+    const validateSession = (strategy: string | null, token: string | null, expires: string | null): boolean => {
+        if (!strategy || !token) return false;
+
+        const expirationTime = expires ? Number(expires) : 0;
+        return expirationTime > Date.now();
+    };
+
+    const getRedirectPath = (strategy: string | null): string => {
+        if (!strategy) return '/';
+        const {login, callback, home} = $auth.getRedirect(strategy)
+        return login || callback || home || '/';
+    };
+
+    if (import.meta.server) {
+        const event = useRequestEvent();
+        if (!event) return;
+
+        const strategyName = useCookie<string | null>($auth.prefix + `strategy`).value;
+        const token = strategyName ? useCookie<string | null>($auth.prefix + `_2fa.` + strategyName).value : null;
+        const expires = strategyName ? useCookie<string | null>($auth.prefix + `_2fa_expiration.` + strategyName).value : null;
+
+
+        if (!validateSession(strategyName, token, expires)) {
+            return await handleLogout(strategyName, getRedirectPath(strategyName));
+        }
+
+        if (token) {
+            $auth.headers.set('2fa', token);
         }
     }
-    if (process.client) {
 
-        const {public: {prefix}} = useRuntimeConfig(nuxtApp)
-        const usePrefix = prefix && !import.meta.dev ? prefix : 'auth.'
-
-        const strategyName = sessionStorage.getItem(`${usePrefix}strategy`)
-        const token = sessionStorage.getItem(`${usePrefix}_2fa.${strategy}`)
-        const expires = sessionStorage.getItem(`${usePrefix}_2fa_expiration.${strategy}`)
-
-        $auth.$headers.set('2fa', token)
-
-        if (!token) {
-            await $auth.logout(strategy ?? strategyName)
-            sessionStorage.clear()
-            return navigateTo('/');
+    if (import.meta.client) {
+        const strategy = sessionStorage.getItem($auth.prefix + `strategy`);
+        const token = strategy ? sessionStorage.getItem($auth.prefix + `_2fa.` + strategy) : null;
+        const expires = strategy ? sessionStorage.getItem($auth.prefix + `_2fa_expiration.` + strategy) : null;
+        //
+        if (!validateSession(strategy, token, expires) || $auth.strategy !== strategy || $auth.strategy !== store.value.strategy) {
+            return await handleLogout(strategy, getRedirectPath(strategy));
         }
 
-        const time = ((expires - Date.now()) / 60000)
+        if (token) {
+            $auth.headers.set('2fa', token);
+        }
 
-        if (!time) {
-            await $auth.logout(strategy)
-            sessionStorage.clear()
-            return navigateTo('/');
+        if (!$auth.user || !$auth.loggedIn || !store.value.user || !store.value.loggedIn) {
+            return await handleLogout(strategy, getRedirectPath(strategy));
         }
     }
-})
+});
