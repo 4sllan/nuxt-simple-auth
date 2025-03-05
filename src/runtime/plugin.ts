@@ -5,7 +5,7 @@ import {
     useAuthStore,
     useRuntimeConfig
 } from '#imports'
-import {createError, parseCookies} from 'h3';
+import {parseCookies} from 'h3';
 import {$fetch} from 'ofetch';
 import type {
     AuthState,
@@ -126,17 +126,10 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 const loginUrl = this.getHandler(strategyName, 'login');
                 if (!loginUrl) throw new Error("Login endpoint not found");
 
-                console.log({strategyName, value})
-
                 const response = await $fetch<AuthResponse>(loginUrl, {
                     method: 'POST',
                     body: {strategyName, value}
-                }).catch((error) => {
-                    console.error('[API Error]', error);
-                    throw createError({ statusCode: 502, statusMessage: 'Authentication service error' });
                 });
-
-                console.log(response, 'response')
 
                 if (!response.token) throw new Error("Token is missing in the response")
 

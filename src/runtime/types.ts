@@ -87,8 +87,7 @@ export interface ProfileResponse {
 export interface AuthResponse {
     token: string;
     expires: string;
-    prefix: string;
-    strategyName: string;
+    refresh_token: string;
 }
 
 export interface AuthInstance {
