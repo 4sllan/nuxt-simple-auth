@@ -59,7 +59,10 @@ export default defineEventHandler(async (event) => {
             method: endpoints.login.method || 'POST',
             body: credentials,
             timeout: 10000,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "/"
+            },
         }).catch((error) => {
             console.error('[API Error]', error);
             throw createError({ statusCode: 502, statusMessage: 'Authentication service error' });

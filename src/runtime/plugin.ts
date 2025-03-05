@@ -128,7 +128,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
                 const response = await $fetch<AuthResponse>(loginUrl, {
                     method: 'POST',
-                    body: {strategyName, value}
+                    body: {strategyName, value},
+                    timeout: 10000
                 });
 
                 if (!response.token) throw new Error("Token is missing in the response")
