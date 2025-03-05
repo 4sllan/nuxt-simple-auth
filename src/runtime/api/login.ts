@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
             timeout: 10000,
             headers: {
                 "Content-Type": "application/json",
-                "Accept": "/"
+                "Accept": "application/json"
             },
         }).catch((error) => {
             console.error('[API Error]', error);
