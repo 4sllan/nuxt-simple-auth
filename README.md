@@ -74,6 +74,21 @@ This route should return a JSON response with the following attributes:
 
 `expires_in`: Must be the number of seconds until the **2FA** access token expires.
 
+[//]: # (Example implementation in Laravel for the `TwoFactorAuthController` route controller:)
+
+[//]: # ()
+[//]: # (```php)
+
+[//]: # (return response&#40;&#41;->json&#40;[)
+
+[//]: # (    'access_token' => $twoFactorAuth->token,)
+
+[//]: # (    'expires_in' => $twoFactorAuth->expire_at->timestamp - now&#40;&#41;->timestamp, // Number of seconds until expiration.)
+
+[//]: # (]&#41;;)
+
+[//]: # (```)
+
 After **2FA** validation, the token will be automatically added to the **headers** of requests as a **Bearer Token**, with the name `"2fa"`.  
 This allows **Laravel APIs** to validate authentication on protected routes.
 
@@ -99,6 +114,21 @@ Essa rota deve retornar uma resposta JSON com os seguintes atributos:
 - `expires_in`
 
 `expires_in`: Deve ser o número de segundos até que o token de acesso do **2FA** expire.
+
+[//]: # (Exemplo de implementação no Laravel para o controller da rota `TwoFactorAuthController`:)
+
+[//]: # ()
+[//]: # (```php)
+
+[//]: # (return response&#40;&#41;->json&#40;[)
+
+[//]: # (    'access_token' => $twoFactorAuth->token,)
+
+[//]: # (    'expires_in' => $twoFactorAuth->expire_at->timestamp - now&#40;&#41;->timestamp, // Número de segundos até a expiração.)
+
+[//]: # (]&#41;;)
+
+[//]: # (```)
 
 Após a validação do **2FA**, o token será automaticamente adicionado aos **headers** das requisições como um **Bearer Token**, com o nome `"2fa"`.  
 Isso permite que as **APIs do Laravel** validem a autenticação nas rotas protegidas.
