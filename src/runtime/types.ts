@@ -11,13 +11,13 @@ export interface ModulePublicRuntimeConfig {
 }
 
 type CookieOption = {
-    httpOnly?: boolean
-    secure?: boolean
-    sameSite?: string
-    priority?: string
-    maxAge?: number
-    domain?: string
-    expire?: string
+    httpOnly?: boolean;
+    secure?: boolean;
+    sameSite?: "lax" | "strict" | "none";
+    priority?: "low" | "medium" | "high";
+    maxAge?: number;
+    domain?: string;
+    expires?: Date;
 }
 
 type AuthOptionsCookie = {
