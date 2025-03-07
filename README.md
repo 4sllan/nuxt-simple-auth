@@ -16,9 +16,12 @@
 [![Static Badge](https://img.shields.io/badge/-%E2%99%A5%20Sponsors-ec5cc6?style=flat-square)](https://github.com/sponsors/4sllan)
 
 
-> **nuxt-simple-auth** is an authentication module for **Nuxt 3**, designed to integrate with **Laravel Passport** for request authentication.  
-> It is an **open-source**, **robust**, and **feature-rich** package that enables cookie validation with `httpOnly`, while also supporting various cookie parameters for both **login** and **2FA**.  
-> Additionally, it supports **SSR authentication**, ensuring that the user remains authenticated on both the **client** and the **server**.
+> **nuxt-simple-auth** is an authentication module for **Nuxt 3**, designed to integrate with **Laravel Passport** for
+> request authentication.  
+> It is an **open-source**, **robust**, and **feature-rich** package that enables cookie validation with `httpOnly`,
+> while also supporting various cookie parameters for both **login** and **2FA**.  
+> Additionally, it supports **SSR authentication**, ensuring that the user remains authenticated on both the **client**
+> and the **server**.
 
 
 > This package is stable in terms of options and behavior, but there are still many important improvements to be made,
@@ -57,7 +60,8 @@ The configuration must be done in the `nuxt.config.js` file by adding the librar
 
 Within the `auth` property, defining **strategies** is **mandatory**, while **cookie** settings are **optional**.
 
-For authentication, the `endpoints.login` property requires the use of **Laravel Passport**, which must expose the `/oauth/token` route.  
+For authentication, the `endpoints.login` property requires the use of **Laravel Passport**, which must expose
+the `/oauth/token` route.  
 [Laravel Passport Documentation - Client Credentials Grant Tokens](https://laravel.com/docs/12.x/passport#client-credentials-grant-tokens)
 
 This route must return a JSON response containing the following attributes:
@@ -66,7 +70,8 @@ This route must return a JSON response containing the following attributes:
 - `refresh_token`
 - `expires_in`
 
-If you choose to use **2FA** authentication, the package requires the configuration of `endpoints.2fa`, which mandates that **Laravel** exposes a specific route.  
+If you choose to use **2FA** authentication, the package requires the configuration of `endpoints.2fa`, which mandates
+that **Laravel** exposes a specific route.  
 This route should return a JSON response with the following attributes:
 
 - `access_token`
@@ -77,6 +82,7 @@ This route should return a JSON response with the following attributes:
 [//]: # (Example implementation in Laravel for the `TwoFactorAuthController` route controller:)
 
 [//]: # ()
+
 [//]: # (```php)
 
 [//]: # (return response&#40;&#41;->json&#40;[)
@@ -89,16 +95,19 @@ This route should return a JSON response with the following attributes:
 
 [//]: # (```)
 
-After **2FA** validation, the token will be automatically added to the **headers** of requests as a **Bearer Token**, with the name `"2fa"`.  
+After **2FA** validation, the token will be automatically added to the **headers** of requests as a **Bearer Token**,
+with the name `"2fa"`.  
 This allows **Laravel APIs** to validate authentication on protected routes.
 
 ---
 
 A configuração deve ser realizada no arquivo `nuxt.config.js`, adicionando a biblioteca na seção de **módulos**.
 
-Dentro da propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies** são **opcionais**.
+Dentro da propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies**
+são **opcionais**.
 
-Para autenticação, a propriedade `endpoints.login` exige o uso do **Laravel Passport**, que deve expor a rota `/oauth/token`.  
+Para autenticação, a propriedade `endpoints.login` exige o uso do **Laravel Passport**, que deve expor a
+rota `/oauth/token`.  
 [Documentação do Laravel Passport - Client Credentials Grant Tokens](https://laravel.com/docs/12.x/passport#client-credentials-grant-tokens)
 
 Essa rota deve retornar uma resposta JSON contendo os seguintes atributos:
@@ -107,7 +116,8 @@ Essa rota deve retornar uma resposta JSON contendo os seguintes atributos:
 - `refresh_token`
 - `expires_in`
 
-Se optar por utilizar a autenticação **2FA**, o pacote requer a configuração de `endpoints.2fa`, que exige que o **Laravel** exponha uma rota específica.  
+Se optar por utilizar a autenticação **2FA**, o pacote requer a configuração de `endpoints.2fa`, que exige que o *
+*Laravel** exponha uma rota específica.  
 Essa rota deve retornar uma resposta JSON com os seguintes atributos:
 
 - `access_token`
@@ -118,6 +128,7 @@ Essa rota deve retornar uma resposta JSON com os seguintes atributos:
 [//]: # (Exemplo de implementação no Laravel para o controller da rota `TwoFactorAuthController`:)
 
 [//]: # ()
+
 [//]: # (```php)
 
 [//]: # (return response&#40;&#41;->json&#40;[)
@@ -130,7 +141,8 @@ Essa rota deve retornar uma resposta JSON com os seguintes atributos:
 
 [//]: # (```)
 
-Após a validação do **2FA**, o token será automaticamente adicionado aos **headers** das requisições como um **Bearer Token**, com o nome `"2fa"`.  
+Após a validação do **2FA**, o token será automaticamente adicionado aos **headers** das requisições como um **Bearer
+Token**, com o nome `"2fa"`.  
 Isso permite que as **APIs do Laravel** validem a autenticação nas rotas protegidas.
 
 #### Example
@@ -364,6 +376,7 @@ Eles **não são globais** e podem ser aplicados seletivamente às páginas do N
 | `loginWith(strategyName, ...args)` | Define a estratégia atual e tenta realizar o login. Retorna uma `Promise`.               | Sets the current strategy and attempts to log in. Returns a `Promise`.                  |
 | `logout(strategyName)`             | Realiza o logout, garantindo a destruição dos cookies e do estado.                       | Logs out, ensuring the destruction of cookies and state.                                |
 | `_2fa(strategyName, ...args)`      | Tenta validar o código de autenticação em dois fatores (**2FA**). Retorna uma `Promise`. | Attempts to validate the two-factor authentication (**2FA**) code. Returns a `Promise`. |
+| `refreshToken(strategyName)`       |                                                                                          |                                                                                         |
 | `$auth.headers.set(name, value)`   | Define um cabeçalho HTTP manualmente.                                                    | Sets an HTTP header manually.                                                           |
 | `$auth.headers.get(name)`          | Obtém o valor de um cabeçalho HTTP.                                                      | Retrieves the value of an HTTP header.                                                  |
 

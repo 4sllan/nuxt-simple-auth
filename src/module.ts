@@ -71,7 +71,7 @@ export default defineNuxtModule<ModuleOptions & { twoFactorAuth: boolean }>({
                 prefix: 'auth.'
             },
             twoFactorAuth: false
-        });
+        }) as ModuleOptions & { twoFactorAuth: boolean };
 
         options.cookie = options.cookie ?? {prefix: 'auth.', options: {}};
         options.cookie.options = options.cookie.options ?? {
