@@ -12,9 +12,9 @@ export async function $autx<T = any>(request: string, options: AutxOptions<T> = 
         throw new Error("Auth instance is not available or missing headers.");
     }
 
-    const authHeaders = $auth.$headers instanceof Headers
-        ? Object.fromEntries($auth.$headers.entries())
-        : $auth.$headers;
+    const authHeaders = $auth.headers instanceof Headers
+        ? Object.fromEntries($auth.headers.entries())
+        : $auth.headers;
 
     const url = new URL(request, baseURL).href;
 
