@@ -4,6 +4,12 @@
   "description": "Authentication module simple for Nuxt.js",
   "repository": "https://github.com/4sllan/nuxt-simple-auth",
   "author": "Aslan Gama <@4slan>",
+  "keywords": [
+    "Laravel passport",
+    "Laravel",
+    "auth",
+    "Nuxt.js 3"
+  ],
   "license": "MIT",
   "type": "module",
   "exports": {
