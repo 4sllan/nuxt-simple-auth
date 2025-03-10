@@ -3,6 +3,7 @@ import {
     useRequestEvent,
     navigateTo,
     useAuthStore,
+    useCookie,
     useRuntimeConfig
 } from '#imports'
 import {parseCookies} from 'h3';
@@ -27,6 +28,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             this.$headers = new Headers();
             this._prefix = options.cookie.prefix;
             this.options = options;
+
+            this._csrfToken();
         }
 
         get state(): AuthState {
@@ -222,9 +225,38 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             }
         }
 
+        refreshToken(strategyName: string): Promise<any> {
+            return new Promise((resolve, reject) => {
+            })
+        }
+
+        private async _csrfToken() {
+            try {
+                const baseURL = useRuntimeConfig().public.baseURL as string | undefined;
+
+                if (!this.options.csrf) return false;
+
+                console.log('teste')
+                const data = await $fetch<{ csrf_token: string }>(this.options.csrf, {
+                    baseURL
+                });
+
+                console.log(data)
+                if (!data) return false;
+
+                this.$headers.set('X-CSRF-TOKEN', data.csrf_token);
+                //const set = useCookie('Euro17', this.options.cookie || {})
+
+                return true;
+            } catch (error) {
+                console.error('Error fetching csrf:', error);
+                return false;
+            }
+        }
+
         private async _setProfile(): Promise<ProfileResponse | false> {
             try {
-                const {public: {baseURL}} = useRuntimeConfig();
+                const baseURL = useRuntimeConfig().public.baseURL as string | undefined;
 
                 const endpoint = this.getEndpointsUser(this._state.strategy!)
                 if (!endpoint?.url || !endpoint?.method) return false;
