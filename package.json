@@ -1,6 +1,6 @@
 {
   "name": "nuxt-simple-auth",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Authentication module simple for Nuxt.js",
   "repository": "https://github.com/4sllan/nuxt-simple-auth",
   "author": "Aslan Gama <@4slan>",
