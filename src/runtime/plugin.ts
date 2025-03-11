@@ -222,7 +222,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             }
         }
 
-        refreshToken(strategyName: string): Promise<any> {
+        async refreshToken(strategyName: string): Promise<any> {
             return new Promise((resolve, reject) => {
             })
         }
