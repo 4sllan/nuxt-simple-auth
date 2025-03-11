@@ -61,7 +61,7 @@ type AuthOptionsStrategies = {
 }
 
 export interface ModuleOptions {
-    csrf: string
+    csrf?: string
     cookie?: AuthOptionsCookie
     strategies: AuthOptionsStrategies
 }

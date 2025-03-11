@@ -101,7 +101,7 @@ This allows **Laravel APIs** to validate authentication on protected routes.
 A configuração deve ser realizada no arquivo `nuxt.config.js`, adicionando a biblioteca na seção de **módulos**.
 
 Dentro da propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies**
-são **opcionais**.
+e **csrf** são **opcionais**.
 
 Para autenticação, a propriedade `endpoints.login` exige o uso do **Laravel Passport**, que deve expor a
 rota `/oauth/token`.  
@@ -151,6 +151,7 @@ export default defineNuxtConfig({
     ],
 
     auth: {
+        csrf: '/csrf-token',
         cookie: {
             options: {
                 httpOnly: true,
