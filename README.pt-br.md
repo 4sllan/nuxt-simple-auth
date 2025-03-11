@@ -55,7 +55,8 @@ npx nuxi@latest module add nuxt-simple-auth
 
 The configuration must be done in the `nuxt.config.js` file by adding the library to the **modules** section.
 
-In the `auth` property, defining **strategies** is **mandatory**, while **cookies** and **CSRF** settings are **optional**.
+In the `auth` property, defining **strategies** is **mandatory**, while **cookies** and **CSRF** settings are **optional
+**.
 
 For authentication, the `endpoints.login` property requires the use of **Laravel Passport**, which must expose
 the `/oauth/token` route.  
@@ -100,7 +101,8 @@ This allows **Laravel APIs** to validate authentication on protected routes.
 
 A configuração deve ser realizada no arquivo `nuxt.config.js`, adicionando a biblioteca à seção de **módulos**.
 
-Na propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies** e **CSRF** são **opcionais**.
+Na propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies** e *
+*CSRF** são **opcionais**.
 
 Para autenticação, a propriedade `endpoints.login` exige o uso do **Laravel Passport**, que deve expor a
 rota `/oauth/token`.  
@@ -178,6 +180,78 @@ export default defineNuxtConfig({
         }
     },
 });
+```
+
+The `auth.csrf` configuration is also **optional**. Here, you can define the **endpoint** for Laravel’s `/csrf-token`
+route, which is responsible for retrieving the **CSRF Token**. This enhances security by validating protected routes
+that require a **CSRF Token**.
+
+### Example Implementation in Laravel
+
+#### **Define the Route in `web.php`**
+
+```php
+Route::get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()])
+        ->header('Access-Control-Allow-Origin', '*')
+        ->header('Access-Control-Allow-Methods', 'GET, POST')
+        ->header('Access-Control-Allow-Headers', 'Content-Type, X-CSRF-TOKEN');
+});
+```
+
+#### **CORS Configuration (`config/cors.php`)**
+
+Add `/csrf-cookie` and `/csrf-token` to the allowed paths in the CORS settings:
+
+```php
+'paths' => ['api/*', 'csrf-cookie', 'csrf-token', 'oauth/*']
+```
+
+#### **CSRF Exceptions (`app/Http/Middleware/VerifyCsrfToken.php`)**
+
+To ensure the token is correctly validated in API routes, add the following exceptions:
+
+```php
+protected $except = [
+    '/api/*'
+];
+```
+
+---
+
+A configuração da propriedade `auth.csrf` também é **opcional**. Nela, você pode definir o **endpoint** da
+rota `/csrf-token` do Laravel, que é responsável por fornecer o **CSRF Token**. Isso melhora a segurança ao validar as
+rotas protegidas que utilizam **CSRF Token**.
+
+### Exemplo de Implementação no Laravel
+
+#### **Definição da rota no `web.php`**
+
+```php
+Route::get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()])
+        ->header('Access-Control-Allow-Origin', '*')
+        ->header('Access-Control-Allow-Methods', 'GET, POST')
+        ->header('Access-Control-Allow-Headers', 'Content-Type, X-CSRF-TOKEN');
+});
+```
+
+#### **Configuração do CORS (`config/cors.php`)**
+
+Adicione `/csrf-cookie` e `/csrf-token` às permissões de caminhos no CORS:
+
+```php
+'paths' => ['api/*', 'csrf-cookie', 'csrf-token', 'oauth/*']
+```
+
+#### **Exceções de CSRF (`app/Http/Middleware/VerifyCsrfToken.php`)**
+
+Para garantir que o token seja validado corretamente nas rotas de API, adicione as exceções:
+
+```php
+protected $except = [
+    '/api/*'
+];
 ```
 
 ### Runtime Config
