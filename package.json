@@ -8,7 +8,17 @@
     "Laravel passport",
     "Laravel",
     "auth",
-    "Nuxt.js 3"
+    "Nuxt.js 3",
+    "Nuxt 3 authentication",
+    "Laravel Passport integration",
+    "Nuxt authentication module",
+    "Server-side authentication Nuxt",
+    "Nuxt 3 2FA support",
+    "Secure cookies authentication",
+    "Nuxt httpOnly cookies",
+    "OAuth authentication Nuxt",
+    "Open-source authentication module",
+    "Nuxt 3 security"
   ],
   "license": "MIT",
   "type": "module",
