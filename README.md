@@ -15,29 +15,26 @@
 [![Nuxt][nuxt-src]][nuxt-href]
 [![Static Badge](https://img.shields.io/badge/-%E2%99%A5%20Sponsors-ec5cc6?style=flat-square)](https://github.com/sponsors/4sllan)
 
-
-> **nuxt-simple-auth** is an authentication module for **Nuxt 3**, designed to integrate with **Laravel Passport** for
-> request authentication.  
-> It is an **open-source**, **robust**, and **feature-rich** package that enables cookie validation with `httpOnly`,
-> while also supporting various cookie parameters for both **login** and **2FA**.  
-> Additionally, it supports **SSR authentication**, ensuring that the user remains authenticated on both the **client**
+> **nuxt-simple-auth** is an authentication module for **Nuxt 3**, designed as an **open-source**, **robust**, and *
+*feature-rich** package. It enables **cookie** validation and **CSRF** protection, seamlessly integrating with **Laravel
+Passport**.\
+> Additionally, it supports various cookie parameters for both **login** and **two-factor authentication (2FA)**.\
+> It also includes **SSR authentication** support, ensuring that the user remains authenticated on both the **client**
 > and the **server**.
 
-
-> This package is stable in terms of options and behavior, but there are still many important improvements to be made,
-> and it may contain some bugs.
+> While the package is stable in terms of options and behavior, there are still improvements to be made, and some bugs
+> may exist.
 
 ---
 
-> **nuxt-simple-auth** é um módulo de autenticação para **Nuxt 3**, projetado para integração com **Laravel Passport**
-> na autenticação de requisições.  
-> É um pacote de **código aberto**, **robusto** e **repleto de recursos**, permitindo a validação de cookies
-> com `httpOnly`, além de oferecer suporte a diversos parâmetros para cookies, tanto no **login** quanto no **2FA**.  
-> Conta ainda com suporte à **autenticação SSR**, garantindo que o usuário esteja autenticado tanto no **cliente**
+> **nuxt-simple-auth** é um módulo de autenticação para **Nuxt 3**, Ele é um pacote de **código aberto**, **robusto** e
+**repleto de recursos**, permitindo a validação de **cookies** e **CSRF** utilizando **Laravel Passport**.\
+> Além disso, oferece suporte a diversos parâmetros para cookies, tanto no **login** quanto na autenticação em **duplo
+fator (2FA)**.\
+> Conta ainda com suporte à **autenticação SSR**, garantindo que o usuário permaneça autenticado tanto no **cliente**
 > quanto no **servidor**.
 
-
-> Este pacote é estável em termos de opções e comportamento, porém ainda há muitas melhorias a serem feitas e a
+> Embora o pacote seja estável em termos de opções e comportamento, ainda há melhorias a serem implementadas e a
 > possibilidade de alguns bugs.
 
 ## Start

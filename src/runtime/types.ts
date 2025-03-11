@@ -111,6 +111,8 @@ export interface AuthInstance {
 
     getRedirect(strategyName: string): Record<string, string> | null
 
+    csrfToken(event?: any): Promise<boolean>
+
     initialize(): Promise<void>
 
     loginWith(strategyName: string, value: any): Promise<any>;

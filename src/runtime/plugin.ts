@@ -3,10 +3,9 @@ import {
     useRequestEvent,
     navigateTo,
     useAuthStore,
-    useCookie,
     useRuntimeConfig
 } from '#imports'
-import {parseCookies} from 'h3';
+import {parseCookies, setCookie} from 'h3';
 import {$fetch} from 'ofetch';
 import type {
     AuthState,
@@ -28,8 +27,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             this.$headers = new Headers();
             this._prefix = options.cookie.prefix;
             this.options = options;
-
-            this._csrfToken();
         }
 
         get state(): AuthState {
@@ -230,26 +227,41 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             })
         }
 
-        private async _csrfToken() {
+        async csrfToken(event?: any): Promise<boolean> {
             try {
                 const baseURL = useRuntimeConfig().public.baseURL as string | undefined;
+                const csrfEndpoint = this.options?.csrf;
 
-                if (!this.options.csrf) return false;
+                if (!csrfEndpoint) {
+                    console.warn("CSRF endpoint is not defined.");
+                    return false;
+                }
 
-                console.log('teste')
-                const data = await $fetch<{ csrf_token: string }>(this.options.csrf, {
-                    baseURL
-                });
+                const data = await $fetch<{ csrf_token?: string }>(csrfEndpoint, {baseURL});
 
-                console.log(data)
-                if (!data) return false;
+                if (!data?.csrf_token) {
+                    throw new Error("Invalid CSRF response: Missing token.");
+                }
 
                 this.$headers.set('X-CSRF-TOKEN', data.csrf_token);
-                //const set = useCookie('Euro17', this.options.cookie || {})
+
+                if (import.meta.server && event) {
+                    const cookies = parseCookies(event);
+                    const csrfCookie = cookies["X-CSRF-TOKEN"];
+
+                    if (!csrfCookie) {
+                        setCookie(event, "X-CSRF-TOKEN", data.csrf_token, this.options.cookie.options || {
+                            httpOnly: true,
+                            secure: true,
+                            sameSite: "strict",
+                            path: "/"
+                        });
+                    }
+                }
 
                 return true;
             } catch (error) {
-                console.error('Error fetching csrf:', error);
+                console.error('Error fetching CSRF token:', error instanceof Error ? error.message : error);
                 return false;
             }
         }
@@ -288,7 +300,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     }
 
     const $auth: AuthInstance = new Auth(JSON.parse(`<%= JSON.stringify(options, null, 2) %>`));
-
+    const event = import.meta.server ? useRequestEvent() : undefined;
+    await $auth.csrfToken(event);
     await $auth.initialize();
 
 
