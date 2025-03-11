@@ -5,7 +5,7 @@ import {
     useAuthStore,
     useRuntimeConfig
 } from '#imports'
-import {parseCookies} from 'h3';
+import {parseCookies, setCookie} from 'h3';
 import {$fetch} from 'ofetch';
 import type {
     AuthState,
@@ -222,9 +222,53 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             }
         }
 
+        async refreshToken(strategyName: string): Promise<any> {
+            return new Promise((resolve, reject) => {
+            })
+        }
+
+        async csrfToken(event?: any): Promise<boolean> {
+            try {
+                const baseURL = useRuntimeConfig().public.baseURL as string | undefined;
+                const csrfEndpoint = this.options?.csrf;
+
+                if (!csrfEndpoint) {
+                    console.warn("CSRF endpoint is not defined.");
+                    return false;
+                }
+
+                const data = await $fetch<{ csrf_token?: string }>(csrfEndpoint, {baseURL});
+
+                if (!data?.csrf_token) {
+                    throw new Error("Invalid CSRF response: Missing token.");
+                }
+
+                this.$headers.set('X-CSRF-TOKEN', data.csrf_token);
+
+                if (import.meta.server && event) {
+                    const cookies = parseCookies(event);
+                    const csrfCookie = cookies["X-CSRF-TOKEN"];
+
+                    if (!csrfCookie) {
+                        setCookie(event, "X-CSRF-TOKEN", data.csrf_token, this.options.cookie.options || {
+                            httpOnly: true,
+                            secure: true,
+                            sameSite: "strict",
+                            path: "/"
+                        });
+                    }
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Error fetching CSRF token:', error instanceof Error ? error.message : error);
+                return false;
+            }
+        }
+
         private async _setProfile(): Promise<ProfileResponse | false> {
             try {
-                const {public: {baseURL}} = useRuntimeConfig();
+                const baseURL = useRuntimeConfig().public.baseURL as string | undefined;
 
                 const endpoint = this.getEndpointsUser(this._state.strategy!)
                 if (!endpoint?.url || !endpoint?.method) return false;
@@ -256,7 +300,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     }
 
     const $auth: AuthInstance = new Auth(JSON.parse(`<%= JSON.stringify(options, null, 2) %>`));
-
+    const event = import.meta.server ? useRequestEvent() : undefined;
+    await $auth.csrfToken(event);
     await $auth.initialize();
 
 

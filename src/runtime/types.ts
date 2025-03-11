@@ -61,7 +61,7 @@ type AuthOptionsStrategies = {
 }
 
 export interface ModuleOptions {
-    csrf: string
+    csrf?: string
     cookie?: AuthOptionsCookie
     strategies: AuthOptionsStrategies
 }
@@ -110,6 +110,8 @@ export interface AuthInstance {
 
 
     getRedirect(strategyName: string): Record<string, string> | null
+
+    csrfToken(event?: any): Promise<boolean>
 
     initialize(): Promise<void>
 

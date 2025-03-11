@@ -25,6 +25,18 @@ Passport**.\
 > While the package is stable in terms of options and behavior, there are still improvements to be made, and some bugs
 > may exist.
 
+---
+
+> **nuxt-simple-auth** é um módulo de autenticação para **Nuxt 3**, Ele é um pacote de **código aberto**, **robusto** e
+**repleto de recursos**, permitindo a validação de **cookies** e **CSRF** utilizando **Laravel Passport**.\
+> Além disso, oferece suporte a diversos parâmetros para cookies, tanto no **login** quanto na autenticação em **duplo
+fator (2FA)**.\
+> Conta ainda com suporte à **autenticação SSR**, garantindo que o usuário permaneça autenticado tanto no **cliente**
+> quanto no **servidor**.
+
+> Embora o pacote seja estável em termos de opções e comportamento, ainda há melhorias a serem implementadas e a
+> possibilidade de alguns bugs.
+
 ## Start
 
 ```sh
@@ -36,6 +48,8 @@ npx nuxi@latest module add nuxt-simple-auth
 ### Installation
 
 > **Add `nuxt-simple-auth` to the `modules` section in `nuxt.config.js`.**
+
+> **Adicione `nuxt-simple-auth` à seção de módulos do `nuxt.config.js`.**
 
 ### Configuration
 
@@ -83,6 +97,52 @@ After **2FA** validation, the token will be automatically added to the **headers
 with the name `"2fa"`.  
 This allows **Laravel APIs** to validate authentication on protected routes.
 
+---
+
+A configuração deve ser realizada no arquivo `nuxt.config.js`, adicionando a biblioteca à seção de **módulos**.
+
+Na propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies** e *
+*CSRF** são **opcionais**.
+
+Para autenticação, a propriedade `endpoints.login` exige o uso do **Laravel Passport**, que deve expor a
+rota `/oauth/token`.  
+[Documentação do Laravel Passport - Client Credentials Grant Tokens](https://laravel.com/docs/12.x/passport#client-credentials-grant-tokens)
+
+Essa rota deve retornar uma resposta JSON contendo os seguintes atributos:
+
+- `access_token`
+- `refresh_token`
+- `expires_in`
+
+Se optar por utilizar a autenticação **2FA**, o pacote requer a configuração de `endpoints.2fa`, que exige que o *
+*Laravel** exponha uma rota específica.  
+Essa rota deve retornar uma resposta JSON com os seguintes atributos:
+
+- `access_token`
+- `expires_in`
+
+`expires_in`: Deve ser o número de segundos até que o token de acesso do **2FA** expire.
+
+[//]: # (Exemplo de implementação no Laravel para o controller da rota `TwoFactorAuthController`:)
+
+[//]: # ()
+
+[//]: # (```php)
+
+[//]: # (return response&#40;&#41;->json&#40;[)
+
+[//]: # (    'access_token' => $twoFactorAuth->token,)
+
+[//]: # (    'expires_in' => $twoFactorAuth->expire_at->timestamp - now&#40;&#41;->timestamp, // Número de segundos até a expiração.)
+
+[//]: # (]&#41;;)
+
+[//]: # (```)
+
+Após a validação do **2FA**, o token será automaticamente adicionado aos **headers** das requisições como um **Bearer
+Token**, com o nome `"2fa"`.  
+Isso permite que as **APIs do Laravel** validem a autenticação nas rotas protegidas.
+
 #### Example
 
 ```js
@@ -122,17 +182,93 @@ export default defineNuxtConfig({
 });
 ```
 
+The `auth.csrf` configuration is also **optional**. Here, you can define the **endpoint** for Laravel’s `/csrf-token`
+route, which is responsible for retrieving the **CSRF Token**. This enhances security by validating protected routes
+that require a **CSRF Token**.
+
+### Example Implementation in Laravel
+
+#### **Define the Route in `web.php`**
+
+```php
+Route::get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()])
+        ->header('Access-Control-Allow-Origin', '*')
+        ->header('Access-Control-Allow-Methods', 'GET, POST')
+        ->header('Access-Control-Allow-Headers', 'Content-Type, X-CSRF-TOKEN');
+});
+```
+
+#### **CORS Configuration (`config/cors.php`)**
+
+Add `/csrf-cookie` and `/csrf-token` to the allowed paths in the CORS settings:
+
+```php
+'paths' => ['api/*', 'csrf-cookie', 'csrf-token', 'oauth/*']
+```
+
+#### **CSRF Exceptions (`app/Http/Middleware/VerifyCsrfToken.php`)**
+
+To ensure the token is correctly validated in API routes, add the following exceptions:
+
+```php
+protected $except = [
+    '/api/*'
+];
+```
+
+---
+
+A configuração da propriedade `auth.csrf` também é **opcional**. Nela, você pode definir o **endpoint** da
+rota `/csrf-token` do Laravel, que é responsável por fornecer o **CSRF Token**. Isso melhora a segurança ao validar as
+rotas protegidas que utilizam **CSRF Token**.
+
+### Exemplo de Implementação no Laravel
+
+#### **Definição da rota no `web.php`**
+
+```php
+Route::get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()])
+        ->header('Access-Control-Allow-Origin', '*')
+        ->header('Access-Control-Allow-Methods', 'GET, POST')
+        ->header('Access-Control-Allow-Headers', 'Content-Type, X-CSRF-TOKEN');
+});
+```
+
+#### **Configuração do CORS (`config/cors.php`)**
+
+Adicione `/csrf-cookie` e `/csrf-token` às permissões de caminhos no CORS:
+
+```php
+'paths' => ['api/*', 'csrf-cookie', 'csrf-token', 'oauth/*']
+```
+
+#### **Exceções de CSRF (`app/Http/Middleware/VerifyCsrfToken.php`)**
+
+Para garantir que o token seja validado corretamente nas rotas de API, adicione as exceções:
+
+```php
+protected $except = [
+    '/api/*'
+];
+```
+
 ### Runtime Config
 
 The **runtimeConfig** of Nuxt 3 must also be configured to include a `secret` object.  
 This object should contain the names of your **strategies**, and within each strategy, the following keys are **required
 **:
 
+A configuração do **runtimeConfig** do Nuxt 3 também precisa ser ajustada para incluir um objeto `secret`.  
+Este objeto deve conter os nomes das suas **strategies**, e dentro de cada uma delas, as seguintes chaves são *
+*obrigatórias**:
+
 - [`client_id`](https://laravel.com/docs/12.x/passport#main-content)
 - [`client_secret`](https://laravel.com/docs/12.x/passport#main-content)
 - [`grant_type`](https://laravel.com/docs/12.x/passport#main-content)
 
-#### Example Configuration:
+#### Exemplo de Configuração:
 
 ```js
 export default defineNuxtConfig({
@@ -158,6 +294,10 @@ export default defineNuxtConfig({
 The **strategies** configuration follows the structure below, starting with a name of your choice to set up the
 package.  
 The available options are listed, indicating which are **required** and which are **optional**.
+
+As configurações das **strategies** seguem a estrutura abaixo, iniciando com um nome de sua escolha para configurar o
+pacote.  
+As opções disponíveis estão listadas, indicando quais são **obrigatórias** e quais são **opcionais**.
 
 #### Configuration
 
@@ -231,6 +371,9 @@ The available options are listed, indicating which are **required** and which ar
 **2FA** is optional, but if included in one of the "strategies," it must have a URL and method to enable the "_2fa"
 middleware. This middleware is not global and can be selectively used on Nuxt pages.
 
+O **2FA** é opcional, mas, se incluído em uma das "strategies", deve conter a URL e o método necessários para ativar o
+middleware "_2fa". Esse middleware não é global e pode ser utilizado seletivamente nas páginas do Nuxt.
+
 ``` js
  definePageMeta({
       middleware: ['auth', '_2fa']
@@ -281,6 +424,16 @@ They are **not global** and can be applied selectively to Nuxt pages.
 - **_2fa**: Enhances authentication by verifying values stored in **cookies** and **sessionStorage** to validate *
   *two-factor authentication (2FA)**, also working on both the client and server (**SSR**).
 
+---
+
+O pacote **nuxt-simple-auth** disponibiliza dois middlewares: **"auth"** e **"_2fa"**.  
+Eles **não são globais** e podem ser aplicados seletivamente às páginas do Nuxt.
+
+- **auth**: Restringe o acesso a páginas protegidas, garantindo que o usuário esteja autenticado via **Laravel Passport
+  **, tanto no cliente quanto no servidor (**SSR**).
+- **_2fa**: Complementa a autenticação verificando os valores armazenados nos **cookies** e no **sessionStorage** para
+  validar a autenticação de dois fatores (**2FA**), também funcionando no cliente e no servidor (**SSR**).
+
 ``` js
  definePageMeta({
       middleware: ['auth', '_2fa']
@@ -289,14 +442,14 @@ They are **not global** and can be applied selectively to Nuxt pages.
 
 ### Methods
 
-| Método / Method                    | Description                                                                             |
-|------------------------------------|-----------------------------------------------------------------------------------------|
-| `loginWith(strategyName, ...args)` | Sets the current strategy and attempts to log in. Returns a `Promise`.                  |
-| `logout(strategyName)`             | Logs out, ensuring the destruction of cookies and state.                                |
-| `_2fa(strategyName, ...args)`      | Attempts to validate the two-factor authentication (**2FA**) code. Returns a `Promise`. |
-| `refreshToken(strategyName)`       |                                                                                         |
-| `$auth.headers.set(name, value)`   | Sets an HTTP header manually.                                                           |
-| `$auth.headers.get(name)`          | Retrieves the value of an HTTP header.                                                  |
+| Método / Method                    | Descrição (PT)                                                                           | Description (EN)                                                                        |
+|------------------------------------|------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+| `loginWith(strategyName, ...args)` | Define a estratégia atual e tenta realizar o login. Retorna uma `Promise`.               | Sets the current strategy and attempts to log in. Returns a `Promise`.                  |
+| `logout(strategyName)`             | Realiza o logout, garantindo a destruição dos cookies e do estado.                       | Logs out, ensuring the destruction of cookies and state.                                |
+| `_2fa(strategyName, ...args)`      | Tenta validar o código de autenticação em dois fatores (**2FA**). Retorna uma `Promise`. | Attempts to validate the two-factor authentication (**2FA**) code. Returns a `Promise`. |
+| `refreshToken(strategyName)`       |                                                                                          |                                                                                         |
+| `$auth.headers.set(name, value)`   | Define um cabeçalho HTTP manualmente.                                                    | Sets an HTTP header manually.                                                           |
+| `$auth.headers.get(name)`          | Obtém o valor de um cabeçalho HTTP.                                                      | Retrieves the value of an HTTP header.                                                  |
 
 ---
 
