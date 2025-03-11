@@ -55,7 +55,7 @@ npx nuxi@latest module add nuxt-simple-auth
 
 The configuration must be done in the `nuxt.config.js` file by adding the library to the **modules** section.
 
-Within the `auth` property, defining **strategies** is **mandatory**, while **cookie** settings are **optional**.
+In the `auth` property, defining **strategies** is **mandatory**, while **cookies** and **CSRF** settings are **optional**.
 
 For authentication, the `endpoints.login` property requires the use of **Laravel Passport**, which must expose
 the `/oauth/token` route.  
@@ -98,10 +98,9 @@ This allows **Laravel APIs** to validate authentication on protected routes.
 
 ---
 
-A configuração deve ser realizada no arquivo `nuxt.config.js`, adicionando a biblioteca na seção de **módulos**.
+A configuração deve ser realizada no arquivo `nuxt.config.js`, adicionando a biblioteca à seção de **módulos**.
 
-Dentro da propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies**
-e **csrf** são **opcionais**.
+Na propriedade `auth`, a definição das **strategies** é **obrigatória**, enquanto as configurações de **cookies** e **CSRF** são **opcionais**.
 
 Para autenticação, a propriedade `endpoints.login` exige o uso do **Laravel Passport**, que deve expor a
 rota `/oauth/token`.  
