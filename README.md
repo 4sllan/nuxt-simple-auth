@@ -195,9 +195,6 @@ The available options are listed, indicating which are **required** and which ar
                     logout: "/auth",
                     login: "/auth"
                 },
-                token: {
-                    property: "access_token",
-                },
                 user: {
                     property: "profile",
                 },
@@ -211,9 +208,6 @@ The available options are listed, indicating which are **required** and which ar
                 redirect: {
                     logout: "/auth",
                     login: "/auth"
-                },
-                token: {
-                    property: "access_token",
                 },
                 user: {
                     property: "profile",
