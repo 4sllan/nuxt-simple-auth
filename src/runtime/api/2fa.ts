@@ -31,16 +31,15 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        const {
-            'nuxt-simple-auth': config,
-            public: {baseURL},
-        } = useRuntimeConfig();
+        const runtimeConfig = useRuntimeConfig();
+        const baseURL = runtimeConfig.public.baseURL as string | undefined;
+        const config = runtimeConfig['nuxt-simple-auth'] as ModuleOptions | undefined;
 
         if (!config) {
             throw createError({statusCode: 500, statusMessage: "Authentication module not configured"});
         }
 
-        const {cookie, strategies} = config as ModuleOptions;
+        const {cookie, strategies} = config;
         const prefix = cookie?.prefix || "auth.";
         const strategy: StrategiesOptions | undefined = strategies?.[body.strategyName];
 
