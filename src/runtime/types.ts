@@ -34,7 +34,8 @@ type fetchOption = {
 type EndpointsOptions = {
     login: fetchOption
     user: { url: string, method: string }
-    "2fa"?: fetchOption
+    "2fa"?: fetchOption,
+    refresh?: fetchOption,
     logout?: { alias?: string }
 }
 
