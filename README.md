@@ -15,6 +15,8 @@
 [![Nuxt][nuxt-src]][nuxt-href]
 [![Static Badge](https://img.shields.io/badge/-%E2%99%A5%20Sponsors-ec5cc6?style=flat-square)](https://github.com/sponsors/4sllan)
 
+
+
 > **nuxt-simple-auth** is an authentication module for **Nuxt 3**, designed as an **open-source**, **robust**, and *
 *feature-rich** package. It enables **cookie** validation and **CSRF** protection, seamlessly integrating with **Laravel
 Passport**.\
