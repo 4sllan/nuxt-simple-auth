@@ -32,8 +32,8 @@ export default defineEventHandler(async (event) => {
         }
 
         const runtimeConfig = useRuntimeConfig();
-        const baseURL = runtimeConfig.public.baseURL as string | undefined;
-        const config = runtimeConfig['nuxt-simple-auth'] as ModuleOptions | undefined;
+        const baseURL = runtimeConfig.public.baseURL;
+        const config = runtimeConfig['nuxt-simple-auth'] as ModuleOptions;
 
         if (!config) {
             throw createError({statusCode: 500, statusMessage: "Authentication module not configured"});

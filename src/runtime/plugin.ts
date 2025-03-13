@@ -229,7 +229,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
         async csrfToken(event?: any): Promise<boolean> {
             try {
-                const baseURL = useRuntimeConfig().public.baseURL as string | undefined;
+                const baseURL = useRuntimeConfig().public.baseURL;
                 const csrfEndpoint = this.options?.csrf;
 
                 if (!csrfEndpoint) {
@@ -268,7 +268,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
         private async _setProfile(): Promise<ProfileResponse | false> {
             try {
-                const baseURL = useRuntimeConfig().public.baseURL as string | undefined;
+                const baseURL = useRuntimeConfig().public.baseURL;
 
                 const endpoint = this.getEndpointsUser(this._state.strategy!)
                 if (!endpoint?.url || !endpoint?.method) return false;

@@ -155,4 +155,7 @@ declare module 'nuxt/schema' {
     interface RuntimeConfig {
         secret: Record<string, AuthSecretConfig>;
     }
+    interface PublicRuntimeConfig {
+        baseURL: string;
+    }
 }

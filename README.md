@@ -27,6 +27,9 @@ Passport**.\
 > While the package is stable in terms of options and behavior, there are still improvements to be made, and some bugs
 > may exist.
 
+
+- [Release Notes](/CHANGELOG.md)
+
 ## Start
 
 ```sh

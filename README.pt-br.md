@@ -25,6 +25,8 @@ fator (2FA)**.\
 > Embora o pacote seja estável em termos de opções e comportamento, ainda há melhorias a serem implementadas e a
 > possibilidade de alguns bugs.
 
+- [Release Notes](/CHANGELOG.md)
+
 ## Start
 
 ```sh

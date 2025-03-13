@@ -30,8 +30,8 @@ export default defineEventHandler(async (event) => {
         }
 
         const runtimeConfig = useRuntimeConfig();
-        const baseURL = runtimeConfig.public.baseURL as string | undefined;
-        const config = runtimeConfig['nuxt-simple-auth'] as ModuleOptions | undefined;
+        const baseURL = runtimeConfig.public.baseURL;
+        const config = runtimeConfig['nuxt-simple-auth'] as ModuleOptions;
         const secret = runtimeConfig.secret;
 
         if (!config) {
