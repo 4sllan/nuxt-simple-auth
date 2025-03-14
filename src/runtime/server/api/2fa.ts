@@ -8,7 +8,7 @@ import {
     setHeader
 } from "h3";
 import {$fetch} from 'ofetch';
-import type {ModuleOptions, StrategiesOptions} from "../types";
+import type {ModuleOptions, StrategiesOptions} from "../../types";
 
 interface Get2FAResponse {
     access_token: string;

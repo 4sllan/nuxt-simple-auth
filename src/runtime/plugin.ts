@@ -18,8 +18,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     const store = useAuthStore()
 
     class Auth implements AuthInstance {
-        private $headers: Headers;
-        private _state: AuthState = {user: null, loggedIn: false, strategy: null};
+        public $headers: Headers;
+        private _state: AuthState = {user: null, loggedIn: false, strategy: ""};
         private _prefix: string;
         private readonly options: Record<string, any>;
 
@@ -54,7 +54,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         }
 
         set headers(headers: Headers) {
-            this.$headers = new Headers(headers);
+            this.$headers = headers;
         }
 
         set state(val: AuthState) {
@@ -233,7 +233,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 const csrfEndpoint = this.options?.csrf;
 
                 if (!csrfEndpoint) {
-                    console.warn("CSRF endpoint is not defined.");
                     return false;
                 }
 

@@ -1,6 +1,6 @@
 import {useRuntimeConfig} from '#imports';
 import {deleteCookie, defineEventHandler, readBody} from 'h3';
-import type {ModuleOptions} from '../types';
+import type {ModuleOptions} from '../../types';
 
 export default defineEventHandler(async (event) => {
     try {
