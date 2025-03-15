@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2025-03-16
+
+### Added
+- **Centralized Session Management (`getAuthSession`)**
+  - Introduced `getAuthSession` function in `server/utils/auth.ts`.
+  - Eliminates code duplication and improves maintainability.
+
+### Changed
+- **Stronger Typing (TypeScript)**
+  - `expires` is now explicitly typed as `number` to prevent inconsistencies.
+  - Introduced `AuthSession` interface for better session data organization.
+  - `event` now correctly uses `H3Event` type.
+
+- **Authentication Flow Improvements**
+  - Extracts `strategyName`, `token`, and `expires` from cookies.
+  - Returns `401 - Unauthorized` if no valid token is found.
+  - Validates token expiration to ensure session activity.
+
+### Fixed
+- **Improved Error Handling**
+  - Errors are now handled using `unknown` instead of `any`, increasing security.
+  - More appropriate HTTP responses for error cases.
+  - Detailed error messages to facilitate debugging.
+
+- **Enhanced Token Expiration Validation**
+  - `expires` is now immediately converted to `number`.
+  - Prevents invalid values that could lead to unexpected errors.
+  
+
+---
+
 ## [1.1.1] - 2025-03-15
 
 ### Features
@@ -33,7 +64,7 @@ All notable changes to this project will be documented in this file.
   - Middleware now focuses solely on session validation.
   - Logout and redirection logic is now separated into `utils`.
 
-
+---
 ## [1.1.0] - 2025-03-11
 
 ### Features
