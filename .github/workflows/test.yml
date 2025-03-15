@@ -26,14 +26,14 @@ jobs:
       - name: 📦 Instalar dependências
         run: npm install
 
-      - name: Instalar dependências do playground
-        run: npm install --prefix playground
+      - name: 📦 Instalar dependências do playground
+        run: cd playground && npm install
 
-      - name: Preparar ambiente Nuxt
-        run: npx nuxi prepare playground
-
-      - name: Preparar ambiente Nuxt
+      - name: 🔧 Preparar ambiente Nuxt
         run: npx nuxi prepare
+
+      - name: 🔧 Preparar ambiente do Playground
+        run: cd playground && npx nuxi prepare
 
       - name: 🔍 Rodar testes
         run: npm run test
