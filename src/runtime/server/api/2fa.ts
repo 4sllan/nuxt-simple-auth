@@ -8,6 +8,7 @@ import {
     setHeader
 } from "h3";
 import {$fetch} from 'ofetch';
+import protectedMiddleware from "../middleware/protected";
 import type {ModuleOptions, StrategiesOptions} from "../../types";
 
 interface Get2FAResponse {
@@ -22,8 +23,8 @@ interface RequestBody {
 
 export default defineEventHandler(async (event) => {
     try {
+        await protectedMiddleware(event)
         const body = await readBody<RequestBody>(event);
-
         if (!body?.strategyName || !body?.code) {
             throw createError({
                 statusCode: 400,
