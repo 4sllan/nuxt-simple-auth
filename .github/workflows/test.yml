@@ -32,5 +32,8 @@ jobs:
       - name: Preparar ambiente Nuxt
         run: npx nuxi prepare playground
 
+      - name: Preparar ambiente Nuxt
+        run: npx nuxi prepare
+
       - name: 🔍 Rodar testes
         run: npm run test
