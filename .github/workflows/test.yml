@@ -26,5 +26,8 @@ jobs:
       - name: 📦 Instalar dependências
         run: npm install
 
+      - name: Preparar ambiente Nuxt
+        run: npx nuxi prepare playground
+
       - name: 🔍 Rodar testes
         run: npm run test
