@@ -1,9 +1,9 @@
 <script setup>
-await navigateTo('/auth')
+
 </script>
 
 <template>
-
+<div>oi</div>
 </template>
 
 <style scoped>

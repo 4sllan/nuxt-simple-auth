@@ -3,7 +3,7 @@ import {
     useNuxtApp,
     useCookie,
     useAuthStore,
-    showError,
+    createError,
     useRequestEvent,
     defineNuxtRouteMiddleware
 } from '#imports';
@@ -14,7 +14,7 @@ export default defineNuxtRouteMiddleware(async () => {
 
 
     if (!$auth) {
-        throw showError({
+        throw createError({
             statusCode: 500,
             statusMessage: "Auth plugin is not initialized"
         });
@@ -27,9 +27,11 @@ export default defineNuxtRouteMiddleware(async () => {
 
         if (import.meta.client) {
             sessionStorage.clear();
+
+            return navigateTo(redirectPath);
         }
 
-        throw showError({
+        throw createError({
             statusCode: 401,
             statusMessage: "You do not have permission to access this page without two-factor authentication."
         })
