@@ -1,9 +1,11 @@
 import {useRuntimeConfig} from '#imports';
 import {deleteCookie, defineEventHandler, readBody} from 'h3';
+import protectedMiddleware from "../middleware/protected";
 import type {ModuleOptions} from '../../types';
 
 export default defineEventHandler(async (event) => {
     try {
+        await protectedMiddleware(event)
         const body = await readBody<{ strategyName?: string }>(event);
         const strategyName = body?.strategyName;
 

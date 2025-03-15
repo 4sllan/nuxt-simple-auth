@@ -1,7 +1,7 @@
 import {useRuntimeConfig} from '#imports';
 import {defineEventHandler, readBody, setCookie, createError, getCookie} from 'h3';
-import {defu} from 'defu';
 import {$fetch} from 'ofetch';
+import protectedMiddleware from "../middleware/protected";
 import type {ModuleOptions, StrategiesOptions} from '../../types';
 
 interface AuthRequestBody {
@@ -23,6 +23,7 @@ type TokenResponse = TokenSuccessResponse | TokenErrorResponse;
 
 export default defineEventHandler(async (event) => {
     try {
+        await protectedMiddleware(event)
         const body = await readBody<AuthRequestBody>(event);
         if (!body?.strategyName) {
             throw createError({statusCode: 400, statusMessage: 'Invalid request body'});
