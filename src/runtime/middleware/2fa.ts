@@ -1,5 +1,4 @@
 import {
-    navigateTo,
     useNuxtApp,
     useCookie,
     useAuthStore,
