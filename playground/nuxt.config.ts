@@ -27,7 +27,7 @@ export default defineNuxtConfig({
     // Nuxt-simple-auth Configuration
 
     auth: {
-        csrf: '/csrf-token',
+        // csrf: '/csrf-token',
         cookie: {
             options: {
                 httpOnly: true,

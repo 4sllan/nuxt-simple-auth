@@ -8,7 +8,7 @@ import {
     setHeader
 } from "h3";
 import {$fetch} from 'ofetch';
-import type {ModuleOptions, StrategiesOptions} from "../types";
+import type {ModuleOptions, StrategiesOptions} from "../../types";
 
 interface Get2FAResponse {
     access_token: string;
@@ -31,16 +31,15 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        const {
-            'nuxt-simple-auth': config,
-            public: {baseURL},
-        } = useRuntimeConfig();
+        const runtimeConfig = useRuntimeConfig();
+        const baseURL = runtimeConfig.public.baseURL;
+        const config = runtimeConfig['nuxt-simple-auth'] as ModuleOptions;
 
         if (!config) {
             throw createError({statusCode: 500, statusMessage: "Authentication module not configured"});
         }
 
-        const {cookie, strategies} = config as ModuleOptions;
+        const {cookie, strategies} = config;
         const prefix = cookie?.prefix || "auth.";
         const strategy: StrategiesOptions | undefined = strategies?.[body.strategyName];
 

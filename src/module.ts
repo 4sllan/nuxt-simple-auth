@@ -107,7 +107,7 @@ export default defineNuxtModule<ModuleOptions & { twoFactorAuth: boolean }>({
                 .forEach(([key, endpoint]) => {
                     const typedEndpoint = endpoint as Endpoint;
                     const route = `/api/${kebabCase(typedEndpoint.alias) || typedEndpoint.url.replace(/^\/(api|oauth)\//, '')}`;
-                    const handlerFile = resolve(`./runtime/api/${key}`);
+                    const handlerFile = resolve(`./runtime/server/api/${key}`);
 
                     strategy.handler!.push({[key]: route});
 
@@ -154,5 +154,8 @@ export default defineNuxtModule<ModuleOptions & { twoFactorAuth: boolean }>({
 declare module 'nuxt/schema' {
     interface RuntimeConfig {
         secret: Record<string, AuthSecretConfig>;
+    }
+    interface PublicRuntimeConfig {
+        baseURL: string;
     }
 }

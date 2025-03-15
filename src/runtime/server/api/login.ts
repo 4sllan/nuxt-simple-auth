@@ -2,7 +2,7 @@ import { useRuntimeConfig } from '#imports';
 import { defineEventHandler, readBody, setCookie, createError } from 'h3';
 import { defu } from 'defu';
 import { $fetch } from 'ofetch';
-import type { ModuleOptions, StrategiesOptions } from '../types';
+import type { ModuleOptions, StrategiesOptions } from '../../types';
 
 interface AuthRequestBody {
     strategyName: string;
@@ -29,17 +29,16 @@ export default defineEventHandler(async (event) => {
             throw createError({ statusCode: 400, statusMessage: 'Invalid request body' });
         }
 
-        const {
-            'nuxt-simple-auth': config,
-            public: { baseURL },
-            secret,
-        } = useRuntimeConfig();
+        const runtimeConfig = useRuntimeConfig();
+        const baseURL = runtimeConfig.public.baseURL;
+        const config = runtimeConfig['nuxt-simple-auth'] as ModuleOptions;
+        const secret = runtimeConfig.secret;
 
         if (!config) {
             throw createError({ statusCode: 500, statusMessage: 'Authentication module not configured' });
         }
 
-        const { cookie, strategies } = config as ModuleOptions;
+        const { cookie, strategies } = config;
         const prefix = cookie?.prefix || 'auth.';
         const strategy: StrategiesOptions | undefined = strategies?.[body.strategyName];
 

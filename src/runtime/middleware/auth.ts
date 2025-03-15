@@ -1,52 +1,23 @@
 import {
-    navigateTo,
     useNuxtApp,
     useCookie,
     useAuthStore,
-    showError,
+    createError,
     useRequestEvent,
     defineNuxtRouteMiddleware
 } from '#imports';
+import {handleLogout, validateSession, getRedirectPath} from '../utils'
 
 export default defineNuxtRouteMiddleware(async () => {
     const {$auth} = useNuxtApp();
     const store = useAuthStore();
 
-
     if (!$auth) {
-        throw showError({
+        throw createError({
             statusCode: 500,
             statusMessage: "Auth plugin is not initialized"
         });
     }
-
-    const handleLogout = async (strategy: string | null, redirectPath: string) => {
-        if (strategy) {
-            await $auth.logout(strategy);
-        }
-
-        if (import.meta.client) {
-            sessionStorage.clear();
-        }
-
-        throw showError({
-            statusCode: 401,
-            statusMessage: "You do not have permission to access this page."
-        })
-    };
-
-    const validateSession = (strategy: string | null, token: string | null, expires: string | null): boolean => {
-        if (!strategy || !token) return false;
-
-        const expirationTime = expires ? Number(expires) : 0;
-        return expirationTime > Date.now();
-    };
-
-    const getRedirectPath = (strategy: string | null): string => {
-        if (!strategy) return '/';
-        const {login, callback, home} = $auth.getRedirect(strategy)
-        return login || callback || home || '/';
-    };
 
     if (import.meta.server) {
         const event = useRequestEvent();

@@ -1,6 +1,6 @@
 import {useRuntimeConfig} from '#imports';
 import {deleteCookie, defineEventHandler, readBody} from 'h3';
-import type {ModuleOptions} from '../types';
+import type {ModuleOptions} from '../../types';
 
 export default defineEventHandler(async (event) => {
     try {
@@ -11,12 +11,14 @@ export default defineEventHandler(async (event) => {
             throw new Error('Strategy name is required.');
         }
 
-        const {'nuxt-simple-auth': config} = useRuntimeConfig();
+        const runtimeConfig = useRuntimeConfig();
+        const config = runtimeConfig['nuxt-simple-auth'] as ModuleOptions & { twoFactorAuth: boolean };
+
         if (!config) {
             throw new Error('Auth configuration is missing.');
         }
 
-        const {cookie, strategies, twoFactorAuth} = config as ModuleOptions & { twoFactorAuth: boolean };
+        const {cookie, strategies, twoFactorAuth} = config;
         const prefix = (cookie?.prefix && !import.meta.dev ? cookie.prefix : 'auth.') + '';
         const strategyConfig = strategies[strategyName];
 

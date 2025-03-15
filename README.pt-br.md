@@ -15,18 +15,6 @@
 [![Nuxt][nuxt-src]][nuxt-href]
 [![Static Badge](https://img.shields.io/badge/-%E2%99%A5%20Sponsors-ec5cc6?style=flat-square)](https://github.com/sponsors/4sllan)
 
-> **nuxt-simple-auth** is an authentication module for **Nuxt 3**, designed as an **open-source**, **robust**, and *
-*feature-rich** package. It enables **cookie** validation and **CSRF** protection, seamlessly integrating with **Laravel
-Passport**.\
-> Additionally, it supports various cookie parameters for both **login** and **two-factor authentication (2FA)**.\
-> It also includes **SSR authentication** support, ensuring that the user remains authenticated on both the **client**
-> and the **server**.
-
-> While the package is stable in terms of options and behavior, there are still improvements to be made, and some bugs
-> may exist.
-
----
-
 > **nuxt-simple-auth** é um módulo de autenticação para **Nuxt 3**, Ele é um pacote de **código aberto**, **robusto** e
 **repleto de recursos**, permitindo a validação de **cookies** e **CSRF** utilizando **Laravel Passport**.\
 > Além disso, oferece suporte a diversos parâmetros para cookies, tanto no **login** quanto na autenticação em **duplo
@@ -36,6 +24,8 @@ fator (2FA)**.\
 
 > Embora o pacote seja estável em termos de opções e comportamento, ainda há melhorias a serem implementadas e a
 > possibilidade de alguns bugs.
+
+- [Release Notes](/CHANGELOG.md)
 
 ## Start
 
@@ -47,57 +37,9 @@ npx nuxi@latest module add nuxt-simple-auth
 
 ### Installation
 
-> **Add `nuxt-simple-auth` to the `modules` section in `nuxt.config.js`.**
-
 > **Adicione `nuxt-simple-auth` à seção de módulos do `nuxt.config.js`.**
 
 ### Configuration
-
-The configuration must be done in the `nuxt.config.js` file by adding the library to the **modules** section.
-
-In the `auth` property, defining **strategies** is **mandatory**, while **cookies** and **CSRF** settings are **optional
-**.
-
-For authentication, the `endpoints.login` property requires the use of **Laravel Passport**, which must expose
-the `/oauth/token` route.  
-[Laravel Passport Documentation - Client Credentials Grant Tokens](https://laravel.com/docs/12.x/passport#client-credentials-grant-tokens)
-
-This route must return a JSON response containing the following attributes:
-
-- `access_token`
-- `refresh_token`
-- `expires_in`
-
-If you choose to use **2FA** authentication, the package requires the configuration of `endpoints.2fa`, which mandates
-that **Laravel** exposes a specific route.  
-This route should return a JSON response with the following attributes:
-
-- `access_token`
-- `expires_in`
-
-`expires_in`: Must be the number of seconds until the **2FA** access token expires.
-
-[//]: # (Example implementation in Laravel for the `TwoFactorAuthController` route controller:)
-
-[//]: # ()
-
-[//]: # (```php)
-
-[//]: # (return response&#40;&#41;->json&#40;[)
-
-[//]: # (    'access_token' => $twoFactorAuth->token,)
-
-[//]: # (    'expires_in' => $twoFactorAuth->expire_at->timestamp - now&#40;&#41;->timestamp, // Number of seconds until expiration.)
-
-[//]: # (]&#41;;)
-
-[//]: # (```)
-
-After **2FA** validation, the token will be automatically added to the **headers** of requests as a **Bearer Token**,
-with the name `"2fa"`.  
-This allows **Laravel APIs** to validate authentication on protected routes.
-
----
 
 A configuração deve ser realizada no arquivo `nuxt.config.js`, adicionando a biblioteca à seção de **módulos**.
 
@@ -123,21 +65,21 @@ Essa rota deve retornar uma resposta JSON com os seguintes atributos:
 
 `expires_in`: Deve ser o número de segundos até que o token de acesso do **2FA** expire.
 
-[//]: # (Exemplo de implementação no Laravel para o controller da rota `TwoFactorAuthController`:)
+Exemplo de implementação no Laravel para o controller da rota `TwoFactorAuthController`:
 
-[//]: # ()
 
-[//]: # (```php)
 
-[//]: # (return response&#40;&#41;->json&#40;[)
+```php
 
-[//]: # (    'access_token' => $twoFactorAuth->token,)
+return response()->json([
 
-[//]: # (    'expires_in' => $twoFactorAuth->expire_at->timestamp - now&#40;&#41;->timestamp, // Número de segundos até a expiração.)
+    'access_token' => $twoFactorAuth->token,
 
-[//]: # (]&#41;;)
+    'expires_in' => $twoFactorAuth->expire_at->timestamp - now()->timestamp, // Número de segundos até a expiração.
 
-[//]: # (```)
+]);
+
+```
 
 Após a validação do **2FA**, o token será automaticamente adicionado aos **headers** das requisições como um **Bearer
 Token**, com o nome `"2fa"`.  
@@ -181,44 +123,6 @@ export default defineNuxtConfig({
     },
 });
 ```
-
-The `auth.csrf` configuration is also **optional**. Here, you can define the **endpoint** for Laravel’s `/csrf-token`
-route, which is responsible for retrieving the **CSRF Token**. This enhances security by validating protected routes
-that require a **CSRF Token**.
-
-### Example Implementation in Laravel
-
-#### **Define the Route in `web.php`**
-
-```php
-Route::get('/csrf-token', function () {
-    return response()->json(['csrf_token' => csrf_token()])
-        ->header('Access-Control-Allow-Origin', '*')
-        ->header('Access-Control-Allow-Methods', 'GET, POST')
-        ->header('Access-Control-Allow-Headers', 'Content-Type, X-CSRF-TOKEN');
-});
-```
-
-#### **CORS Configuration (`config/cors.php`)**
-
-Add `/csrf-cookie` and `/csrf-token` to the allowed paths in the CORS settings:
-
-```php
-'paths' => ['api/*', 'csrf-cookie', 'csrf-token', 'oauth/*']
-```
-
-#### **CSRF Exceptions (`app/Http/Middleware/VerifyCsrfToken.php`)**
-
-To ensure the token is correctly validated in API routes, add the following exceptions:
-
-```php
-protected $except = [
-    '/api/*'
-];
-```
-
----
-
 A configuração da propriedade `auth.csrf` também é **opcional**. Nela, você pode definir o **endpoint** da
 rota `/csrf-token` do Laravel, que é responsável por fornecer o **CSRF Token**. Isso melhora a segurança ao validar as
 rotas protegidas que utilizam **CSRF Token**.
@@ -256,10 +160,6 @@ protected $except = [
 
 ### Runtime Config
 
-The **runtimeConfig** of Nuxt 3 must also be configured to include a `secret` object.  
-This object should contain the names of your **strategies**, and within each strategy, the following keys are **required
-**:
-
 A configuração do **runtimeConfig** do Nuxt 3 também precisa ser ajustada para incluir um objeto `secret`.  
 Este objeto deve conter os nomes das suas **strategies**, e dentro de cada uma delas, as seguintes chaves são *
 *obrigatórias**:
@@ -290,10 +190,6 @@ export default defineNuxtConfig({
 ```
 
 ### Strategies
-
-The **strategies** configuration follows the structure below, starting with a name of your choice to set up the
-package.  
-The available options are listed, indicating which are **required** and which are **optional**.
 
 As configurações das **strategies** seguem a estrutura abaixo, iniciando com um nome de sua escolha para configurar o
 pacote.  
@@ -368,9 +264,6 @@ As opções disponíveis estão listadas, indicando quais são **obrigatórias**
         }
 ```
 
-**2FA** is optional, but if included in one of the "strategies," it must have a URL and method to enable the "_2fa"
-middleware. This middleware is not global and can be selectively used on Nuxt pages.
-
 O **2FA** é opcional, mas, se incluído em uma das "strategies", deve conter a URL e o método necessários para ativar o
 middleware "_2fa". Esse middleware não é global e pode ser utilizado seletivamente nas páginas do Nuxt.
 
@@ -415,16 +308,6 @@ cookie: {
 ```
 
 ### Middlewares
-
-The **nuxt-simple-auth** package provides two middlewares: **"auth"** and **"_2fa"**.  
-They are **not global** and can be applied selectively to Nuxt pages.
-
-- **auth**: Restricts access to protected pages, ensuring the user is authenticated via **Laravel Passport**, both on
-  the client and server (**SSR**).
-- **_2fa**: Enhances authentication by verifying values stored in **cookies** and **sessionStorage** to validate *
-  *two-factor authentication (2FA)**, also working on both the client and server (**SSR**).
-
----
 
 O pacote **nuxt-simple-auth** disponibiliza dois middlewares: **"auth"** e **"_2fa"**.  
 Eles **não são globais** e podem ser aplicados seletivamente às páginas do Nuxt.
