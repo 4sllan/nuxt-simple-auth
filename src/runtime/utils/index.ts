@@ -1,6 +1,6 @@
 import {createError, navigateTo, useNuxtApp} from "#imports";
 
-export const handleLogout = async (strategy: string | null, redirectPath: string) => {
+export const handleLogout = async (strategy: string | null, redirectPath: string, middleware: string = "auth") => {
     const nuxtApp = useNuxtApp();
     const $auth = nuxtApp?.$auth;
 
@@ -22,7 +22,9 @@ export const handleLogout = async (strategy: string | null, redirectPath: string
 
     throw createError({
         statusCode: 401,
-        statusMessage: "You do not have permission to access this page."
+        statusMessage: middleware === "auth" ?
+            "You do not have permission to access this page." :
+            "You do not have permission to access this page without two-factor authentication."
     })
 };
 
