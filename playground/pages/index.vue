@@ -1,9 +1,11 @@
 <script setup>
-
+useAsyncData(() => {
+  navigateTo("/auth")
+})
 </script>
 
 <template>
-<div>oi</div>
+
 </template>
 
 <style scoped>
