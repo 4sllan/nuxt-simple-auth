@@ -8,6 +8,12 @@ interface AuthSession {
     strategyName?: string;
 }
 
+/**
+ * Retrieves the authentication session from HTTP-only cookies.
+ * @param event The H3 event from the request.
+ * @returns An object containing token, expires, and strategyName.
+ * @throws An error if the authentication configuration is missing.
+ */
 export function getAuthSession(event: H3Event): AuthSession {
     const runtimeConfig = useRuntimeConfig();
     const config = runtimeConfig['nuxt-simple-auth'] as ModuleOptions;
