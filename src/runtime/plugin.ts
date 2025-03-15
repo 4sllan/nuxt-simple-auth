@@ -272,12 +272,16 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 const endpoint = this.getEndpointsUser(this._state.strategy!)
                 if (!endpoint?.url || !endpoint?.method) return false;
 
-                this.$headers.set('Content-Type', 'application/json');
+                const headers = this.$headers instanceof Headers ?
+                    Object.fromEntries(this.$headers.entries()) : this.$headers;
 
                 const data = await $fetch<ProfileResponse>(endpoint.url, {
                     baseURL,
                     method: endpoint.method,
-                    headers: this.$headers
+                    headers: {
+                        ...headers,
+                        'Content-Type': 'application/json'
+                    }
                 });
 
                 if (!data) return false;
@@ -298,7 +302,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         }
     }
 
-    const $auth: AuthInstance = new Auth(JSON.parse(`<%= JSON.stringify(options, null, 2) %>`));
+    const $auth = new Auth(JSON.parse(`<%= JSON.stringify(options, null, 2) %>`));
     const event = import.meta.server ? useRequestEvent() : undefined;
     await $auth.csrfToken(event);
     await $auth.initialize();
