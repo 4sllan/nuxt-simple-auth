@@ -1,34 +1,37 @@
-name: ci
+name: 🚀 Criar Release
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - 'v*'  # Dispara quando um novo tag versão é criado (ex: v1.0.0)
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npm test
 
-  publish-gpr:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - name: 🛎️ Checkout do código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Node.js
+        uses: actions/setup-node@v4
         with:
-          registry-url: 'https://registry.npmjs.org/'
-          node-version-file: '.nvmrc'
+          node-version: 18
           cache: 'npm'
-      - run: npm ci
-      - run: npm publish
+
+      - name: 📦 Instalar dependências
+        run: npm ci
+
+      - name: 📦 Construir pacote
+        run: npm run build
+
+      - name: 🚀 Criar Release no GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: "Nova versão publicada automaticamente 🚀"
+          draft: false
+          prerelease: false
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
