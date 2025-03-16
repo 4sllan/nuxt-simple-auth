@@ -8,6 +8,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Necessário para criar releases com GITHUB_TOKEN
 
     steps:
       - name: 🛎️ Checkout do código
@@ -25,13 +27,29 @@ jobs:
       - name: 📦 Construir pacote
         run: npm run build
 
+      - name: 📄 Verificar se CHANGELOG.md existe
+        run: |
+          if [ ! -f CHANGELOG.md ]; then
+            echo "Arquivo CHANGELOG.md não encontrado!"
+            exit 1
+          fi
+
+      - name: 📄 Adicionar Changelog na Release
+        id: changelog
+        run: |
+          VERSION="v${{ github.ref_name }}"
+          awk "/^## \[/{if (p) exit; p=1} p" CHANGELOG.md > temp_changelog.md
+          echo "BODY<<EOF" >> $GITHUB_ENV
+          cat temp_changelog.md >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: 🚀 Criar Release no GitHub
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
-          body: "Nova versão publicada automaticamente 🚀"
+          body: ${{ env.BODY }}
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}  # Ou remova essa linha se estiver usando GITHUB_TOKEN padrão
