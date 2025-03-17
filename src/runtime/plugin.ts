@@ -70,7 +70,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         }
 
         private getEndpointsUser(strategyName: string): { url: string, method: string } | null {
-            return this.options.strategies?.[strategyName]?.endpoints.user ?? null;
+            return this.options.strategies?.[strategyName]?.endpoints.user ?? null
         }
 
         private getHandler(strategyName: string, key: string): string | null {
@@ -133,9 +133,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
                 if (!response.token) throw new Error("Token is missing in the response");
 
-                sessionStorage.setItem(this._prefix + `_token.` + strategyName, response.token);
-                sessionStorage.setItem(this._prefix + `strategy`, strategyName);
-                sessionStorage.setItem(this._prefix + `_token_expiration.` + strategyName, response.expires);
+                sessionStorage.setItem(this._prefix + `_token.` + strategyName, response.token)
+                sessionStorage.setItem(this._prefix + `strategy`, strategyName)
+                sessionStorage.setItem(this._prefix + `_token_expiration.` + strategyName, response.expires)
 
                 this._state.strategy = strategyName ?? null;
                 this.$headers.set('Authorization', response.token);
@@ -343,5 +343,5 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         return await $auth._2fa(strategyName, code);
     };
 
-    nuxtApp.provide('auth', exposed);
+    nuxtApp.provide('auth', exposed)
 })
