@@ -37,7 +37,7 @@ jobs:
       - name: 📄 Adicionar Changelog na Release
         id: changelog
         run: |
-          VERSION="v${{ github.ref_name }}"
+          VERSION="${{ github.ref_name }}"
           awk "/^## \[/{if (p) exit; p=1} p" CHANGELOG.md > temp_changelog.md
           echo "BODY<<EOF" >> $GITHUB_ENV
           cat temp_changelog.md >> $GITHUB_ENV
@@ -53,3 +53,8 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}  # Ou remova essa linha se estiver usando GITHUB_TOKEN padrão
+
+#      - name: 🚀 Publicar no NPM
+#        run: npm publish --access public
+#        env:
+#          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,14 +1,10 @@
 {
   "name": "nuxt-simple-auth",
-  "version": "1.6.7",
+  "version": "1.6.8",
   "description": "Authentication module simple for Nuxt.js",
   "repository": "https://github.com/4sllan/nuxt-simple-auth",
   "author": "Aslan Gama <@4slan>",
   "keywords": [
-    "Laravel passport",
-    "Laravel",
-    "auth",
-    "Nuxt.js 3",
     "Nuxt 3 authentication",
     "Laravel Passport integration",
     "Nuxt authentication module",
@@ -16,9 +12,7 @@
     "Nuxt 3 2FA support",
     "Secure cookies authentication",
     "Nuxt httpOnly cookies",
-    "OAuth authentication Nuxt",
-    "Open-source authentication module",
-    "Nuxt 3 security"
+    "OAuth authentication Nuxt"
   ],
   "license": "MIT",
   "type": "module",
@@ -60,6 +54,7 @@
     "defu": "^6.1.4",
     "h3": "^1.15.0",
     "lodash.kebabcase": "^4.1.1",
-    "ofetch": "^1.4.1"
+    "ofetch": "^1.4.1",
+    "unstorage": "^1.15.0"
   }
 }
