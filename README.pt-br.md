@@ -220,7 +220,7 @@ As opções disponíveis estão listadas, indicando quais são **obrigatórias**
 
 - ~~**`token`**: Name of the object returned from Laravel authentication. It is usually `"access_token"`. _(Required)_~~
 
-- **`user`**: Name of the object containing user data. _(Required)_
+- **`user`**: Name of the object containing user data. _(Optional)_
 
 ---
 
@@ -230,9 +230,6 @@ As opções disponíveis estão listadas, indicando quais são **obrigatórias**
                 redirect: {
                     logout: "/auth",
                     login: "/auth"
-                },
-                token: {
-                    property: "access_token",
                 },
                 user: {
                     property: "profile",
@@ -247,12 +244,6 @@ As opções disponíveis estão listadas, indicando quais são **obrigatórias**
                 redirect: {
                     logout: "/auth",
                     login: "/auth"
-                },
-                token: {
-                    property: "access_token",
-                },
-                user: {
-                    property: "profile",
                 },
                 endpoints: {
                     login: {url: "/oauth/token", method: "post"},
