@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.1.3] - 2025-03-17
+## [1.1.4] - 2025-03-17
 
 ### 🔧 Improvements in Utils
 #### 🎯 Objectives
