@@ -2,6 +2,83 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.3] - 2025-03-17
+
+### 🔧 Improvements in Utils
+#### 🎯 Objectives
+- ✅ Implement a storage system compatible with both client and server environments.
+- ✅ Ensure compatibility with `unstorage` and support for different storage drivers.
+- ✅ Guarantee correct processing of JSON values.
+- ✅ Standardize key naming by removing dynamic prefixes and suffixes.
+
+#### 🚀 Implemented Features
+- **`set(key: string, value: T): Promise<void>`**
+  - Stores a value associated with a key.
+  - **Client-side:** Uses `sessionStorage`.
+  - **Server-side:** Uses `unstorage`, automatically removing dynamic prefixes and suffixes from keys.
+  - All values are stored in JSON format.
+
+- **`get(key: string): Promise<T | null>`**
+  - Retrieves a stored value.
+  - First checks `sessionStorage`, and if not found, looks in `unstorage`.
+  - Converts non-string values to string before applying `JSON.parse()`.
+
+- **`remove(key: string): Promise<void>`**
+  - Removes an item from storage.
+  - Deletes the entry from both `sessionStorage` and `unstorage` using the processed key.
+
+- **`clear(): Promise<void>`**
+  - Clears all stored items.
+  - Removes data from `sessionStorage` and `unstorage`.
+
+#### 🔄 Improvements and Adjustments
+- **Automatic Base Key Extraction**
+  - Implemented `extractBaseKey(key: string)`, which automatically removes dynamic prefixes and suffixes.
+  - Ensures more consistent data storage and retrieval.
+
+- **Enhanced Type Handling in `get()`**
+  - To prevent type errors, `unstorage.getItem(baseKey)` now always returns strings before being processed by `JSON.parse()`.
+
+#### 🛠 Adjustments in `StrategiesOptions` Typing
+- **Before:**
+  ```ts
+  user: { property: string } // Required
+  ```
+- **Now:**
+  ```ts
+  user?: { property?: string } // Optional
+  ```
+
+----
+
+### ❤️ Contribution by Pamela ([Pull Request](https://github.com/4sllan/nuxt-simple-auth/pull/3))
+
+#### 🔀 Authentication Improvements
+##### **Redirect to Login URL**
+
+- Implemented in the `loginWith()` function.
+- Now, before continuing navigation, it checks if a redirect to login is configured:
+  ```ts
+  const redirectUrl = this.getRedirect(strategyName)?.login;
+
+  if (redirectUrl) {
+      await navigateTo(redirectUrl);
+  }
+  ```
+- ✔️ Ensures the user is correctly redirected after login.
+- ✔️ Prevents navigation to `undefined` or invalid URLs.
+
+##### **Improved User Profile Property Verification**
+
+- Enhanced security when accessing user profile properties.
+- Now, before accessing any property, it verifies if it actually exists:
+  ```ts
+  property ? data[property as keyof ProfileResponse] : data ?? null
+  ```
+- ✔️ Prevents errors when accessing undefined properties.
+
+---
+
 ## 🚀 [1.1.2] - 2025-03-16
 
 ### ✨ Added
