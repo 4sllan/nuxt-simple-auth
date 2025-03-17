@@ -1,4 +1,7 @@
 import {createError, navigateTo, useNuxtApp} from "#imports";
+import { createStorage } from 'unstorage';
+import type { Storage } from 'unstorage';
+import memoryDriver from 'unstorage/drivers/memory';
 
 /**
  * Handles user logout by clearing session data and redirecting.
@@ -70,50 +73,54 @@ export const getRedirectPath = (strategy: string | null): string => {
 };
 
 /**
- * Utility for managing session storage in the browser.
+ * Universal storage utility for managing session-like data.
+ * Uses memory storage in the client and cookies on the server.
+ */
+const unStorage: Storage = createStorage({
+    driver: memoryDriver()
+});
+
+/**
+ * Storage utility with type-safe methods for setting, getting, and removing items.
  */
 export const storage = {
     /**
-     * Stores a value in session storage.
+     * Stores a value in the storage.
      * @param key - The key under which the value will be stored.
      * @param value - The value to store, automatically stringified if necessary.
      */
-    set: (key: string, value: any) => {
-        if (typeof window !== 'undefined') {
-            sessionStorage.setItem(key, JSON.stringify(value));
-        }
+    set<T>(key: string, value: T): Promise<void> {
+        return unStorage.setItem(key, JSON.stringify(value));
     },
+
     /**
-     * Retrieves a value from session storage.
+     * Retrieves a value from the storage.
      * @param key - The key of the stored value.
-     * @returns The parsed value if it was JSON, otherwise the raw string.
+     * @returns A promise resolving to the parsed value if it was JSON, otherwise the raw string.
      */
-    get: (key: string): any => {
-        if (typeof window !== 'undefined') {
-            const item = sessionStorage.getItem(key);
-            try {
-                return item ? JSON.parse(item) : null;
-            } catch {
-                return item; // Se não for JSON, retorna como string
-            }
+    async get<T>(key: string): Promise<T | null> {
+        const item = await unStorage.getItem(key);
+        if (!item) return null;
+        try {
+            return JSON.parse(String(item)) as T;
+        } catch {
+            return item as T; // If not JSON, return as raw value
         }
-        return null;
     },
+
     /**
-     * Removes a specific item from session storage.
+     * Removes a specific item from the storage.
      * @param key - The key of the item to remove.
      */
-    remove: (key: string) => {
-        if (typeof window !== 'undefined') {
-            sessionStorage.removeItem(key);
-        }
+    remove(key: string): Promise<void> {
+        return unStorage.removeItem(key);
     },
+
     /**
-     * Clears all session storage data.
+     * Clears all stored data.
      */
-    clear: () => {
-        if (typeof window !== 'undefined') {
-            sessionStorage.clear();
-        }
+    clear(): Promise<void> {
+        return unStorage.clear();
     }
 };
+
