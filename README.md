@@ -187,9 +187,7 @@ The available options are listed, indicating which are **required** and which ar
     - `logout`: _(Optional)_
         - `alias`: _(Optional)_
 
-- ~~**`token`**: Name of the object returned from Laravel authentication. It is usually `"access_token"`. _(Required)_~~
-
-- **`user`**: Name of the object containing user data. _(Required)_
+- **`user`**: Name of the object containing user data. _(Optional)_
 
 ---
 
@@ -213,9 +211,6 @@ The available options are listed, indicating which are **required** and which ar
                 redirect: {
                     logout: "/auth",
                     login: "/auth"
-                },
-                user: {
-                    property: "profile",
                 },
                 endpoints: {
                     login: {url: "/oauth/token", method: "post"},
