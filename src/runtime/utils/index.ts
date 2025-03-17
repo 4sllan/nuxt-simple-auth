@@ -1,6 +1,6 @@
 import {createError, navigateTo, useNuxtApp} from "#imports";
-import { createStorage } from 'unstorage';
-import type { Storage } from 'unstorage';
+import {createStorage} from 'unstorage';
+import type {Storage} from 'unstorage';
 import memoryDriver from 'unstorage/drivers/memory';
 
 /**
@@ -81,6 +81,16 @@ const unStorage: Storage = createStorage({
 });
 
 /**
+ * Extracts the base key name by removing dynamic prefixes and suffixes.
+ * Example: "auth._token.local" -> "token"
+ * @param key - The original key name.
+ * @returns The extracted base key.
+ */
+function extractBaseKey(key: string): string {
+    return key.replace(/^auth\./, '').replace(/\.local$/, '');
+}
+
+/**
  * Storage utility with type-safe methods for setting, getting, and removing items.
  */
 export const storage = {
@@ -90,7 +100,11 @@ export const storage = {
      * @param value - The value to store, automatically stringified if necessary.
      */
     set<T>(key: string, value: T): Promise<void> {
-        return unStorage.setItem(key, JSON.stringify(value));
+        const baseKey = extractBaseKey(key);
+        if (typeof window !== 'undefined') {
+            sessionStorage.setItem(key, JSON.stringify(value));
+        }
+        return unStorage.setItem(baseKey, JSON.stringify(value));
     },
 
     /**
@@ -99,10 +113,18 @@ export const storage = {
      * @returns A promise resolving to the parsed value if it was JSON, otherwise the raw string.
      */
     async get<T>(key: string): Promise<T | null> {
-        const item = await unStorage.getItem(key);
+        const baseKey = extractBaseKey(key);
+        let item: string | null = null;
+        if (typeof window !== 'undefined') {
+            item = sessionStorage.getItem(key);
+        }
+        if (!item) {
+            const storedItem = await unStorage.getItem(baseKey);
+            item = storedItem !== null ? String(storedItem) : null;
+        }
         if (!item) return null;
         try {
-            return JSON.parse(String(item)) as T;
+            return JSON.parse(item) as T;
         } catch {
             return item as T; // If not JSON, return as raw value
         }
@@ -113,14 +135,20 @@ export const storage = {
      * @param key - The key of the item to remove.
      */
     remove(key: string): Promise<void> {
-        return unStorage.removeItem(key);
+        const baseKey = extractBaseKey(key);
+        if (typeof window !== 'undefined') {
+            sessionStorage.removeItem(key);
+        }
+        return unStorage.removeItem(baseKey);
     },
 
     /**
      * Clears all stored data.
      */
     clear(): Promise<void> {
+        if (typeof window !== 'undefined') {
+            sessionStorage.clear();
+        }
         return unStorage.clear();
     }
 };
-

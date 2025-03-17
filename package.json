@@ -5,10 +5,6 @@
   "repository": "https://github.com/4sllan/nuxt-simple-auth",
   "author": "Aslan Gama <@4slan>",
   "keywords": [
-    "Laravel passport",
-    "Laravel",
-    "auth",
-    "Nuxt.js 3",
     "Nuxt 3 authentication",
     "Laravel Passport integration",
     "Nuxt authentication module",
@@ -16,9 +12,7 @@
     "Nuxt 3 2FA support",
     "Secure cookies authentication",
     "Nuxt httpOnly cookies",
-    "OAuth authentication Nuxt",
-    "Open-source authentication module",
-    "Nuxt 3 security"
+    "OAuth authentication Nuxt"
   ],
   "license": "MIT",
   "type": "module",
