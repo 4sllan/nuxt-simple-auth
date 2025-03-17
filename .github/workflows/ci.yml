@@ -53,8 +53,3 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}  # Ou remova essa linha se estiver usando GITHUB_TOKEN padrão
-
-#      - name: 🚀 Publicar no NPM
-#        run: npm publish --access public
-#        env:
-#          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

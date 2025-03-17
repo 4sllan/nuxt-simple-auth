@@ -49,8 +49,6 @@ All notable changes to this project will be documented in this file.
   user?: { property?: string } // Optional
   ```
 
-----
-
 ### ❤️ Contribution by Pamela ([Pull Request](https://github.com/4sllan/nuxt-simple-auth/pull/3))
 
 #### 🔀 Authentication Improvements
