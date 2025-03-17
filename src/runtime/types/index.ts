@@ -48,6 +48,10 @@ export type redirectOptions = {
 
 
 export type StrategiesOptions = {
+    /**
+     * Name of the object containing user data. (Optional)
+     * @type string
+     */
     user: { property?: string }
     endpoints: EndpointsOptions
     redirect: redirectOptions
