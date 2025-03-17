@@ -111,7 +111,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 if (data) {
                     const property = this.getUserProperty(this._state.strategy);
                     this._state = {
-                        user: data[property as keyof ProfileResponse] ?? null,
+                        user: property ? data[property as keyof ProfileResponse] : data ?? null,
                         loggedIn: true,
                         strategy: strategy ?? null,
                     };
@@ -131,7 +131,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                     body: {strategyName, value}
                 });
 
-                if (!response.token) throw new Error("Token is missing in the response")
+                if (!response.token) throw new Error("Token is missing in the response");
 
                 sessionStorage.setItem(this._prefix + `_token.` + strategyName, response.token)
                 sessionStorage.setItem(this._prefix + `strategy`, strategyName)
@@ -144,7 +144,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 if (data) {
                     const property = this.getUserProperty(strategyName);
                     this._state = {
-                        user: data[property as keyof ProfileResponse] ?? null,
+                        user: property ? data[property as keyof ProfileResponse] : data ?? null,
                         loggedIn: true,
                         strategy: strategyName ?? null,
                     };
@@ -152,8 +152,13 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                     this._state = store.value;
                 }
 
-                return response ?? Promise.reject('No data returned');
+                const redirectUrl = this.getRedirect(strategyName)?.login;
 
+                if (redirectUrl) {
+                    await navigateTo(redirectUrl);
+                }
+
+                return response ?? Promise.reject('No data returned');
             } catch (error) {
                 console.error('Login failed:', error);
                 return Promise.reject(error);
@@ -175,7 +180,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                     loggedIn: false,
                     strategy: "",
                 };
-                store.value = this._state
+                store.value = this._state;
 
                 sessionStorage.clear();
 
@@ -269,7 +274,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
             try {
                 const baseURL = useRuntimeConfig().public.baseURL;
 
-                const endpoint = this.getEndpointsUser(this._state.strategy!)
+                const endpoint = this.getEndpointsUser(this._state.strategy!);
                 if (!endpoint?.url || !endpoint?.method) return false;
 
                 const headers = this.$headers instanceof Headers ?
@@ -288,12 +293,12 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
                 const property = this.getUserProperty(this._state.strategy);
                 store.value = {
-                    user: data[property as keyof ProfileResponse] ?? null,
+                    user: property ? data[property as keyof ProfileResponse] : data ?? null,
                     strategy: this._state.strategy ?? null,
                     loggedIn: true
                 }
 
-                this._state = store.value
+                this._state = store.value;
                 return data;
             } catch (error) {
                 console.error('Error fetching profile:', error);
