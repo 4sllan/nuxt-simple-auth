@@ -43,9 +43,6 @@ export default defineNuxtConfig({
                     logout: "/auth",
                     login: "/auth"
                 },
-                token: {
-                    property: "access_token",
-                },
                 user: {
                     property: "profile",
                 },
@@ -59,9 +56,6 @@ export default defineNuxtConfig({
                 redirect: {
                     logout: "/auth",
                     login: "/auth"
-                },
-                token: {
-                    property: "access_token",
                 },
                 user: {
                     property: "profile",
