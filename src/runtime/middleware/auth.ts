@@ -6,7 +6,7 @@ import {
     useRequestEvent,
     defineNuxtRouteMiddleware
 } from '#imports';
-import {handleLogout, validateSession, getRedirectPath} from '../utils'
+import {handleLogout, validateSession, getRedirectPath} from '#auth-utils'
 
 export default defineNuxtRouteMiddleware(async () => {
     const {$auth} = useNuxtApp();
