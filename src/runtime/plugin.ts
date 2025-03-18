@@ -7,6 +7,7 @@ import {
 } from '#imports'
 import {parseCookies, setCookie} from 'h3';
 import {$fetch} from 'ofetch';
+import {storage} from "#auth-utils";
 import type {
     AuthState,
     ProfileResponse,
