@@ -144,7 +144,7 @@ export default defineNuxtModule<ModuleOptions & { twoFactorAuth: boolean }>({
             }
         })
 
-
+        nuxt.options.alias['#auth-utils'] = resolve('./runtime/utils')
         nuxt.options.runtimeConfig[PACKAGE_NAME] = options;
 
         logger.success('`nuxt-simple-auth` setup done')
