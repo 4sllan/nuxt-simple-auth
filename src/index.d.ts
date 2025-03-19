@@ -2,7 +2,7 @@ declare module '#auth-utils' {
     /**
      * Storage utility class for managing stored values.
      */
-    export class Storage {
+    export class storage {
         /**
          * Stores a value in the storage.
          * @param key - The key under which the value will be stored.
