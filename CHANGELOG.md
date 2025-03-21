@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+
+## [1.1.5] - 2025-03-21
+
+### 🔐 Authentication State Persistence
+#### 1️⃣ Use of `localStorage` in `initialize()`
+- `localStorage` is used to store and retrieve `token`, `strategy`, and `token_expiration`.
+- Ensures authentication state persists across browser tabs.
+
+#### 2️⃣ Persistence Confirmation in `loginWith()`
+- The storage logic in `localStorage` remains intact.
+- Credentials are correctly stored upon login, ensuring authentication continuity.
+
+#### 3️⃣ Complete Credential Removal in `logout()`
+- `localStorage.clear()` has been implemented to remove all stored credentials.
+- This approach ensures a complete logout, preventing unauthorized access after the user logs out.
+
+#### ✅ Benefits & Impacts
+- ✔️ **Enhanced Persistence:** Maintains session across different browser tabs.
+- ✔️ **Continuous Authentication:** Avoids repeated logins when reloading the page.
+- ✔️ **Secure Logout:** Removes all credentials, preventing unintended reuse of stored data.
+
+---
+
 ## [1.1.4] - 2025-03-17
 
 ### 🔧 Improvements in Utils
