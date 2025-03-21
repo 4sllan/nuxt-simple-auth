@@ -96,8 +96,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                     strategy = cookies[this._prefix + `strategy`]
                     token = strategy ? cookies[this._prefix + `_token.` + strategy] : null;
                 } else {
-                    strategy = sessionStorage.getItem(this._prefix + `strategy`);
-                    token = strategy ? sessionStorage.getItem(this._prefix + `_token.` + strategy) : null;
+                    strategy =  localStorage.getItem(this._prefix + `strategy`);
+                    token = strategy ?  localStorage.getItem(this._prefix + `_token.` + strategy) : null;
                 }
 
                 if (!strategy || !token) {
@@ -134,9 +134,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
                 if (!response.token) throw new Error("Token is missing in the response");
 
-                sessionStorage.setItem(this._prefix + `_token.` + strategyName, response.token);
-                sessionStorage.setItem(this._prefix + `strategy`, strategyName);
-                sessionStorage.setItem(this._prefix + `_token_expiration.` + strategyName, response.expires);
+                localStorage.setItem(this._prefix + `_token.` + strategyName, response.token);
+                localStorage.setItem(this._prefix + `strategy`, strategyName);
+                localStorage.setItem(this._prefix + `_token_expiration.` + strategyName, response.expires);
 
                 this._state.strategy = strategyName ?? null;
                 this.$headers.set('Authorization', response.token);
@@ -183,7 +183,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 };
                 store.value = this._state;
 
-                sessionStorage.clear();
+                localStorage.clear();
 
                 const redirectUrl = this.getRedirect(strategyName)?.logout ?? '/';
                 await navigateTo(redirectUrl);
@@ -214,8 +214,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
                 }
 
                 if (import.meta.client) {
-                    sessionStorage.setItem(this._prefix + "_2fa." + strategyName, response.token);
-                    sessionStorage.setItem(this._prefix + "_2fa_expiration." + strategyName, response.expires);
+                    localStorage.setItem(this._prefix + "_2fa." + strategyName, response.token);
+                    localStorage.setItem(this._prefix + "_2fa_expiration." + strategyName, response.expires);
                 }
 
                 this.$headers.set('2fa', response.token);
