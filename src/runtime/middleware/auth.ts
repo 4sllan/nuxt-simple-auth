@@ -6,7 +6,7 @@ import {
     useRequestEvent,
     defineNuxtRouteMiddleware
 } from '#imports';
-import {handleLogout, validateSession, getRedirectPath} from '../utils'
+import {handleLogout, validateSession, getRedirectPath} from '#auth-utils'
 
 export default defineNuxtRouteMiddleware(async () => {
     const {$auth} = useNuxtApp();
@@ -38,9 +38,9 @@ export default defineNuxtRouteMiddleware(async () => {
     }
 
     if (import.meta.client) {
-        const strategy = sessionStorage.getItem($auth.prefix + `strategy`);
-        const token = strategy ? sessionStorage.getItem($auth.prefix + `_token.` + strategy) : null;
-        const expires = strategy ? sessionStorage.getItem($auth.prefix + `_token_expiration.` + strategy) : null;
+        const strategy =  localStorage.getItem($auth.prefix + `strategy`);
+        const token = strategy ?  localStorage.getItem($auth.prefix + `_token.` + strategy) : null;
+        const expires = strategy ?  localStorage.getItem($auth.prefix + `_token_expiration.` + strategy) : null;
         //
         if (!validateSession(strategy, token, expires) || $auth.strategy !== strategy || $auth.strategy !== store.value.strategy) {
             return await handleLogout(strategy, getRedirectPath(strategy));

@@ -41,7 +41,7 @@ export default defineNuxtConfig({
             local: {
                 redirect: {
                     logout: "/auth",
-                    login: "/auth"
+                    login: "/auth/verification"
                 },
                 user: {
                     property: "profile",

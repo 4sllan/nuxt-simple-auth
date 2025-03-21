@@ -59,6 +59,8 @@ useAsyncData(() => {
   if(import.meta.client){
     resendToken2fa()
   }
+
+  return true
 })
 </script>
 <template>
