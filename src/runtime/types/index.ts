@@ -1,15 +1,3 @@
-export interface ModuleHooks {
-    'my-module:init': any
-}
-
-export interface RuntimeModuleHooks {
-    'my-module:runtime-hook': any
-}
-
-export interface ModulePublicRuntimeConfig {
-    NAME: string
-}
-
 // Type definition for cookie options
 type CookieOption = {
     httpOnly?: boolean; // Ensures the cookie is only accessible via HTTP (not available to JavaScript in the browser)
