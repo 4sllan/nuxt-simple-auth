@@ -10,19 +10,23 @@ export interface ModulePublicRuntimeConfig {
     NAME: string
 }
 
+// Type definition for cookie options
 type CookieOption = {
-    httpOnly?: boolean;
-    secure?: boolean;
-    sameSite?: "lax" | "strict" | "none";
-    priority?: "low" | "medium" | "high";
-    maxAge?: number;
-    domain?: string;
-    expires?: Date;
+    httpOnly?: boolean; // Ensures the cookie is only accessible via HTTP (not available to JavaScript in the browser)
+    secure?: boolean; // Requires HTTPS for the cookie to be sent
+    sameSite?: "lax" | "strict" | "none"; // Controls cross-site cookie sharing
+    priority?: "low" | "medium" | "high"; // Defines the cookie's priority in the browser
+    maxAge?: number; // Cookie lifespan in seconds
+    domain?: string; // The domain for which the cookie is valid
+    expires?: Date; // Expiration date of the cookie
 }
 
+// Authentication cookie configuration
 type AuthOptionsCookie = {
-    options: CookieOption
-    prefix: string
+    options: CookieOption;
+    prefix: "__Secure-" | "__Host-" | "auth."; // Cookie prefix
+    // "__Secure-" and "__Host-" are used in production for enhanced security.
+    // "auth." is used only in development mode.
 }
 
 type fetchOption = {
@@ -48,11 +52,7 @@ export type redirectOptions = {
 
 
 export type StrategiesOptions = {
-    /**
-     * Name of the object containing user data. (Optional)
-     * @type string
-     */
-    user?: { property?: string }
+    user?: { property?: string } // Name of the object containing user data. (Optional)
     endpoints: EndpointsOptions
     redirect: redirectOptions
 }
