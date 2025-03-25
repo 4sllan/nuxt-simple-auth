@@ -32,10 +32,10 @@ export default defineNuxtConfig({
             options: {
                 httpOnly: true,
                 secure: true,
-                sameSite: 'Lax',
+                sameSite: 'lax',
                 priority: 'high',
             },
-            prefix: '__Secure-auth.'
+            prefix: '__Secure-'
         },
         strategies: {
             local: {
