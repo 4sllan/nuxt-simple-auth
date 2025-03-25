@@ -22,12 +22,11 @@ type FetchOption = {
     url: string; // API endpoint URL
     method: string; // HTTP method (e.g., GET, POST, PUT, DELETE)
     alias?: string; // Optional alias for easier reference
-    proxy?: boolean; // If true (default), the request will be made through the Nuxt backend.
 }
 
 // Type definition for authentication-related API endpoints
 type EndpointsOptions = {
-    login: FetchOption // Endpoint for user login
+    login: FetchOption; // Endpoint for user login
     user: { url: string; method: string }; // Endpoint to fetch user data
     "2fa"?: FetchOption; // Optional endpoint for two-factor authentication (2FA)
     refresh?: FetchOption; // Optional endpoint to refresh authentication tokens
