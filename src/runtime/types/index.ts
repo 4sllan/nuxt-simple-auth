@@ -22,11 +22,12 @@ type FetchOption = {
     url: string; // API endpoint URL
     method: string; // HTTP method (e.g., GET, POST, PUT, DELETE)
     alias?: string; // Optional alias for easier reference
+    proxy?: boolean
 }
 
 // Type definition for authentication-related API endpoints
 type EndpointsOptions = {
-    login: FetchOption; // Endpoint for user login
+    login: FetchOption // Endpoint for user login
     user: { url: string; method: string }; // Endpoint to fetch user data
     "2fa"?: FetchOption; // Optional endpoint for two-factor authentication (2FA)
     refresh?: FetchOption; // Optional endpoint to refresh authentication tokens
@@ -74,47 +75,61 @@ export type AuthState = {
     strategy: string; // Name of the active strategy (must match a key in StrategiesOptions)
 };
 
+// Response format for user profile retrieval
 export interface ProfileResponse {
-    profile: any;
-    strategyName: string;
-    token: string;
+    profile: any; // User profile data (structure depends on the authentication strategy)
+    strategyName: string; // Name of the authentication strategy used
+    token: string; // Authentication token
 }
 
+// Response format for authentication actions (e.g., login, token refresh)
 export interface AuthResponse {
-    token: string;
-    expires: string;
-    refresh_token: string;
+    token: string; // Access token for authentication
+    expires: string; // Token expiration timestamp
+    refresh_token: string; // Refresh token for renewing authentication
 }
 
+// Interface for the authentication instance
 export interface AuthInstance {
-    $headers: Headers;
-    readonly _prefix: string;
-    readonly options: ModuleOptions;
-    readonly state: AuthState;
+    $headers: Headers; // HTTP headers used for authentication
+    readonly _prefix: string; // Default prefix for authentication cookies/tokens
+    readonly options: ModuleOptions; // Authentication module configuration options
+    readonly state: AuthState; // Current authentication state
 
+    // Gets the authenticated user's data (or null if not authenticated)
     get user(): any | null;
 
+    // Gets the name of the active authentication strategy (or null if none is active)
     get strategy(): string | null;
 
+    // Checks if the user is authenticated
     get loggedIn(): boolean;
 
+    // Gets the HTTP headers used for authentication
     get headers(): Headers;
 
+    // Gets the authentication prefix (or null if none)
     get prefix(): string | null;
 
-    set headers(headers: Headers)
+    // Sets new HTTP headers for authentication
+    set headers(headers: Headers);
 
+    // Gets the redirection URLs for a given authentication strategy
+    getRedirect(strategyName: string): Record<string, string> | null;
 
-    getRedirect(strategyName: string): Record<string, string> | null
+    // Retrieves the CSRF token if required
+    csrfToken(event?: any): Promise<boolean>;
 
-    csrfToken(event?: any): Promise<boolean>
+    // Initializes the authentication instance (typically called on app load)
+    initialize(): Promise<void>;
 
-    initialize(): Promise<void>
-
+    // Logs in using a specific authentication strategy
     loginWith(strategyName: string, value: any): Promise<any>;
 
+    // Logs out from the specified authentication strategy
     logout(strategyName: string): Promise<void>;
 
+    // Sends the two-factor authentication (2FA) code for validation
     _2fa(strategyName: string, code: string): Promise<{ success: boolean }>;
-
 }
+
