@@ -22,7 +22,7 @@ type FetchOption = {
     url: string; // API endpoint URL
     method: string; // HTTP method (e.g., GET, POST, PUT, DELETE)
     alias?: string; // Optional alias for easier reference
-    proxy?: boolean
+    proxy?: boolean; // If true (default), the request will be made through the Nuxt backend.
 }
 
 // Type definition for authentication-related API endpoints
