@@ -7,6 +7,7 @@ const form = reactive({});
 const hideField = ref(false);
 
 const router = useRouter();
+const route = useRoute();
 const {$auth, $toast} = useNuxtApp();
 
 const submit = (value, {resetForm, setErrors}) => {
@@ -25,6 +26,12 @@ const submit = (value, {resetForm, setErrors}) => {
         });
       });
 };
+
+useAsyncData(() => {
+  if($auth.loggedIn){
+    router.push({path: "/auth/verification"});
+  }
+})
 </script>
 <template>
   <v-card flat>
