@@ -65,6 +65,6 @@ export const getRedirectPath = (strategy: string | null): string => {
         return '/';
     }
 
-    const {login, callback, home} = $auth.getRedirect(strategy);
+    const {login, callback, home} = $auth.getRedirect(strategy) || {};
     return callback || home || login || '/';
 };
