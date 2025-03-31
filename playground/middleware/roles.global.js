@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   console.log($auth)
 
 
-  $auth.headers.set("X-CSRF-TOKEN", "1yU9FS7SMPah5O7KXA5O7KXWMWMA5O7KXWMA")
+  $auth.headers.set("X-CSRF-TOKEN", "1yU9FS7SMPah5O7KXAKXWMWMA5O7KXWMA")
   console.log($auth.headers, 'middleware')
   console.log($auth.headers.get("X-CSRF-TOKEN"), 'middleware')
   console.log($auth.strategy, 'middleware')
