@@ -31,21 +31,25 @@ declare module '#auth-utils' {
 
     /**
      * Handles user logout by clearing session and redirecting.
-     * @param context - The Nuxt context object.
+     * @param strategy
+     * @param redirectPath
+     * @param middleware
      */
-    function handleLogout(context: any): void;
+    function handleLogout(strategy: string | null, redirectPath: string, middleware: string): Promise<any>;
 
     /**
      * Validates the current user session.
-     * @param context - The Nuxt context object.
      * @returns A promise resolving to a boolean indicating if the session is valid.
+     * @param strategy
+     * @param token
+     * @param expires
      */
-    function validateSession(context: any): Promise<boolean>;
+    function validateSession(strategy: string | null, token: string | null, expires: string | null): boolean;
 
     /**
      * Determines the appropriate redirect path after authentication.
-     * @param context - The Nuxt context object.
      * @returns A string representing the redirect path.
+     * @param strategy
      */
-    function getRedirectPath(context: any): string;
+    function getRedirectPath(strategy: string | null): string;
 }

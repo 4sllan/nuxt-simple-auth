@@ -29,7 +29,7 @@ export default defineNuxtRouteMiddleware(async () => {
 
 
         if (!validateSession(strategyName, token, expires)) {
-            return await handleLogout(strategyName, getRedirectPath(strategyName));
+            return await handleLogout(strategyName, getRedirectPath(strategyName), "auth");
         }
 
         if (token) {
@@ -43,7 +43,7 @@ export default defineNuxtRouteMiddleware(async () => {
         const expires = strategy ?  localStorage.getItem($auth.prefix + `_token_expiration.` + strategy) : null;
         //
         if (!validateSession(strategy, token, expires) || $auth.strategy !== strategy || $auth.strategy !== store.value.strategy) {
-            return await handleLogout(strategy, getRedirectPath(strategy));
+            return await handleLogout(strategy, getRedirectPath(strategy), "auth");
         }
 
         if (token) {
@@ -51,7 +51,7 @@ export default defineNuxtRouteMiddleware(async () => {
         }
 
         if (!$auth.user || !$auth.loggedIn || !store.value.user || !store.value.loggedIn) {
-            return await handleLogout(strategy, getRedirectPath(strategy));
+            return await handleLogout(strategy, getRedirectPath(strategy), "auth");
         }
     }
 });
