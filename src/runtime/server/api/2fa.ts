@@ -72,7 +72,7 @@ export default defineEventHandler(async (event) => {
             },
         }).catch((error) => {
             console.error("[API Error]", error);
-            throw createError({statusCode: 502, statusMessage: "Authentication service error"});
+            throw createError({ statusCode: 400, statusMessage: 'Authentication processing failed' });
         });
 
         if (!response?.access_token || !response?.expires_in) {

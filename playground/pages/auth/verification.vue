@@ -1,6 +1,4 @@
 <script setup>
-import {useMounted} from "@vueuse/core";
-
 definePageMeta({
   layout: 'auth',
   middleware: ['auth'],
@@ -12,7 +10,7 @@ const {$auth, $toast} = useNuxtApp();
 const form = ref({});
 const errors = ref([])
 const submit = (value, {resetForm}) => {
-  if(!form.value.code || form.value.code.length !== 8){
+  if(!form.value.code || form.value.code.length !== 6){
     errors.value.push({
       message: "not code"
     });
@@ -33,7 +31,7 @@ const submit = (value, {resetForm}) => {
 };
 
 const resendToken2fa = async () => {
-  await $fetch('/api/resend-token-2fa', {
+  await $fetch('/api/gerar_codigo', {
     baseURL: config.public.baseURL,
     method: 'POST',
     headers: $auth.headers,
@@ -76,7 +74,7 @@ useAsyncData(() => {
           <div>
             <v-otp-input
                 v-model="form.code"
-                length="8"
+                length="6"
                 type="number"
                 :error-messages="errors"
             />
