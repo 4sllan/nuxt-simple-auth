@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.7] - 2025-03-28
+
+### 🚨 Fix: Incorrect Status Code on Authentication Failure
+
+#### 🧾 Summary
+- Fixed the HTTP status code returned when authentication fails due to invalid credentials.
+
+#### ❌ Previous Behavior
+- When a user submitted incorrect credentials, the system responded with:
+  - **HTTP Status Code:** `502 Bad Gateway`
+  - **Message:** `Authentication service error`
+- This was misleading, as 502 indicates a gateway/proxy failure, not a client-side error.
+
+#### ✅ New Behavior
+- The system now correctly returns:
+  - **HTTP Status Code:** `401 Unauthorized`
+  - This accurately reflects an authentication failure due to invalid client input.
+
+#### 🛠 Impact
+- ✔️ Improves clarity during debugging and API diagnostics.
+- ✔️ Aligns with HTTP standards for client authentication errors.
+
+---
+
 ## [1.1.6] - 2025-03-25
 
 ### 🔐 AuthOptionsCookie
