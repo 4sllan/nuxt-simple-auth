@@ -29,7 +29,8 @@ const submit = (value, {resetForm, setErrors}) => {
 
 useAsyncData(() => {
   if($auth.loggedIn){
-    router.push({path: "/auth/verification"});
+    // router.push({path: "/auth/verification"});
+    router.push({path: '/sys'});
   }
 })
 </script>

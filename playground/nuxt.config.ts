@@ -49,7 +49,7 @@ export default defineNuxtConfig({
                 endpoints: {
                     login: {url: "/oauth/token", method: "post", alias: "auth token"},
                     user: {url: "/api/profile", method: "get"},
-                    "2fa": {url: "/api/send-token-2fa", method: "post"},
+                    "2fa": {url: '/api/token_2fa', method: 'post'},
                 },
             },
             client:{
@@ -81,8 +81,8 @@ export default defineNuxtConfig({
         // The private keys which are only available server-side
         secret: {
             local: {
-                client_id: 1,
-                client_secret: "1yU9bPrjspLF9FS7SMPah5O7KXWMA04Kv6dfnTMd",
+                client_id: 2,
+                client_secret: process.env.CLIENT_SECRET,
                 grant_type: "password",
             },
         },
