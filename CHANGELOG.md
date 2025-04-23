@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.1.7] - 2025-03-28
+## [1.1.7] - 2025-04-23
 
 ### 🚨 Fix: Incorrect Status Code on Authentication Failure
 
