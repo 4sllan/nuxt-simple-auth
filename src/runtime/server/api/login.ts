@@ -64,7 +64,7 @@ export default defineEventHandler(async (event) => {
             },
         }).catch((error) => {
             console.error('[API Error]', error);
-            throw createError({ statusCode: 400, statusMessage: 'Authentication processing failed' });
+            throw createError({ statusCode: 401, statusMessage: 'Authentication processing failed' });
         });
 
         if (!response?.access_token || !response?.refresh_token || !response?.expires_in) {
