@@ -301,9 +301,11 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
                 this._state = store.value;
                 return data;
-            } catch (error) {
-                console.error('Error fetching profile:', error);
-                return false;
+            } catch (error: any) {
+                throw createError({
+                    statusCode: error.statusCode,
+                    statusMessage: 'Access denied',
+                })
             }
         }
     }
