@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.8] - 2026-07-09
+
+### ⚠️ Deprecated
+
+- **nuxt-simple-auth** has been deprecated.
+- This package is no longer under active development and will not receive new features.
+- Please migrate to **nuxt-umbu**, which is the direct successor and will continue to receive improvements, bug fixes, and new features.
+
+#### Migration
+
+- 📦 npm: https://www.npmjs.com/package/nuxt-umbu
+- 🐙 GitHub: https://github.com/4sllan/nuxt-umbu
+- 📖 Documentation: https://4sllan.github.io/nuxt-umbu/
+
 ## [1.1.7] - 2025-04-23
 
 ### 🚨 Fix: Incorrect Status Code on Authentication Failure
